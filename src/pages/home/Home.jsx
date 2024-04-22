@@ -24,7 +24,7 @@ class ItemGroupElement {
 	constructor({ type }) {
 		this.type = type;
 		this.uid = generateUid();
-		this.id = "T4_PLANKS";
+		this.id = "";
 		this.label = "";
 		this.quantity = 1;
 		this.price = 0;
@@ -187,7 +187,7 @@ function reducer(state, action) {
 	if (action.type === "DELETE_GROUP_ITEM") {
 		// params:
 		//  - action.groupId
-		//  - action.itemId
+		//  - action.itemUid
 
 		const newGroups = [...state.groups];
 
@@ -198,11 +198,11 @@ function reducer(state, action) {
 		let group = newGroups[index];
 
 		// Get the item index
-		const foundItem = group.items.find((_item) => _item.uid === action.itemId);
+		const foundItem = group.items.find((_item) => _item.uid === action.itemUid);
 		if (foundItem === -1) return state;
 
 		// Remove the item
-		group = group.items.filter((_item) => _item.uid !== action.itemId);
+		group = group.items.filter((_item) => _item.uid !== action.itemUid);
 		newGroups[index].items = group;
 
 		return {
@@ -342,7 +342,7 @@ export default function Home() {
 										}}
 									/>
 
-									<Stack gap="xs" ml="md">
+									<Stack gap="xs">
 										{ingredients.map((_ingredient, _idx) => {
 											return (
 												<ItemRow
@@ -356,7 +356,7 @@ export default function Home() {
 														dispatch({
 															type: "DELETE_GROUP_ITEM",
 															groupId: _group.id,
-															itemUud: _ingredient.uid,
+															itemUid: _ingredient.uid,
 														});
 													}}
 													onChange={(_payload) => {

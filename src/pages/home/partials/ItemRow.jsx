@@ -1,10 +1,11 @@
 import {
 	ActionIcon,
+	Flex,
 	Group,
+	Image,
 	NumberInput,
 	Select,
 	Stack,
-	TextInput,
 } from "@mantine/core";
 import { IconX } from "@tabler/icons-react";
 import { memo, useMemo } from "react";
@@ -28,16 +29,39 @@ export default function ItemRow({
 
 	const itemList = useMemo(() => {
 		const list = new Set();
-		for (const _item of albionData) {
-			const str = _item.LocalizedNames?.["ES-ES"];
 
-			if (str) {
-				list.add(str);
+		for (const _item of albionData) {
+			let label = _item.LocalizedNames?.["ES-ES"];
+
+			if (!label) {
+				continue;
 			}
-			// return {
-			// 	id: _item.UniqueName,
-			// 	label: _item.LocalizedNames,
-			// };
+
+			// _item.UniqueName = "T8_SHOES_LEATHER_MORGANA@1"
+			const itemId = _item.UniqueName;
+
+			const parts = itemId.match(/T([0-9])[^@]*@?([0-9])?/);
+
+			const tier = parts?.[1] ?? "";
+			const enchant = parts?.[2] ?? "0";
+
+			let prefix = "";
+			if (tier) {
+				prefix = `T${tier}`;
+
+				if (enchant) {
+					prefix = `${prefix}.${enchant}`;
+				}
+
+				prefix += " ";
+			}
+
+			label = `${prefix}${label}`;
+
+			list.add({
+				value: _item.UniqueName,
+				label,
+			});
 		}
 
 		return [...list];
@@ -50,7 +74,10 @@ export default function ItemRow({
 				placeholder="Pick value"
 				data={itemList}
 				value={id}
-				onChange={({ value, label }) => handleChange("id", value)}
+				limit={16}
+				onChange={(value) => {
+					handleChange("id", value);
+				}}
 				searchable
 			/>
 		);
@@ -87,7 +114,7 @@ export default function ItemRow({
 
 	return (
 		<Group h="100%">
-			<TextInput
+			{/* <TextInput
 				label={label}
 				value={id}
 				onChange={(ev) => {
@@ -95,8 +122,15 @@ export default function ItemRow({
 					handleChange("id", value);
 				}}
 				placeholder={uid}
+			/> */}
+
+			<Image
+				h={56}
+				src={`https://render.albiononline.com/v1/item/${id}.png`}
+				mt={6}
 			/>
-			{/* <MemoizedSelect /> */}
+
+			<MemoizedSelect />
 			<NumberInput
 				label="Cantidad"
 				allowNegative={false}
