@@ -340,9 +340,10 @@ export default function Home() {
 												isProduct: true,
 											});
 										}}
+										isHighlighted
 									/>
 
-									<Stack gap="xs">
+									<Stack gap="2">
 										{ingredients.map((_ingredient, _idx) => {
 											return (
 												<ItemRow

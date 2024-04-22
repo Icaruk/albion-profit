@@ -19,6 +19,7 @@ export default function ItemRow({
 	price,
 	onChange = () => {},
 	onDelete,
+	isHighlighted = false,
 }) {
 	// const [state, setState] = useState({
 	// 	id,
@@ -112,8 +113,16 @@ export default function ItemRow({
 		);
 	}, [JSON.stringify(state)]); */
 
+	let style = {};
+	if (isHighlighted) {
+		style = {
+			borderRadius: 4,
+			background: "rgba(255,255,255,0.06)",
+		};
+	}
+
 	return (
-		<Group h="100%">
+		<Group h="100%" style={style} p={4} gap="md">
 			{/* <TextInput
 				label={label}
 				value={id}
@@ -126,7 +135,11 @@ export default function ItemRow({
 
 			<Image
 				h={56}
-				src={`https://render.albiononline.com/v1/item/${id}.png`}
+				src={
+					id
+						? `https://render.albiononline.com/v1/item/${id}.png`
+						: "https://render.albiononline.com/v1/spell/HASTE.png"
+				}
 				mt={6}
 			/>
 
