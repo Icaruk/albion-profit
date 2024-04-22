@@ -6,3 +6,4 @@
   - [ ] Random, con transparencia y blur
 - [x] Usar [esto](https://render.albiononline.com/v1/item/T6_2H_AXE_AVALON@3?quality=5) para sacar las imágenes
 - [ ] Guardar en localStorage
+- [ ] Redondear decimales en el componente `RowSummary`
