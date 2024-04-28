@@ -1,0 +1,14 @@
+.mainContainer {
+	height: 100vh;
+	overflow: hidden;
+	
+	display: flex;
+	justify-content: center;
+}
+
+.image {
+	position: absolute;
+	height: 100vh;
+	object-fit: cover;
+	filter: blur(8px);
+}

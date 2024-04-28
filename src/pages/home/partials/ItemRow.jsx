@@ -145,7 +145,7 @@ export default function ItemRow({
 
 			<MemoizedSelect />
 			<NumberInput
-				label="Cantidad"
+				label="Quantity"
 				allowNegative={false}
 				allowDecimal={false}
 				thousandSeparator="."
@@ -156,7 +156,7 @@ export default function ItemRow({
 				onChange={(val) => handleChange("quantity", val)}
 			/>
 			<NumberInput
-				label="Precio"
+				label="Price"
 				allowNegative={false}
 				allowDecimal={false}
 				thousandSeparator="."

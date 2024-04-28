@@ -4,8 +4,9 @@ import {
 	Card,
 	Center,
 	Group,
+	Image,
+	ScrollArea,
 	Stack,
-	Text,
 	Title,
 } from "@mantine/core";
 import { IconCloudDownload, IconPlus, IconTrash } from "@tabler/icons-react";
@@ -19,6 +20,10 @@ import { locations } from "../../data/locations";
 import LocationsSelector from "./partials/LocationsSelector";
 import { setGroupItemsPriceWithCity } from "./utils/setGroupIngredientsWithCity";
 import { getGroupItemIds } from "./utils/getGroupItemIds";
+import { useState } from "react";
+
+import classes from "./Home.module.css";
+import { getRandomWallpaper } from "./utils/getRandomWallpaper";
 
 class ItemGroupElement {
 	constructor({ type }) {
@@ -264,17 +269,24 @@ const initialState = {
 
 export default function Home() {
 	const [state, dispatch] = useReducer(reducer, initialState);
+	const [loading, setLoading] = useState(false);
+	const [wallpaper] = useState(() => getRandomWallpaper());
 
 	async function getPrices({ groupId }) {
+		setLoading(true);
+
 		const group = state.groups.find((_group) => _group.id === groupId);
 		const itemIdListStr = getGroupItemIds({ group });
 
 		const url = new URL(
-			`https://west.albion-online-data.com/api/v2/stats/prices/${itemIdListStr}`,
+			`https://europe.albion-online-data.com/api/v2/stats/prices/${itemIdListStr}`,
 		);
 		url.searchParams.append("locations", locations.join(","));
 
 		const { isError, response } = await dame.get(url.toString());
+
+		setLoading(false);
+
 		if (isError) {
 			return;
 		}
@@ -286,131 +298,139 @@ export default function Home() {
 		});
 	}
 
-	console.log("state", state);
-
 	return (
-		<Center>
-			<Stack p="md" gap="md">
-				{state?.groups?.map((_group) => {
-					const group = state.groups.find((_g) => _g.id === _group.id);
-					const { product, ingredients } = getGroupParts(group);
+		<div className={classes.mainContainer}>
+			<Image className={classes.image} src={wallpaper} />
 
-					return (
-						<Card key={_group.id}>
-							<Stack gap="md">
-								<Group justify="space-between">
-									<Title order={3}>Grupo {_group.id}</Title>
-									<ActionIcon
-										color="red"
-										variant="subtle"
-										onClick={() =>
-											dispatch({ type: "DELETE_GROUP", id: _group.id })
-										}
-									>
-										<IconTrash />
-									</ActionIcon>
-								</Group>
+			<ScrollArea w="100%">
+				<Center>
+					<Stack p="md" gap="md">
+						{state?.groups?.map((_group) => {
+							const group = state.groups.find((_g) => _g.id === _group.id);
+							const { product, ingredients } = getGroupParts(group);
 
-								<LocationsSelector
-									location={group.location}
-									onChange={({ location }) => {
-										dispatch({
-											type: "EDIT_GROUP",
-											groupId: _group.id,
-											payload: {
-												location,
-											},
-										});
-									}}
-								/>
+							return (
+								<Card key={_group.id}>
+									<Stack gap="md">
+										<Group justify="space-between">
+											<Title order={3}>Group {_group.id}</Title>
+											<ActionIcon
+												color="red"
+												variant="subtle"
+												onClick={() =>
+													dispatch({ type: "DELETE_GROUP", id: _group.id })
+												}
+											>
+												<IconTrash />
+											</ActionIcon>
+										</Group>
 
-								<Stack>
-									<ItemRow
-										label="Producto"
-										id={product.id}
-										uid={product.uid}
-										quantity={product.quantity}
-										price={product.price}
-										onChange={(_payload) => {
-											dispatch({
-												type: "EDIT_GROUP_ITEM",
-												groupId: _group.id,
-												itemUid: _payload.uid,
-												payload: _payload,
-												isProduct: true,
-											});
-										}}
-										isHighlighted
-									/>
-
-									<Stack gap="2">
-										{ingredients.map((_ingredient, _idx) => {
-											return (
-												<ItemRow
-													key={_ingredient.uid}
-													label={`Ingrediente ${_idx + 1}`}
-													id={_ingredient.id}
-													uid={_ingredient.uid}
-													quantity={_ingredient.quantity}
-													price={_ingredient.price}
-													onDelete={() => {
-														dispatch({
-															type: "DELETE_GROUP_ITEM",
-															groupId: _group.id,
-															itemUid: _ingredient.uid,
-														});
-													}}
-													onChange={(_payload) => {
-														dispatch({
-															type: "EDIT_GROUP_ITEM",
-															groupId: _group.id,
-															itemUid: _payload.uid,
-															payload: _payload,
-														});
-													}}
-												/>
-											);
-										})}
-									</Stack>
-
-									<Group grow>
-										<Button
-											leftSection={<IconCloudDownload />}
-											variant="light"
-											onClick={() => {
-												getPrices({ groupId: _group.id });
-											}}
-										>
-											Cargar precios
-										</Button>
-										<Button
-											leftSection={<IconPlus />}
-											variant="light"
-											onClick={() => {
+										<LocationsSelector
+											location={group.location}
+											onChange={({ location }) => {
 												dispatch({
-													type: "ADD_GROUP_ITEM",
+													type: "EDIT_GROUP",
 													groupId: _group.id,
+													payload: {
+														location,
+													},
 												});
 											}}
-										>
-											Añadir ingrediente
-										</Button>
-									</Group>
+										/>
 
-									<RowSummary group={group} />
-								</Stack>
-							</Stack>
-						</Card>
-					);
-				})}
+										<Stack>
+											<ItemRow
+												label="Result"
+												id={product.id}
+												uid={product.uid}
+												quantity={product.quantity}
+												price={product.price}
+												onChange={(_payload) => {
+													dispatch({
+														type: "EDIT_GROUP_ITEM",
+														groupId: _group.id,
+														itemUid: _payload.uid,
+														payload: _payload,
+														isProduct: true,
+													});
+												}}
+												isHighlighted
+											/>
 
-				<Button
-					leftSection={<IconPlus />}
-					onClick={() => dispatch({ type: "ADD_GROUP" })}
-				>
-					Añadir grupo
-				</Button>
-			</Stack>
-		</Center>
+											<Stack gap="2">
+												{ingredients.map((_ingredient, _idx) => {
+													return (
+														<ItemRow
+															key={_ingredient.uid}
+															label={`Component ${_idx + 1}`}
+															id={_ingredient.id}
+															uid={_ingredient.uid}
+															quantity={_ingredient.quantity}
+															price={_ingredient.price}
+															onDelete={() => {
+																dispatch({
+																	type: "DELETE_GROUP_ITEM",
+																	groupId: _group.id,
+																	itemUid: _ingredient.uid,
+																});
+															}}
+															onChange={(_payload) => {
+																dispatch({
+																	type: "EDIT_GROUP_ITEM",
+																	groupId: _group.id,
+																	itemUid: _payload.uid,
+																	payload: _payload,
+																});
+															}}
+														/>
+													);
+												})}
+											</Stack>
+
+											<Group grow>
+												<Button
+													leftSection={<IconPlus />}
+													variant="light"
+													onClick={() => {
+														dispatch({
+															type: "ADD_GROUP_ITEM",
+															groupId: _group.id,
+														});
+													}}
+												>
+													Add component
+												</Button>
+												<Button
+													rightSection={<IconCloudDownload />}
+													variant="light"
+													onClick={() => {
+														getPrices({ groupId: _group.id });
+													}}
+													loading={loading}
+												>
+													Fetch prices
+												</Button>
+											</Group>
+
+											<RowSummary group={group} />
+										</Stack>
+									</Stack>
+								</Card>
+							);
+						})}
+
+						<Button
+							leftSection={<IconPlus />}
+							onClick={() => dispatch({ type: "ADD_GROUP" })}
+						>
+							Add group
+						</Button>
+					</Stack>
+				</Center>
+			</ScrollArea>
+
+			{/* <Center> */}
+			{/* </Center> */}
+		</div>
 	);
 }

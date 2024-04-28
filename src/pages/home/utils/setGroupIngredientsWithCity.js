@@ -19,7 +19,7 @@ export function setGroupItemsPriceWithCity({
 			return _item;
 		}
 
-		_item.price = foundData.sell_price_min;
+		_item.price = foundData.sell_price_min ?? foundData.buy_price_min;
 		return _item;
 	});
 
