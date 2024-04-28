@@ -267,10 +267,39 @@ const initialState = {
 	groups: [new ItemGroup({ id: 1 })],
 };
 
+function saveToLocalStorage(state) {
+	const str = JSON.stringify(state);
+	if (str) {
+		localStorage.setItem("state", str);
+		console.log("state saved:", state);
+	}
+}
+
+function loadFromLocalStorage() {
+	const str = localStorage.getItem("state");
+	if (!str) return null;
+	try {
+		const parsed = JSON.parse(str);
+		console.log("state loaded:", parsed);
+		return parsed;
+	} catch (err) {
+		return null;
+	}
+}
+
 export default function Home() {
-	const [state, dispatch] = useReducer(reducer, initialState);
+	const [state, dispatch] = useReducer(reducer, null, () => {
+		const loadedState = loadFromLocalStorage();
+		console.log("loaded state:", loadedState);
+		return loadedState || initialState;
+	});
 	const [loading, setLoading] = useState(false);
 	const [wallpaper] = useState(() => getRandomWallpaper());
+
+	function dispatchWithSave(...args) {
+		saveToLocalStorage(state);
+		dispatch(...args);
+	}
 
 	async function getPrices({ groupId }) {
 		setLoading(true);
@@ -291,7 +320,7 @@ export default function Home() {
 			return;
 		}
 
-		dispatch({
+		dispatchWithSave({
 			type: "SET_GROUP_PRICE_DATA",
 			groupId: groupId,
 			payload: response,
@@ -318,7 +347,10 @@ export default function Home() {
 												color="red"
 												variant="subtle"
 												onClick={() =>
-													dispatch({ type: "DELETE_GROUP", id: _group.id })
+													dispatchWithSave({
+														type: "DELETE_GROUP",
+														id: _group.id,
+													})
 												}
 											>
 												<IconTrash />
@@ -328,7 +360,7 @@ export default function Home() {
 										<LocationsSelector
 											location={group.location}
 											onChange={({ location }) => {
-												dispatch({
+												dispatchWithSave({
 													type: "EDIT_GROUP",
 													groupId: _group.id,
 													payload: {
@@ -346,7 +378,7 @@ export default function Home() {
 												quantity={product.quantity}
 												price={product.price}
 												onChange={(_payload) => {
-													dispatch({
+													dispatchWithSave({
 														type: "EDIT_GROUP_ITEM",
 														groupId: _group.id,
 														itemUid: _payload.uid,
@@ -368,14 +400,14 @@ export default function Home() {
 															quantity={_ingredient.quantity}
 															price={_ingredient.price}
 															onDelete={() => {
-																dispatch({
+																dispatchWithSave({
 																	type: "DELETE_GROUP_ITEM",
 																	groupId: _group.id,
 																	itemUid: _ingredient.uid,
 																});
 															}}
 															onChange={(_payload) => {
-																dispatch({
+																dispatchWithSave({
 																	type: "EDIT_GROUP_ITEM",
 																	groupId: _group.id,
 																	itemUid: _payload.uid,
@@ -392,7 +424,7 @@ export default function Home() {
 													leftSection={<IconPlus />}
 													variant="light"
 													onClick={() => {
-														dispatch({
+														dispatchWithSave({
 															type: "ADD_GROUP_ITEM",
 															groupId: _group.id,
 														});
@@ -421,7 +453,7 @@ export default function Home() {
 
 						<Button
 							leftSection={<IconPlus />}
-							onClick={() => dispatch({ type: "ADD_GROUP" })}
+							onClick={() => dispatchWithSave({ type: "ADD_GROUP" })}
 						>
 							Add group
 						</Button>
