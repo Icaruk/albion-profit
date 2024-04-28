@@ -1,6 +1,11 @@
 # Albion profit
 
-# TODO
+# Todo
+
+- [ ] Duplicar grupos
+- [ ] Mover grupos
+
+# Done
 
 - [x] Añadir un fondo de [aquí](https://albiononline.com/wallpapers).
   - [x] Random, con transparencia y blur
