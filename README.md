@@ -4,6 +4,7 @@
 
 - [ ] Duplicar grupos
 - [ ] Mover grupos
+- [ ] Añadir ciudad custom
 
 # Done
 
