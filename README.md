@@ -7,6 +7,7 @@
 - [ ] Detectar el tier si se escribe "T4.0" en la búsqueda
 - [ ] Incrementar tier
 - [ ] Incrementar enchant
+- [ ] Añadir ciudad custom
 
 # Done
 
