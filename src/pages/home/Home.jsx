@@ -6,24 +6,32 @@ import {
 	Group,
 	Image,
 	ScrollArea,
+	SimpleGrid,
 	Stack,
+	Text,
 	Title,
 } from "@mantine/core";
 import { IconCloudDownload, IconPlus, IconTrash } from "@tabler/icons-react";
+import dame from "dame";
 import { useReducer } from "react";
+import { useState } from "react";
+import { locations } from "../../data/locations";
 import ItemRow from "./partials/ItemRow";
+import LocationsSelector from "./partials/LocationsSelector";
 import RowSummary from "./partials/RowSummary";
 import { generateUid } from "./utils/generateUid";
-import { getGroupParts } from "./utils/getGroupParts";
-import dame from "dame";
-import { locations } from "../../data/locations";
-import LocationsSelector from "./partials/LocationsSelector";
-import { setGroupItemsPriceWithCity } from "./utils/setGroupIngredientsWithCity";
 import { getGroupItemIds } from "./utils/getGroupItemIds";
-import { useState } from "react";
+import { getGroupParts } from "./utils/getGroupParts";
+import { setGroupItemsPriceWithCity } from "./utils/setGroupIngredientsWithCity";
 
+import { IconCopy } from "@tabler/icons-react";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 import classes from "./Home.module.css";
 import { getRandomWallpaper } from "./utils/getRandomWallpaper";
+import TierSelector from "./partials/TierSelector";
+import { getItemIdComponents } from "./utils/getItemIdComponents";
+import { findItemById } from "../../data/utils/findItemById";
+import { buildItemId } from "./utils/buildItemId";
 
 class ItemGroupElement {
 	constructor({ type }) {
@@ -39,8 +47,9 @@ class ItemGroupElement {
 }
 
 class ItemGroup {
-	constructor({ id }) {
-		this.id = id;
+	constructor({ name }) {
+		this.id = generateUid();
+		this.name = name ?? "";
 		this.items = [
 			new ItemGroupElement({ type: "product" }),
 			new ItemGroupElement({ type: "ingredient" }),
@@ -48,17 +57,39 @@ class ItemGroup {
 	}
 }
 
+/**
+ * Finds the index of a group in the state array by its ID.
+ * @param {Object} groups `state.groups`
+ * @param {string} id
+ * @return {{
+ * 	index: number,
+ * 	group: ItemGroup
+ * }}
+ */
+function getGroupIndexById(groups, id) {
+	const index = groups.findIndex((_group) => _group.id === id);
+	if (index === -1)
+		return {
+			index: -1,
+			group: null,
+		};
+
+	return {
+		index: index,
+		group: groups[index],
+	};
+}
+
 function reducer(state, action) {
 	if (action.type === "ADD_GROUP") {
-		// Get last group id and inc 1
-		const lastGroupId = state.groups[state.groups.length - 1]?.id ?? 0;
-		const newGroupId = lastGroupId + 1;
+		const newGroups = [...state.groups, new ItemGroup({})];
 
 		return {
 			...state,
-			groups: [...state.groups, new ItemGroup({ id: newGroupId })],
+			groups: newGroups,
 		};
 	}
+
 	if (action.type === "EDIT_GROUP") {
 		// params:
 		//  - action.groupId
@@ -105,6 +136,67 @@ function reducer(state, action) {
 
 		// Remove the group
 		newGroups.splice(index, 1);
+
+		return {
+			...state,
+			groups: newGroups,
+		};
+	}
+	if (action.type === "DUPLICATE_GROUP") {
+		const newGroups = [...state.groups];
+
+		const { index } = getGroupIndexById(newGroups, action.id);
+		if (index === -1) return state;
+
+		const clonedGroup = JSON.parse(JSON.stringify(newGroups[index]));
+		clonedGroup.name = `${clonedGroup.name}_copy`;
+		clonedGroup.id = generateUid();
+
+		// Insert the same group after the index
+		newGroups.splice(index + 1, 0, clonedGroup);
+
+		return {
+			...state,
+			groups: newGroups,
+		};
+	}
+	if (action.type === "CHANGE_GROUP_TIER") {
+		// action.type
+		// action.groupId
+		// action.value
+
+		const newGroups = [...state.groups];
+		const { index, group } = getGroupIndexById(newGroups, action.groupId);
+
+		const tierChange = action?.value ?? 0;
+		if (tierChange === 0) {
+			return state;
+		}
+
+		// Iterate each group and find if the new tier is valid
+		for (const _item of group.items) {
+			if (!["product", "ingredient"].includes(_item.type)) {
+				continue;
+			}
+
+			const { tier, enchant } = getItemIdComponents(_item.id);
+
+			const newItemId = buildItemId({
+				id: _item.id,
+				tier: tier + tierChange,
+				enchant,
+			});
+			const foundItem = findItemById(newItemId);
+
+			if (foundItem) {
+				_item.id = newItemId;
+				_item.price = 0;
+				_item.priceData = [];
+			}
+		}
+
+		// Set the group
+		newGroups[index] = group;
 
 		return {
 			...state,
@@ -264,14 +356,14 @@ function reducer(state, action) {
 }
 
 const initialState = {
-	groups: [new ItemGroup({ id: 1 })],
+	groups: [new ItemGroup({})],
 };
 
 function saveToLocalStorage(state) {
 	const str = JSON.stringify(state);
 	if (str) {
 		localStorage.setItem("state", str);
-		console.log("state saved:", state);
+		console.log("state saved");
 	}
 }
 
@@ -280,7 +372,7 @@ function loadFromLocalStorage() {
 	if (!str) return null;
 	try {
 		const parsed = JSON.parse(str);
-		console.log("state loaded:", parsed);
+		console.log("state loaded");
 		return parsed;
 	} catch (err) {
 		return null;
@@ -290,11 +382,12 @@ function loadFromLocalStorage() {
 export default function Home() {
 	const [state, dispatch] = useReducer(reducer, null, () => {
 		const loadedState = loadFromLocalStorage();
-		console.log("loaded state:", loadedState);
 		return loadedState || initialState;
 	});
-	const [loading, setLoading] = useState(false);
+	const [loadingGroup, setLoadingGroup] = useState(null);
 	const [wallpaper] = useState(() => getRandomWallpaper());
+
+	const [parent] = useAutoAnimate();
 
 	function dispatchWithSave(...args) {
 		saveToLocalStorage(state);
@@ -302,7 +395,7 @@ export default function Home() {
 	}
 
 	async function getPrices({ groupId }) {
-		setLoading(true);
+		setLoadingGroup(groupId);
 
 		const group = state.groups.find((_group) => _group.id === groupId);
 		const itemIdListStr = getGroupItemIds({ group });
@@ -314,7 +407,7 @@ export default function Home() {
 
 		const { isError, response } = await dame.get(url.toString());
 
-		setLoading(false);
+		setLoadingGroup(null);
 
 		if (isError) {
 			return;
@@ -333,7 +426,7 @@ export default function Home() {
 
 			<ScrollArea w="100%">
 				<Center>
-					<Stack p="md" gap="md">
+					<SimpleGrid p="md" ref={parent} cols={{ base: 1, xl: 2 }}>
 						{state?.groups?.map((_group) => {
 							const group = state.groups.find((_g) => _g.id === _group.id);
 							const { product, ingredients } = getGroupParts(group);
@@ -342,19 +435,36 @@ export default function Home() {
 								<Card key={_group.id}>
 									<Stack gap="md">
 										<Group justify="space-between">
-											<Title order={3}>Group {_group.id}</Title>
-											<ActionIcon
-												color="red"
-												variant="subtle"
-												onClick={() =>
-													dispatchWithSave({
-														type: "DELETE_GROUP",
-														id: _group.id,
-													})
-												}
-											>
-												<IconTrash />
-											</ActionIcon>
+											<Text size="xs" c="dimmed">
+												ID: {_group.id}
+											</Text>
+
+											<Group>
+												<ActionIcon
+													variant="subtle"
+													onClick={() =>
+														dispatchWithSave({
+															type: "DUPLICATE_GROUP",
+															id: _group.id,
+														})
+													}
+												>
+													<IconCopy />
+												</ActionIcon>
+
+												<ActionIcon
+													color="red"
+													variant="subtle"
+													onClick={() =>
+														dispatchWithSave({
+															type: "DELETE_GROUP",
+															id: _group.id,
+														})
+													}
+												>
+													<IconTrash />
+												</ActionIcon>
+											</Group>
 										</Group>
 
 										<LocationsSelector
@@ -387,6 +497,23 @@ export default function Home() {
 													});
 												}}
 												isHighlighted
+											/>
+
+											<TierSelector
+												onTierChange={(tier) => {
+													dispatchWithSave({
+														type: "CHANGE_GROUP_TIER",
+														groupId: _group.id,
+														value: tier,
+													});
+												}}
+												onEnchantChange={(enchant) => {
+													dispatchWithSave({
+														type: "CHANGE_GROUP_ENCHANT",
+														groupId: _group.id,
+														value: enchant,
+													});
+												}}
 											/>
 
 											<Stack gap="2">
@@ -432,13 +559,14 @@ export default function Home() {
 												>
 													Add component
 												</Button>
+
 												<Button
 													rightSection={<IconCloudDownload />}
 													variant="light"
 													onClick={() => {
 														getPrices({ groupId: _group.id });
 													}}
-													loading={loading}
+													loading={loadingGroup === _group.id}
 												>
 													Fetch prices
 												</Button>
@@ -457,7 +585,7 @@ export default function Home() {
 						>
 							Add group
 						</Button>
-					</Stack>
+					</SimpleGrid>
 				</Center>
 			</ScrollArea>
 

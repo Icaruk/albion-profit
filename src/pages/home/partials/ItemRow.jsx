@@ -123,16 +123,6 @@ export default function ItemRow({
 
 	return (
 		<Group h="100%" style={style} p={4} gap="md">
-			{/* <TextInput
-				label={label}
-				value={id}
-				onChange={(ev) => {
-					const value = (ev.target.value ?? "").toUpperCase().replace(" ", "_");
-					handleChange("id", value);
-				}}
-				placeholder={uid}
-			/> */}
-
 			<Image
 				h={56}
 				src={

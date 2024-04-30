@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@formkit/auto-animate": "^0.8.2",
     "@icaruk/debounce": "^1.1.0",
     "@mantine/core": "7.7.1",
     "@mantine/hooks": "7.7.1",
