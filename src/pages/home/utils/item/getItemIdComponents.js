@@ -15,19 +15,18 @@ export function getItemIdComponents(itemId) {
 	// T4_WOOD_LEVEL4@4
 	// T5_WOOD
 
-	let tier = null;
-	let enchant = 0;
+	const tierMatch = itemId.match(/T([0-9]{1})/i);
+	let tier = tierMatch?.[1] ?? null;
 
-	const parts = itemId.split("_");
-	// T4_WOOD --> ["T4", "WOOD"]
-	// T4_WOOD_LEVEL1@1 --> ["T4", "WOOD", "LEVEL1@1"]
+	if (tier) {
+		tier = Number.parseInt(tier);
+	}
 
-	const strTier = parts[0]; // "T4"
-	tier = +strTier[1]; // 4
+	const enchantMatch = itemId.match(/@([0-9]{1})/i);
+	let enchant = enchantMatch?.[1] ?? 0;
 
-	if (parts?.[2]) {
-		const partsEnchant = parts[2].split("@"); // ["LEVEL1", "1"]
-		enchant = +partsEnchant[1]; // 1
+	if (enchant) {
+		enchant = Number.parseInt(enchant);
 	}
 
 	return { tier, enchant };

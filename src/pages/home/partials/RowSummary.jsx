@@ -1,5 +1,5 @@
 import { Group, NumberFormatter, Stack, Text } from "@mantine/core";
-import { getGroupParts } from "../utils/getGroupParts";
+import { getGroupParts } from "../utils/group/getGroupParts";
 
 export default function RowSummary({ group }) {
 	let totalCost = 0;

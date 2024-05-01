@@ -9,29 +9,25 @@ import {
 	SimpleGrid,
 	Stack,
 	Text,
-	Title,
 } from "@mantine/core";
 import { IconCloudDownload, IconPlus, IconTrash } from "@tabler/icons-react";
 import dame from "dame";
-import { useReducer } from "react";
-import { useState } from "react";
+import { useReducer, useState } from "react";
 import { locations } from "../../data/locations";
 import ItemRow from "./partials/ItemRow";
 import LocationsSelector from "./partials/LocationsSelector";
 import RowSummary from "./partials/RowSummary";
-import { generateUid } from "./utils/generateUid";
-import { getGroupItemIds } from "./utils/getGroupItemIds";
-import { getGroupParts } from "./utils/getGroupParts";
-import { setGroupItemsPriceWithCity } from "./utils/setGroupIngredientsWithCity";
+import { generateUid } from "./utils/group/generateUid";
+import { getGroupItemIds } from "./utils/group/getGroupItemIds";
+import { getGroupParts } from "./utils/group/getGroupParts";
+import { setGroupItemsPriceWithCity } from "./utils/group/setGroupIngredientsWithCity";
 
-import { IconCopy } from "@tabler/icons-react";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
+import { IconCopy } from "@tabler/icons-react";
 import classes from "./Home.module.css";
-import { getRandomWallpaper } from "./utils/getRandomWallpaper";
 import TierSelector from "./partials/TierSelector";
-import { getItemIdComponents } from "./utils/getItemIdComponents";
-import { findItemById } from "../../data/utils/findItemById";
-import { buildItemId } from "./utils/buildItemId";
+import { getRandomWallpaper } from "./utils/getRandomWallpaper";
+import { buildAndFindItemId } from "./utils/item/buildAndFindItemid";
 
 class ItemGroupElement {
 	constructor({ type }) {
@@ -163,15 +159,14 @@ function reducer(state, action) {
 	if (action.type === "CHANGE_GROUP_TIER") {
 		// action.type
 		// action.groupId
-		// action.value
+		// action.tierLevelChange
+		// action.enchantLevelChange
 
 		const newGroups = [...state.groups];
 		const { index, group } = getGroupIndexById(newGroups, action.groupId);
 
-		const tierChange = action?.value ?? 0;
-		if (tierChange === 0) {
-			return state;
-		}
+		const tierChange = action?.tierLevelChange ?? 0;
+		const enchantChange = action?.enchantLevelChange ?? 0;
 
 		// Iterate each group and find if the new tier is valid
 		for (const _item of group.items) {
@@ -179,17 +174,14 @@ function reducer(state, action) {
 				continue;
 			}
 
-			const { tier, enchant } = getItemIdComponents(_item.id);
-
-			const newItemId = buildItemId({
-				id: _item.id,
-				tier: tier + tierChange,
-				enchant,
+			const { item, itemId } = buildAndFindItemId({
+				itemId: _item.id,
+				tierChange,
+				enchantChange,
 			});
-			const foundItem = findItemById(newItemId);
 
-			if (foundItem) {
-				_item.id = newItemId;
+			if (item) {
+				_item.id = itemId;
 				_item.price = 0;
 				_item.priceData = [];
 			}
@@ -504,14 +496,14 @@ export default function Home() {
 													dispatchWithSave({
 														type: "CHANGE_GROUP_TIER",
 														groupId: _group.id,
-														value: tier,
+														tierLevelChange: tier,
 													});
 												}}
 												onEnchantChange={(enchant) => {
 													dispatchWithSave({
-														type: "CHANGE_GROUP_ENCHANT",
+														type: "CHANGE_GROUP_TIER",
 														groupId: _group.id,
-														value: enchant,
+														enchantLevelChange: enchant,
 													});
 												}}
 											/>

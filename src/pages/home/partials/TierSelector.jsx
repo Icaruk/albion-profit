@@ -27,7 +27,7 @@ export default function TierSelector({
 				</Button>
 			</Group>
 
-			{/* 			<Group gap="xs">
+			<Group gap="xs">
 				<Button
 					variant="subtle"
 					size="compact-xs"
@@ -43,7 +43,7 @@ export default function TierSelector({
 				>
 					<IconPlus size={16} />
 				</Button>
-			</Group> */}
+			</Group>
 		</Group>
 	);
 }
