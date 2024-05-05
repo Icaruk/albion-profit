@@ -1,3 +1,4 @@
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 import {
 	ActionIcon,
 	Button,
@@ -10,24 +11,22 @@ import {
 	Stack,
 	Text,
 } from "@mantine/core";
-import { IconCloudDownload, IconPlus, IconTrash } from "@tabler/icons-react";
+import { IconCloudDownload, IconCopy, IconPlus, IconTrash } from "@tabler/icons-react";
 import dame from "dame";
 import { useReducer, useState } from "react";
 import { locations } from "../../data/locations";
+import classes from "./Home.module.css";
 import ItemRow from "./partials/ItemRow";
 import LocationsSelector from "./partials/LocationsSelector";
 import RowSummary from "./partials/RowSummary";
+import TierSelector from "./partials/TierSelector";
+import { getRandomWallpaper } from "./utils/getRandomWallpaper";
 import { generateUid } from "./utils/group/generateUid";
 import { getGroupItemIds } from "./utils/group/getGroupItemIds";
 import { getGroupParts } from "./utils/group/getGroupParts";
 import { setGroupItemsPriceWithCity } from "./utils/group/setGroupIngredientsWithCity";
-
-import { useAutoAnimate } from "@formkit/auto-animate/react";
-import { IconCopy } from "@tabler/icons-react";
-import classes from "./Home.module.css";
-import TierSelector from "./partials/TierSelector";
-import { getRandomWallpaper } from "./utils/getRandomWallpaper";
 import { buildAndFindItemId } from "./utils/item/buildAndFindItemid";
+import { TaxSelector } from "./partials/TaxSelector";
 
 class ItemGroupElement {
 	constructor({ type }) {
@@ -39,6 +38,7 @@ class ItemGroupElement {
 		this.price = 0;
 		this.location = "";
 		this.priceData = [];
+		this.modifierPercentage = 0;
 	}
 }
 
@@ -230,9 +230,7 @@ function reducer(state, action) {
 		const group = newGroups[index];
 
 		// Get the item index
-		const itemIndex = group.items.findIndex(
-			(_item) => _item.uid === action.itemUid,
-		);
+		const itemIndex = group.items.findIndex((_item) => _item.uid === action.itemUid);
 		if (!itemIndex === -1) return state;
 
 		const foundItem = group.items[itemIndex];
@@ -475,11 +473,7 @@ export default function Home() {
 										<Stack>
 											<ItemRow
 												label="Result"
-												id={product.id}
-												name={product.name}
-												uid={product.uid}
-												quantity={product.quantity}
-												price={product.price}
+												item={product}
 												onChange={(_payload) => {
 													dispatchWithSave({
 														type: "EDIT_GROUP_ITEM",
@@ -492,22 +486,26 @@ export default function Home() {
 												isHighlighted
 											/>
 
-											<TierSelector
-												onTierChange={(tier) => {
-													dispatchWithSave({
-														type: "CHANGE_GROUP_TIER",
-														groupId: _group.id,
-														tierLevelChange: tier,
-													});
-												}}
-												onEnchantChange={(enchant) => {
-													dispatchWithSave({
-														type: "CHANGE_GROUP_TIER",
-														groupId: _group.id,
-														enchantLevelChange: enchant,
-													});
-												}}
-											/>
+											<Group align="center">
+												<TierSelector
+													onTierChange={(tier) => {
+														dispatchWithSave({
+															type: "CHANGE_GROUP_TIER",
+															groupId: _group.id,
+															tierLevelChange: tier,
+														});
+													}}
+													onEnchantChange={(enchant) => {
+														dispatchWithSave({
+															type: "CHANGE_GROUP_TIER",
+															groupId: _group.id,
+															enchantLevelChange: enchant,
+														});
+													}}
+												/>
+
+												{/* <TaxSelector /> */}
+											</Group>
 
 											<Stack gap="2">
 												{ingredients.map((_ingredient, _idx) => {
@@ -515,10 +513,7 @@ export default function Home() {
 														<ItemRow
 															key={_ingredient.uid}
 															label={`Component ${_idx + 1}`}
-															id={_ingredient.id}
-															uid={_ingredient.uid}
-															quantity={_ingredient.quantity}
-															price={_ingredient.price}
+															item={_ingredient}
 															onDelete={() => {
 																dispatchWithSave({
 																	type: "DELETE_GROUP_ITEM",

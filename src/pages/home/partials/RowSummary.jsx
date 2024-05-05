@@ -7,7 +7,9 @@ export default function RowSummary({ group }) {
 
 	const { product, ingredients } = getGroupParts(group);
 
-	const totalEarnings = Math.round(product.price * product.quantity);
+	const percentageToMultiplier = 1 + product?.modifierPercentage / 100;
+
+	const totalEarnings = Math.round(product.price * product.quantity * percentageToMultiplier);
 
 	for (const _ingredient of ingredients) {
 		totalCost += _ingredient.price * _ingredient.quantity;

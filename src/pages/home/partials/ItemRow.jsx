@@ -1,12 +1,4 @@
-import {
-	ActionIcon,
-	Flex,
-	Group,
-	Image,
-	NumberInput,
-	Select,
-	Stack,
-} from "@mantine/core";
+import { ActionIcon, Flex, Group, Image, NumberInput, Select, Stack } from "@mantine/core";
 import { IconX } from "@tabler/icons-react";
 import { memo, useMemo } from "react";
 import { albionData } from "../../../data/items";
@@ -16,10 +8,7 @@ import { IconClipboard } from "@tabler/icons-react";
 
 export default function ItemRow({
 	label,
-	id,
-	uid,
-	quantity,
-	price,
+	item = {},
 	onChange = () => {},
 	onDelete,
 	isHighlighted = false,
@@ -65,14 +54,14 @@ export default function ItemRow({
 
 		return [...list];
 	}, []);
-	
-	const currentItemName = useMemo( () => {
+
+	const currentItemName = useMemo(() => {
 		for (const _item of albionData) {
-			if (_item.UniqueName === id) {
+			if (_item.UniqueName === item?.id) {
 				return _item.LocalizedNames?.["ES-ES"];
 			}
 		}
-	}, [ id ] );
+	}, [item?.id]);
 
 	const MemoizedSelect = memo(() => {
 		return (
@@ -80,7 +69,7 @@ export default function ItemRow({
 				label={label}
 				placeholder="Pick value"
 				data={itemList}
-				value={id}
+				value={item?.id}
 				limit={16}
 				onChange={(value) => {
 					handleChange("id", value);
@@ -92,7 +81,7 @@ export default function ItemRow({
 
 	function handleChange(key, value) {
 		onChange({
-			uid: uid, // mandatory to identify the item
+			uid: item?.uid, // mandatory to identify the item
 			[key]: value,
 		});
 	}
@@ -115,13 +104,16 @@ export default function ItemRow({
 		};
 	}
 
+	const percentageToMultiplier = 1 + (item?.modifierPercentage ?? 0) / 100;
+	const calculatedTotal = Math.round(item?.quantity * item?.price * percentageToMultiplier);
+
 	return (
 		<Group h="100%" style={style} p={4} gap="md">
 			<Image
 				h={56}
 				src={
-					id
-						? `https://render.albiononline.com/v1/item/${id}.png`
+					item?.id
+						? `https://render.albiononline.com/v1/item/${item?.id}.png`
 						: "https://render.albiononline.com/v1/spell/HASTE.png"
 				}
 				mt={6}
@@ -138,7 +130,7 @@ export default function ItemRow({
 				decimalSeparator=","
 				hideControls
 				w={80}
-				value={quantity}
+				value={item?.quantity}
 				onChange={(val) => handleChange("quantity", val)}
 			/>
 			<NumberInput
@@ -149,9 +141,22 @@ export default function ItemRow({
 				decimalSeparator=","
 				hideControls
 				w={128}
-				value={price}
+				value={item?.price}
 				onChange={(val) => handleChange("price", val)}
 			/>
+			{item?.type === "product" && (
+				<NumberInput
+					label="Mod. %"
+					allowNegative={true}
+					allowDecimal={false}
+					thousandSeparator="."
+					decimalSeparator=","
+					hideControls
+					w={64}
+					value={item?.modifierPercentage}
+					onChange={(val) => handleChange("modifierPercentage", val)}
+				/>
+			)}
 			<NumberInput
 				variant="filled"
 				label="Total"
@@ -159,7 +164,7 @@ export default function ItemRow({
 				decimalSeparator=","
 				hideControls
 				w={128}
-				value={quantity * price}
+				value={calculatedTotal}
 				readOnly
 			/>
 			{onDelete && (
