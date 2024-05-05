@@ -476,6 +476,7 @@ export default function Home() {
 											<ItemRow
 												label="Result"
 												id={product.id}
+												name={product.name}
 												uid={product.uid}
 												quantity={product.quantity}
 												price={product.price}

@@ -10,6 +10,9 @@ import {
 import { IconX } from "@tabler/icons-react";
 import { memo, useMemo } from "react";
 import { albionData } from "../../../data/items";
+import { useClipboard } from "@mantine/hooks";
+import { notifications } from "@mantine/notifications";
+import { IconClipboard } from "@tabler/icons-react";
 
 export default function ItemRow({
 	label,
@@ -21,12 +24,7 @@ export default function ItemRow({
 	onDelete,
 	isHighlighted = false,
 }) {
-	// const [state, setState] = useState({
-	// 	id,
-	// 	uid,
-	// 	quantity,
-	// 	price,
-	// });
+	const clipboard = useClipboard();
 
 	const itemList = useMemo(() => {
 		const list = new Set();
@@ -67,6 +65,14 @@ export default function ItemRow({
 
 		return [...list];
 	}, []);
+	
+	const currentItemName = useMemo( () => {
+		for (const _item of albionData) {
+			if (_item.UniqueName === id) {
+				return _item.LocalizedNames?.["ES-ES"];
+			}
+		}
+	}, [ id ] );
 
 	const MemoizedSelect = memo(() => {
 		return (
@@ -85,33 +91,21 @@ export default function ItemRow({
 	}, [itemList]);
 
 	function handleChange(key, value) {
-		// setState((_curr) => {
-		// 	return {
-		// 		..._curr,
-		// 		[key]: value,
-		// 	};
-		// });
-
 		onChange({
 			uid: uid, // mandatory to identify the item
 			[key]: value,
 		});
 	}
 
-	/* useEffect(() => {
-		debounce(
-			500,
-			() => {
-				onChange({
-					id,
-					uid,
-					quantity,
-					price,
-				});
-			},
-			"ItemRow",
-		);
-	}, [JSON.stringify(state)]); */
+	function handleCopyItemId() {
+		clipboard.copy(currentItemName);
+
+		notifications.show({
+			color: "green",
+			icon: <IconClipboard />,
+			title: "Item has been copied to clipboard",
+		});
+	}
 
 	let style = {};
 	if (isHighlighted) {
@@ -131,6 +125,8 @@ export default function ItemRow({
 						: "https://render.albiononline.com/v1/spell/HASTE.png"
 				}
 				mt={6}
+				onClick={() => handleCopyItemId()}
+				style={{ cursor: "pointer" }}
 			/>
 
 			<MemoizedSelect />
