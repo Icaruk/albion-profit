@@ -1,9 +1,10 @@
 .mainContainer {
-	height: 100vh;
+	height: 95vh;
 	overflow: hidden;
 	
 	display: flex;
 	justify-content: center;
+	flex-direction: column;
 }
 
 .image {

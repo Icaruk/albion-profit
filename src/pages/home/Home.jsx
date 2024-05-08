@@ -7,6 +7,7 @@ import {
 	Group,
 	Image,
 	ScrollArea,
+	Select,
 	SimpleGrid,
 	Stack,
 	Text,
@@ -16,20 +17,19 @@ import dame from "dame";
 import { useReducer, useState } from "react";
 import { locations } from "../../data/locations";
 import classes from "./Home.module.css";
-import * as m from "./paraglide/messages.js";
 import ItemRow from "./partials/ItemRow";
 import LocationsSelector from "./partials/LocationsSelector";
 import RowSummary from "./partials/RowSummary";
 import TierSelector from "./partials/TierSelector";
 import { getRandomWallpaper } from "./utils/getRandomWallpaper";
-import { setLanguageTag } from "./paraglide/runtime.js";
 import { generateUid } from "./utils/group/generateUid";
 import { getGroupItemIds } from "./utils/group/getGroupItemIds";
 import { getGroupParts } from "./utils/group/getGroupParts";
 import { setGroupItemsPriceWithCity } from "./utils/group/setGroupIngredientsWithCity";
 import { buildAndFindItemId } from "./utils/item/buildAndFindItemid";
 
-setLanguageTag("en");
+import * as m from "@paraglide/messages.js";
+import { setLanguageTag } from "@paraglide/runtime.js";
 
 class ItemGroupElement {
 	constructor({ type }) {
@@ -378,6 +378,7 @@ export default function Home() {
 		return loadedState || initialState;
 	});
 	const [loadingGroup, setLoadingGroup] = useState(null);
+	const [lang, setLang] = useState("en");
 	const [wallpaper] = useState(() => getRandomWallpaper());
 
 	const [parent] = useAutoAnimate();
@@ -416,6 +417,21 @@ export default function Home() {
 	return (
 		<div className={classes.mainContainer}>
 			<Image className={classes.image} src={wallpaper} />
+
+			<Group h="5vh" my="xs" ml="md">
+				<Select
+					defaultValue={"es"}
+					data={[
+						{ label: "🇪🇸 Español", value: "es" },
+						{ label: "🇬🇧 English", value: "en" },
+						{ label: "🇫🇷 Français", value: "fr" },
+					]}
+					onChange={(_val) => {
+						setLang(_val);
+						setLanguageTag(_val);
+					}}
+				/>
+			</Group>
 
 			<ScrollArea w="100%">
 				<Center>
@@ -559,7 +575,7 @@ export default function Home() {
 													}}
 													loading={loadingGroup === _group.id}
 												>
-													Fetch prices
+													{m.fetchPrices()}
 												</Button>
 											</Group>
 
@@ -574,7 +590,7 @@ export default function Home() {
 							leftSection={<IconPlus />}
 							onClick={() => dispatchWithSave({ type: "ADD_GROUP" })}
 						>
-							Add group
+							{m.addGroup()}
 						</Button>
 					</SimpleGrid>
 				</Center>

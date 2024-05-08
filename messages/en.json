@@ -1,4 +1,6 @@
 {
     "$schema": "https://inlang.com/schema/inlang-message-format",
-    "addComponent": "Add component"
+    "addComponent": "Add component",
+    "fetchPrices": "Fetch prices",
+    "addGroup": "Add group"
 }
