@@ -5,15 +5,17 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "build": "paraglide-js compile --project ./project.inlang --outdir ./src\\paraglide && vite build",
+    "preview": "vite preview",
+    "postinstall": "paraglide-js compile --project ./project.inlang --outdir ./src\\paraglide"
   },
   "dependencies": {
     "@formkit/auto-animate": "^0.8.2",
     "@icaruk/debounce": "^1.1.0",
-    "@mantine/core": "^7.9.0",
-    "@mantine/hooks": "^7.9.0",
-    "@mantine/notifications": "^7.9.0",
+    "@inlang/paraglide-vite": "^1.2.50",
+    "@mantine/core": "^7.9.1",
+    "@mantine/hooks": "^7.9.1",
+    "@mantine/notifications": "^7.9.1",
     "@tabler/icons-react": "^3.3.0",
     "dame": "^1.2.6",
     "react": "^18.3.1",
@@ -21,6 +23,7 @@
     "react-router-dom": "^6.23.0"
   },
   "devDependencies": {
+    "@inlang/paraglide-js": "1.8.0",
     "@types/react": "^18.3.1",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.2.1",

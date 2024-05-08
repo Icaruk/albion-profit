@@ -16,17 +16,20 @@ import dame from "dame";
 import { useReducer, useState } from "react";
 import { locations } from "../../data/locations";
 import classes from "./Home.module.css";
+import * as m from "./paraglide/messages.js";
 import ItemRow from "./partials/ItemRow";
 import LocationsSelector from "./partials/LocationsSelector";
 import RowSummary from "./partials/RowSummary";
 import TierSelector from "./partials/TierSelector";
 import { getRandomWallpaper } from "./utils/getRandomWallpaper";
+import { setLanguageTag } from "./paraglide/runtime.js";
 import { generateUid } from "./utils/group/generateUid";
 import { getGroupItemIds } from "./utils/group/getGroupItemIds";
 import { getGroupParts } from "./utils/group/getGroupParts";
 import { setGroupItemsPriceWithCity } from "./utils/group/setGroupIngredientsWithCity";
 import { buildAndFindItemId } from "./utils/item/buildAndFindItemid";
-import { TaxSelector } from "./partials/TaxSelector";
+
+setLanguageTag("en");
 
 class ItemGroupElement {
 	constructor({ type }) {
