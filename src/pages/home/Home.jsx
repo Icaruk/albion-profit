@@ -545,7 +545,7 @@ export default function Home() {
 														});
 													}}
 												>
-													Add component
+													{m.addComponent()}
 												</Button>
 
 												<Button
