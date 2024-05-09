@@ -7,6 +7,7 @@
 # Features
 
 - ⚡ Better and faster than google sheets / excel.
+- 📚 All servers supported
 - ♾️ You can make endless groups with endless components.
 - 🪄 It fetches prices for all the items inside each group, but It works without it!.
 - 🌐 Multilanguage: ![](https://flagsapi.com/GB/flat/16.png) ![](https://flagsapi.com/ES/flat/16.png) ![](https://flagsapi.com/FR/flat/16.png)
@@ -15,7 +16,6 @@
 
 # WIP
 
-- Only fetches data for Europe
 - Crafting ingredients must be added manually
 - Missing crystal weapons
 
