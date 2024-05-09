@@ -1,20 +1,40 @@
 # Albion profit
 
-# Todo
+Albion Profit is a tool that enables users to semi-automatically calculate any combination of one product with multiple ingredients. 
 
-- [ ] Añadir precio mínimo para que sea rentable (al menos 5%)
-- [ ] Mover grupos
-- [ ] Detectar el tier si se escribe "T4.0" en la búsqueda https://mantine.dev/core/select/#options-filtering
-- [ ] Idiomas https://inlang.com
-- [ ] Añadir ciudad custom
+![image](https://github.com/Icaruk/albion-profit/assets/10779469/3799df11-e86d-4f78-940b-0266e88ab21a)
+
+# Features
+
+- ⚡ Better and faster than google sheets / excel.
+- 🪄 It works without fetching prices.
+- 🌐 Multilanguage: ![](https://flagsapi.com/GB/flat/16.png) ![](https://flagsapi.com/ES/flat/16.png) ![](https://flagsapi.com/FR/flat/16.png)
+- ♾️ You can make endless groups with endless components.
+- 💾 Save your calculations for later, all data is saved on your browser.
+- 👉 Click on the item's icon to copy the item's name to your clipboard, so you can easily search on the marketplace for real-time price.
+
+# WIP
+
+- Only fetches data for Europe
+- Crafting ingredients must be added manually
+- Missing crystal weapons
+
+---
+
+# TODO
+
+- [ ] Move groups
+- [ ] Detect tier writing "T4.0" on the search [using this](https://mantine.dev/core/select/#options-filtering)
+- [ ] Add "Custom" in cities
+- [ ] Market tax selector
+- [ ] Server selector
 
 # Done
 
-- [x] Añadir un fondo de [aquí](https://albiononline.com/wallpapers).
-  - [x] Random, con transparencia y blur
-- [x] Usar [esto](https://render.albiononline.com/v1/item/T6_2H_AXE_AVALON@3?quality=5) para sacar las imágenes
-- [x] Guardar en localStorage
-- [x] Redondear decimales en el componente `RowSummary`
-- [x] Duplicar grupos
-- [x] Incrementar tier
-- [x] Incrementar enchant
+- [x] Multilanguage https://inlang.com
+- [x] Wallpapers from [here](https://albiononline.com/wallpapers).
+- [x] Use [this](https://render.albiononline.com/v1/item/T6_2H_AXE_AVALON@3?quality=5) to get item icons
+- [x] Save in localStorage
+- [x] Duplicate groups
+- [x] Increment tier
+- [x] Increment enchant
