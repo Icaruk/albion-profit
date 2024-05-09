@@ -428,7 +428,7 @@ export default observer(function Home() {
 			<ScrollArea w="100%">
 				<Center>
 					<SimpleGrid p="md" ref={parent} cols={{ base: 1, xl: 2 }}>
-						{state?.groups?.map((_group) => {
+						{state?.groups?.map((_group, _idx) => {
 							const group = state.groups.find((_g) => _g.id === _group.id);
 							const { product, ingredients } = getGroupParts(group);
 
@@ -437,7 +437,7 @@ export default observer(function Home() {
 									<Stack gap="md">
 										<Group justify="space-between">
 											<Text size="xs" c="dimmed">
-												ID: {_group.id}
+												Group {_idx + 1}
 											</Text>
 
 											<Group>
