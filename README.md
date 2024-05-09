@@ -4,7 +4,7 @@
 
 - [ ] Añadir precio mínimo para que sea rentable (al menos 5%)
 - [ ] Mover grupos
-- [ ] Detectar el tier si se escribe "T4.0" en la búsqueda
+- [ ] Detectar el tier si se escribe "T4.0" en la búsqueda https://mantine.dev/core/select/#options-filtering
 - [ ] Idiomas https://inlang.com
 - [ ] Añadir ciudad custom
 

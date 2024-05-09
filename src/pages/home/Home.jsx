@@ -7,7 +7,6 @@ import {
 	Group,
 	Image,
 	ScrollArea,
-	Select,
 	SimpleGrid,
 	Stack,
 	Text,
@@ -17,7 +16,8 @@ import dame from "dame";
 import { useReducer, useState } from "react";
 import { locations } from "../../data/locations";
 import classes from "./Home.module.css";
-import ItemRow from "./partials/ItemRow";
+import { ItemRow } from "./partials/ItemRow";
+import { LanguageSelector } from "./partials/LanguageSelector";
 import LocationsSelector from "./partials/LocationsSelector";
 import RowSummary from "./partials/RowSummary";
 import TierSelector from "./partials/TierSelector";
@@ -29,7 +29,8 @@ import { setGroupItemsPriceWithCity } from "./utils/group/setGroupIngredientsWit
 import { buildAndFindItemId } from "./utils/item/buildAndFindItemid";
 
 import * as m from "@/paraglide/messages.js";
-import { setLanguageTag } from "@/paraglide/runtime.js";
+import { observer } from "mobx-react-lite";
+import { globalStore } from "@/mobx/rootStore";
 
 class ItemGroupElement {
 	constructor({ type }) {
@@ -372,13 +373,12 @@ function loadFromLocalStorage() {
 	}
 }
 
-export default function Home() {
+export default observer(function Home() {
 	const [state, dispatch] = useReducer(reducer, null, () => {
 		const loadedState = loadFromLocalStorage();
 		return loadedState || initialState;
 	});
 	const [loadingGroup, setLoadingGroup] = useState(null);
-	const [lang, setLang] = useState("en");
 	const [wallpaper] = useState(() => getRandomWallpaper());
 
 	const [parent] = useAutoAnimate();
@@ -414,23 +414,15 @@ export default function Home() {
 		});
 	}
 
+	// This will force re-render
+	const language = globalStore.language;
+
 	return (
 		<div className={classes.mainContainer}>
 			<Image className={classes.image} src={wallpaper} />
 
 			<Group h="5vh" my="xs" ml="md">
-				<Select
-					defaultValue={"es"}
-					data={[
-						{ label: "🇪🇸 Español", value: "es" },
-						{ label: "🇬🇧 English", value: "en" },
-						{ label: "🇫🇷 Français", value: "fr" },
-					]}
-					onChange={(_val) => {
-						setLang(_val);
-						setLanguageTag(_val);
-					}}
-				/>
+				<LanguageSelector />
 			</Group>
 
 			<ScrollArea w="100%">
@@ -595,9 +587,6 @@ export default function Home() {
 					</SimpleGrid>
 				</Center>
 			</ScrollArea>
-
-			{/* <Center> */}
-			{/* </Center> */}
 		</div>
 	);
-}
+});

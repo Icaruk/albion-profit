@@ -12,12 +12,14 @@
   "dependencies": {
     "@formkit/auto-animate": "^0.8.2",
     "@icaruk/debounce": "^1.1.0",
-    "@inlang/paraglide-vite": "^1.2.50",
+    "@inlang/paraglide-vite": "^1.2.51",
     "@mantine/core": "^7.9.1",
     "@mantine/hooks": "^7.9.1",
     "@mantine/notifications": "^7.9.1",
     "@tabler/icons-react": "^3.3.0",
     "dame": "^1.2.6",
+    "mobx": "^6.12.3",
+    "mobx-react-lite": "^4.0.7",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.23.0"
