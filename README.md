@@ -7,9 +7,9 @@
 # Features
 
 - ⚡ Better and faster than google sheets / excel.
-- 🪄 It works without fetching prices.
-- 🌐 Multilanguage: ![](https://flagsapi.com/GB/flat/16.png) ![](https://flagsapi.com/ES/flat/16.png) ![](https://flagsapi.com/FR/flat/16.png)
 - ♾️ You can make endless groups with endless components.
+- 🪄 It fetches prices for all the items inside each group, but It works without it!.
+- 🌐 Multilanguage: ![](https://flagsapi.com/GB/flat/16.png) ![](https://flagsapi.com/ES/flat/16.png) ![](https://flagsapi.com/FR/flat/16.png)
 - 💾 Save your calculations for later, all data is saved on your browser.
 - 👉 Click on the item's icon to copy the item's name to your clipboard, so you can easily search on the marketplace for real-time price.
 
