@@ -38,3 +38,12 @@
 - [x] Duplicate groups
 - [x] Increment tier
 - [x] Increment enchant
+
+---
+
+# Made with
+
+- [React](https://react.dev) + [Vite](https://vitejs.dev)
+- [Mantine](https://mantine.dev)
+- [Inlang](https://inlang.com)
+- [The Albion Online Data Project](https://www.albion-online-data.com)
