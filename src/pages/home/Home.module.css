@@ -12,4 +12,5 @@
 	height: 100vh;
 	object-fit: cover;
 	filter: blur(8px);
+	z-index: -1;
 }

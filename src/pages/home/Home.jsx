@@ -1,6 +1,8 @@
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import {
 	ActionIcon,
+	Anchor,
+	Avatar,
 	Button,
 	Card,
 	Center,
@@ -31,6 +33,7 @@ import { buildAndFindItemId } from "./utils/item/buildAndFindItemid";
 import * as m from "@/paraglide/messages.js";
 import { observer } from "mobx-react-lite";
 import { globalStore } from "@/mobx/rootStore";
+import { GithubIcon } from "@/assets/logos/GithubIcon";
 
 class ItemGroupElement {
 	constructor({ type }) {
@@ -421,8 +424,14 @@ export default observer(function Home() {
 		<div className={classes.mainContainer}>
 			<Image className={classes.image} src={wallpaper} />
 
-			<Group h="5vh" my="xs" ml="md">
+			<Group h="5vh" my="xs" mx="md" justify="space-between">
 				<LanguageSelector />
+
+				<Anchor href="https://github.com/Icaruk/albion-profit" target="_blank">
+					<Avatar variant="light">
+						<GithubIcon size={32} color="var(--mantine-color-dark-8)" />
+					</Avatar>
+				</Anchor>
 			</Group>
 
 			<ScrollArea w="100%">
