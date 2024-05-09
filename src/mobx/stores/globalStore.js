@@ -6,6 +6,7 @@ import { setLanguageTag } from "@/paraglide/runtime.js";
 
 const defaultProperties = {
 	language: "en",
+	server: "europe",
 };
 
 export class GlobalStore {
@@ -31,12 +32,21 @@ export class GlobalStore {
 		return languageToItemKey[language];
 	};
 
-	/** * @param {"en" | "es" | "fr"} lang */
+	/** @param {"en" | "es" | "fr"} lang */
 	setLanguage = (language) => {
 		if (!language) return;
 
 		setLanguageTag(language);
 		this.language = language;
+	};
+
+	/**
+	 * @param {"west" | "east" | "europe"} server
+	 */
+	setServer = (server) => {
+		if (!server) return;
+
+		this.server = server;
 	};
 
 	reset() {

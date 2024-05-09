@@ -34,6 +34,7 @@ import * as m from "@/paraglide/messages.js";
 import { observer } from "mobx-react-lite";
 import { globalStore } from "@/mobx/rootStore";
 import { GithubIcon } from "@/assets/logos/GithubIcon";
+import { ServerSelector } from "./partials/ServerSelector";
 
 class ItemGroupElement {
 	constructor({ type }) {
@@ -398,7 +399,7 @@ export default observer(function Home() {
 		const itemIdListStr = getGroupItemIds({ group });
 
 		const url = new URL(
-			`https://europe.albion-online-data.com/api/v2/stats/prices/${itemIdListStr}`,
+			`https://${globalStore.server}.albion-online-data.com/api/v2/stats/prices/${itemIdListStr}`,
 		);
 		url.searchParams.append("locations", locations.join(","));
 
@@ -425,7 +426,10 @@ export default observer(function Home() {
 			<Image className={classes.image} src={wallpaper} />
 
 			<Group h="5vh" my="xs" mx="md" justify="space-between">
-				<LanguageSelector />
+				<Group>
+					<LanguageSelector />
+					<ServerSelector />
+				</Group>
 
 				<Anchor href="https://github.com/Icaruk/albion-profit" target="_blank">
 					<Avatar variant="light">
