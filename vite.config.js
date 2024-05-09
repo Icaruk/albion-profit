@@ -9,8 +9,6 @@ export default defineConfig({
 	resolve: {
 		alias: {
 			"@": path.resolve(__dirname, "./src"),
-			"@messages": path.resolve(__dirname, "./src/messages"),
-			"@paraglide": path.resolve(__dirname, "./src/paraglide"),
 		},
 	},
 	plugins: [
