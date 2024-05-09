@@ -28,8 +28,8 @@ import { getGroupParts } from "./utils/group/getGroupParts";
 import { setGroupItemsPriceWithCity } from "./utils/group/setGroupIngredientsWithCity";
 import { buildAndFindItemId } from "./utils/item/buildAndFindItemid";
 
-import * as m from "@paraglide/messages.js";
-import { setLanguageTag } from "@paraglide/runtime.js";
+import * as m from "@/paraglide/messages.js";
+import { setLanguageTag } from "@/paraglide/runtime.js";
 
 class ItemGroupElement {
 	constructor({ type }) {

@@ -2,5 +2,8 @@
     "$schema": "https://inlang.com/schema/inlang-message-format",
     "addComponent": "Add component",
     "fetchPrices": "Fetch prices",
-    "addGroup": "Add group"
+    "addGroup": "Add group",
+    "resultValue": "Result value",
+    "cost": "Cost",
+    "earnings": "Earnings"
 }

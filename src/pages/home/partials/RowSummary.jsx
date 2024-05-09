@@ -1,6 +1,8 @@
 import { Group, NumberFormatter, Stack, Text } from "@mantine/core";
 import { getGroupParts } from "../utils/group/getGroupParts";
 
+import * as m from "@/paraglide/messages.js";
+
 export default function RowSummary({ group }) {
 	let totalCost = 0;
 	let totalProfit = 0;
@@ -27,7 +29,7 @@ export default function RowSummary({ group }) {
 			<Group justify="flex-end">
 				<Stack gap={0}>
 					<Group justify="flex-end">
-						<Text>Result value:</Text>
+						<Text>{m.resultValue()}:</Text>
 						<Text>
 							<NumberFormatter
 								thousandSeparator="."
@@ -38,7 +40,7 @@ export default function RowSummary({ group }) {
 					</Group>
 
 					<Group justify="flex-end">
-						<Text>Cost:</Text>
+						<Text>{m.cost()}:</Text>
 						<Text>
 							<NumberFormatter
 								thousandSeparator="."
@@ -49,7 +51,7 @@ export default function RowSummary({ group }) {
 					</Group>
 
 					<Group justify="flex-end">
-						<Text>Earnings:</Text>
+						<Text>{m.earnings()}:</Text>
 						<Text>
 							<NumberFormatter
 								thousandSeparator="."
@@ -60,7 +62,7 @@ export default function RowSummary({ group }) {
 					</Group>
 
 					<Group justify="flex-end">
-						<Text>% earnings:</Text>
+						<Text>% {m.earnings()}:</Text>
 						<Text c={isGoodProfit ? "green" : "red"}>
 							<NumberFormatter
 								thousandSeparator="."
