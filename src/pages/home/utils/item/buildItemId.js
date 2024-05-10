@@ -28,7 +28,7 @@ export function buildItemId({ id, tier, enchant }) {
 			newId = newId.replace(/_LEVEL[0-8]{1}/i, `_LEVEL${enchant}`);
 			newId = newId.replace(/@[0-8]{1}/i, `@${enchant}`);
 		} else {
-			const underscoreCount = id.match(/_/g).length;
+			const underscoreCount = id.match(/_/g)?.length ?? 0;
 
 			if (underscoreCount === 1) {
 				newId += `_LEVEL${enchant}@${enchant}`;
