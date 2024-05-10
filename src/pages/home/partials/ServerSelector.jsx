@@ -1,11 +1,12 @@
 import { globalStore } from "@/mobx/rootStore";
 import { Select } from "@mantine/core";
+import { IconMapPin } from "@tabler/icons-react";
 import { observer } from "mobx-react-lite";
 
 export const ServerSelector = observer(() => {
 	return (
 		<Select
-			w={100}
+			w={120}
 			value={globalStore.server}
 			data={[
 				{ label: "West", value: "west" },
@@ -15,6 +16,7 @@ export const ServerSelector = observer(() => {
 			onChange={(_val) => {
 				globalStore.setServer(_val);
 			}}
+			leftSection={<IconMapPin />}
 		/>
 	);
 });

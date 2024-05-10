@@ -36,7 +36,7 @@ function getFlagRenderOptions({ language, withText = true }) {
 export const LanguageSelector = observer(() => {
 	return (
 		<Select
-			// w={150}
+			w={150}
 			withCheckIcon
 			value={globalStore.language}
 			data={[

@@ -6,8 +6,8 @@ import {
 	Button,
 	Card,
 	Center,
-	Checkbox,
 	Code,
+	Divider,
 	Group,
 	Image,
 	ScrollArea,
@@ -32,11 +32,12 @@ import { getGroupParts } from "./utils/group/getGroupParts";
 import { setGroupItemsPriceWithCity } from "./utils/group/setGroupIngredientsWithCity";
 import { buildAndFindItemId } from "./utils/item/buildAndFindItemid";
 
+import { GithubIcon } from "@/assets/logos/GithubIcon";
+import { globalStore } from "@/mobx/rootStore";
 import * as m from "@/paraglide/messages.js";
 import { observer } from "mobx-react-lite";
-import { globalStore } from "@/mobx/rootStore";
-import { GithubIcon } from "@/assets/logos/GithubIcon";
 import { ServerSelector } from "./partials/ServerSelector";
+import { TaxSelector } from "./partials/TaxSelector";
 
 class ItemGroupElement {
 	constructor({ type }) {
@@ -60,6 +61,7 @@ class ItemGroup {
 			new ItemGroupElement({ type: "product" }),
 			new ItemGroupElement({ type: "ingredient" }),
 		];
+		this.tax = 0;
 	}
 }
 
@@ -429,17 +431,28 @@ export default observer(function Home() {
 		<div className={classes.mainContainer}>
 			<Image className={classes.image} src={wallpaper} />
 
-			<Group h="5vh" my="xs" mx="md" justify="space-between">
+			<Group my="xs" mx="md" justify="space-between">
 				<Group>
 					<LanguageSelector />
 					<ServerSelector />
 				</Group>
 
-				<Anchor href="https://github.com/Icaruk/albion-profit" target="_blank">
-					<Avatar variant="light">
-						<GithubIcon size={32} color="var(--mantine-color-dark-8)" />
-					</Avatar>
-				</Anchor>
+				<Group align="center">
+					<Button
+						variant={isDebugMode ? "filled" : "outline"}
+						onClick={() => {
+							globalStore.debugMode = !isDebugMode;
+						}}
+					>
+						{isDebugMode ? "Debug mode enabled" : "Debug mode"}
+					</Button>
+
+					<Anchor href="https://github.com/Icaruk/albion-profit" target="_blank">
+						<Avatar variant="light">
+							<GithubIcon size={32} color="var(--mantine-color-dark-8)" />
+						</Avatar>
+					</Anchor>
+				</Group>
 			</Group>
 
 			<ScrollArea w="100%">
@@ -532,8 +545,25 @@ export default observer(function Home() {
 													}}
 												/>
 
-												{/* <TaxSelector /> */}
+												<TaxSelector
+													tax={group.tax}
+													onChange={(tax) => {
+														dispatchWithSave({
+															type: "EDIT_GROUP",
+															groupId: _group.id,
+															payload: {
+																tax,
+															},
+														});
+													}}
+												/>
 											</Group>
+
+											<Divider
+												my="xs"
+												label="Components"
+												labelPosition="center"
+											/>
 
 											<Stack gap="2">
 												{ingredients.map((_ingredient, _idx) => {
@@ -621,15 +651,6 @@ export default observer(function Home() {
 						>
 							{m.addGroup()}
 						</Button>
-
-						<Checkbox
-							mt="xl"
-							label="Debug mode"
-							checked={isDebugMode}
-							onChange={() => {
-								globalStore.debugMode = !isDebugMode;
-							}}
-						/>
 					</SimpleGrid>
 				</Center>
 			</ScrollArea>

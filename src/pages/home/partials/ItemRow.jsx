@@ -128,7 +128,7 @@ export const ItemRow = observer(
 					thousandSeparator="."
 					decimalSeparator=","
 					hideControls
-					w={80}
+					w={70}
 					value={item?.quantity}
 					onChange={(val) => handleChange("quantity", val)}
 				/>
@@ -139,7 +139,7 @@ export const ItemRow = observer(
 					thousandSeparator="."
 					decimalSeparator=","
 					hideControls
-					w={128}
+					w={100}
 					value={item?.price}
 					onChange={(val) => handleChange("price", val)}
 				/>
@@ -162,7 +162,7 @@ export const ItemRow = observer(
 					thousandSeparator="."
 					decimalSeparator=","
 					hideControls
-					w={128}
+					w={100}
 					value={calculatedTotal}
 					readOnly
 				/>

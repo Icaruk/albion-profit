@@ -1,4 +1,4 @@
-import { Group, NumberFormatter, Stack, Text } from "@mantine/core";
+import { Group, NumberFormatter, Stack, Table, Text } from "@mantine/core";
 import { getGroupParts } from "../utils/group/getGroupParts";
 
 import * as m from "@/paraglide/messages.js";
@@ -11,6 +11,9 @@ export default function RowSummary({ group }) {
 
 	const percentageToMultiplier = 1 + product?.modifierPercentage / 100;
 
+	const tax = group?.tax ?? 0;
+	const taxMultiplier = 1 - tax / 100;
+
 	const totalEarnings = Math.round(product.price * product.quantity * percentageToMultiplier);
 
 	for (const _ingredient of ingredients) {
@@ -20,7 +23,9 @@ export default function RowSummary({ group }) {
 	totalCost = Math.round(totalCost);
 
 	totalProfit = totalEarnings - totalCost;
-	const totalProfitPercentage = (totalProfit / totalEarnings) * 100;
+	const totalProfitAfterTax = Math.round(totalProfit * taxMultiplier);
+
+	const totalProfitPercentage = (totalProfitAfterTax / totalEarnings) * 100;
 
 	const isGoodProfit = totalProfit >= 0;
 
@@ -57,6 +62,16 @@ export default function RowSummary({ group }) {
 								thousandSeparator="."
 								decimalSeparator=","
 								value={totalProfit}
+							/>
+						</Text>
+					</Group>
+					<Group justify="flex-end">
+						<Text>{m.earnings()}:</Text>
+						<Text>
+							<NumberFormatter
+								thousandSeparator="."
+								decimalSeparator=","
+								value={totalProfitAfterTax}
 							/>
 						</Text>
 					</Group>
