@@ -560,7 +560,7 @@ export default observer(function Home() {
 
 											<Divider
 												my="xs"
-												label="Components"
+												label={m.components()}
 												labelPosition="center"
 											/>
 
