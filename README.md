@@ -2,7 +2,7 @@
 
 [Albion Profit](https://icaruk.github.io/albion-profit/) is a tool that enables users to semi-automatically calculate any combination of one product with multiple ingredients. 
 
-![image](https://github.com/Icaruk/albion-profit/assets/10779469/3799df11-e86d-4f78-940b-0266e88ab21a)
+![km1rXBM](https://github.com/Icaruk/albion-profit/assets/10779469/db0d4cbf-a43a-479f-9168-d749b00369ad)
 
 # Features
 
