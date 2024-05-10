@@ -14,7 +14,7 @@
     "components": "Components",
     "noTax": "No tax",
     "sellWithPremium": "{num}% (sell with premium)",
-    "sellWIthoutPremium": "{num}% (sell without premium)",
+    "sellWithoutPremium": "{num}% (sell without premium)",
     "sellOrderWithPremium": "{num}% (sell order with premium)",
     "sellOrderWithoutPremium": "{num}% (sell order without premium)"
 }

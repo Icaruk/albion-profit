@@ -11,7 +11,7 @@ export function TaxSelector({ tax, onChange = () => {} }) {
 			data={[
 				{ value: "0", label: m.noTax() },
 				{ value: "4", label: m.sellWithPremium({ num: 4 }) },
-				{ value: "8", label: m.sellWIthoutPremium({ num: 8 }) },
+				{ value: "8", label: m.sellWithoutPremium({ num: 8 }) },
 				{ value: "6.5", label: m.sellOrderWithPremium({ num: 6.5 }) },
 				{ value: "10.5", label: m.sellOrderWithoutPremium({ num: 10.5 }) },
 			]}
