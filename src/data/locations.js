@@ -3,5 +3,6 @@ export const locations = [
 	"Fort Sterling",
 	"Martlock",
 	"Thetford",
+	"Lymhurst",
 	"Caerleon",
 ];
