@@ -3,7 +3,8 @@
 	"files": {
 		"ignore": [
 			"**/node_modules/**",
-			"**/dist/**"
+			"**/dist/**",
+			"src/paraglide"
 		]
 	},
 	"organizeImports": {
