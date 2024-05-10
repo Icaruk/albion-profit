@@ -6,6 +6,8 @@ import {
 	Button,
 	Card,
 	Center,
+	Checkbox,
+	Code,
 	Group,
 	Image,
 	ScrollArea,
@@ -421,6 +423,8 @@ export default observer(function Home() {
 	// This will force re-render
 	const language = globalStore.language;
 
+	const isDebugMode = globalStore.debugMode;
+
 	return (
 		<div className={classes.mainContainer}>
 			<Image className={classes.image} src={wallpaper} />
@@ -584,7 +588,27 @@ export default observer(function Home() {
 												</Button>
 											</Group>
 
-											<RowSummary group={group} />
+											<Group
+												justify={isDebugMode ? "space-between" : "flex-end"}
+												gap="xl"
+											>
+												{isDebugMode && (
+													<Code block>
+														{JSON.stringify(
+															{
+																productId: product?.id,
+																ingredientIds: ingredients.map(
+																	(i) => i.id,
+																),
+															},
+															null,
+															2,
+														)}
+													</Code>
+												)}
+
+												<RowSummary group={group} />
+											</Group>
 										</Stack>
 									</Stack>
 								</Card>
@@ -597,6 +621,15 @@ export default observer(function Home() {
 						>
 							{m.addGroup()}
 						</Button>
+
+						<Checkbox
+							mt="xl"
+							label="Debug mode"
+							checked={isDebugMode}
+							onChange={() => {
+								globalStore.debugMode = !isDebugMode;
+							}}
+						/>
 					</SimpleGrid>
 				</Center>
 			</ScrollArea>

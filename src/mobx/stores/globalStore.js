@@ -7,6 +7,7 @@ import { setLanguageTag } from "@/paraglide/runtime.js";
 const defaultProperties = {
 	language: "en",
 	server: "europe",
+	debugMode: false,
 };
 
 export class GlobalStore {
