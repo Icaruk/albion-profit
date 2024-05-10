@@ -5,5 +5,10 @@
     "addGroup": "Añadir grupo",
     "resultValue": "Valor del resultado",
     "cost": "Coste",
-    "earnings": "Ganancias"
+    "earnings": "Ganancias",
+    "quantity": "Cantidad",
+    "price": "Precio",
+    "total": "Total",
+    "group": "Grupo",
+    "result": "Resultado"
 }

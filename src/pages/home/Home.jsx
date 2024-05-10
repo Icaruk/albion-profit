@@ -1,3 +1,6 @@
+import { GithubIcon } from "@/assets/logos/GithubIcon";
+import { globalStore } from "@/mobx/rootStore";
+import * as m from "@/paraglide/messages.js";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import {
 	ActionIcon,
@@ -17,6 +20,7 @@ import {
 } from "@mantine/core";
 import { IconCloudDownload, IconCopy, IconPlus, IconTrash } from "@tabler/icons-react";
 import dame from "dame";
+import { observer } from "mobx-react-lite";
 import { useReducer, useState } from "react";
 import { locations } from "../../data/locations";
 import classes from "./Home.module.css";
@@ -24,6 +28,8 @@ import { ItemRow } from "./partials/ItemRow";
 import { LanguageSelector } from "./partials/LanguageSelector";
 import LocationsSelector from "./partials/LocationsSelector";
 import RowSummary from "./partials/RowSummary";
+import { ServerSelector } from "./partials/ServerSelector";
+import { TaxSelector } from "./partials/TaxSelector";
 import TierSelector from "./partials/TierSelector";
 import { getRandomWallpaper } from "./utils/getRandomWallpaper";
 import { generateUid } from "./utils/group/generateUid";
@@ -31,13 +37,6 @@ import { getGroupItemIds } from "./utils/group/getGroupItemIds";
 import { getGroupParts } from "./utils/group/getGroupParts";
 import { setGroupItemsPriceWithCity } from "./utils/group/setGroupIngredientsWithCity";
 import { buildAndFindItemId } from "./utils/item/buildAndFindItemid";
-
-import { GithubIcon } from "@/assets/logos/GithubIcon";
-import { globalStore } from "@/mobx/rootStore";
-import * as m from "@/paraglide/messages.js";
-import { observer } from "mobx-react-lite";
-import { ServerSelector } from "./partials/ServerSelector";
-import { TaxSelector } from "./partials/TaxSelector";
 
 class ItemGroupElement {
 	constructor({ type }) {
@@ -467,7 +466,7 @@ export default observer(function Home() {
 									<Stack gap="md">
 										<Group justify="space-between">
 											<Text size="xs" c="dimmed">
-												Group {_idx + 1}
+												{m.group()} {_idx + 1}
 											</Text>
 
 											<Group>
@@ -513,7 +512,7 @@ export default observer(function Home() {
 
 										<Stack>
 											<ItemRow
-												label="Result"
+												label={m.result()}
 												item={product}
 												onChange={(_payload) => {
 													dispatchWithSave({

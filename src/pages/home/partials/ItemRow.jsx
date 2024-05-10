@@ -1,9 +1,9 @@
 import { globalStore } from "@/mobx/rootStore";
-import { ActionIcon, Flex, Group, Image, NumberInput, Select, Stack } from "@mantine/core";
+import * as m from "@/paraglide/messages.js";
+import { ActionIcon, Group, Image, NumberInput, Select, Stack } from "@mantine/core";
 import { useClipboard } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import { IconX } from "@tabler/icons-react";
-import { IconClipboard } from "@tabler/icons-react";
+import { IconClipboard, IconX } from "@tabler/icons-react";
 import { observer } from "mobx-react-lite";
 import { memo, useMemo } from "react";
 import { albionData } from "../../../data/items";
@@ -122,7 +122,7 @@ export const ItemRow = observer(
 
 				<MemoizedSelect />
 				<NumberInput
-					label="Quantity"
+					label={m.quantity()}
 					allowNegative={false}
 					allowDecimal={false}
 					thousandSeparator="."
@@ -133,7 +133,7 @@ export const ItemRow = observer(
 					onChange={(val) => handleChange("quantity", val)}
 				/>
 				<NumberInput
-					label="Price"
+					label={m.price()}
 					allowNegative={false}
 					allowDecimal={false}
 					thousandSeparator="."
@@ -158,7 +158,7 @@ export const ItemRow = observer(
 				)}
 				<NumberInput
 					variant="filled"
-					label="Total"
+					label={m.total()}
 					thousandSeparator="."
 					decimalSeparator=","
 					hideControls
