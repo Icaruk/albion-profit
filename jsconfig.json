@@ -8,9 +8,14 @@
       ]
     },
   },
+  "include": [
+    "src"
+  ],
   "exclude": [
     "node_modules",
     "dist",
-    ".git"
+    ".git",
+    "src/data/items.js",
+    "src/data/v2/items.js"
   ]
 }

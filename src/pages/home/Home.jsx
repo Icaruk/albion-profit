@@ -645,11 +645,11 @@ export default observer(function Home() {
 																	payload: _payload,
 																});
 															}}
-															onGetIngredients={() =>
-																getIngredients({
-																	groupId: _group.id,
-																})
-															}
+															// onGetIngredients={() =>
+															// 	getIngredients({
+															// 		groupId: _group.id,
+															// 	})
+															// }
 														/>
 													);
 												})}
