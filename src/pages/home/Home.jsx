@@ -210,6 +210,7 @@ function reducer(state, action) {
 	if (action.type === "ADD_GROUP_ITEM") {
 		// params:
 		//  - action.groupId
+		//  - action.items?
 
 		const newGroups = [...state.groups];
 
@@ -217,8 +218,29 @@ function reducer(state, action) {
 		const index = newGroups.findIndex((_group) => _group.id === action.groupId);
 		if (index === -1) return state;
 
-		// Add the item
-		newGroups[index].items.push(new ItemGroupElement({ type: "ingredient" }));
+		const items = action?.items;
+		const isMultipleItems = Array.isArray(items);
+
+		// Add only one empty item
+		if (!items) {
+			newGroups[index].items.push(new ItemGroupElement({ type: "ingredient" }));
+		} else {
+			// Add multiple items
+			if (isMultipleItems) {
+				for (const _item of items) {
+					newGroups[index].items.push({
+						..._item,
+						type: "ingredient",
+					});
+				}
+				// Add one item
+			} else {
+				newGroups[index].items.push({
+					...items,
+					type: "ingredient",
+				});
+			}
+		}
 
 		return {
 			...state,
@@ -421,6 +443,45 @@ export default observer(function Home() {
 		});
 	}
 
+	async function getIngredients({ groupId }) {
+		setLoadingGroup(groupId);
+
+		const group = state.groups.find((_group) => _group.id === groupId);
+		const { product } = getGroupParts(group);
+
+		const productId = product?.id;
+
+		const url = new URL(
+			`https://gameinfo.albiononline.com/api/gameinfo/items/${productId}/data`,
+		);
+
+		const { isError, response } = await dame.get(url.toString());
+
+		setLoadingGroup(null);
+
+		if (isError) {
+			return;
+		}
+
+		const newItemsToAdd = [];
+
+		const craftingRequirements = response?.craftingRequirements ?? {};
+		const craftingResourceList = craftingRequirements?.craftingResourceList ?? [];
+
+		for (const _res of craftingResourceList) {
+			newItemsToAdd.push({
+				id: _res.uniqueName,
+				quantity: _res.count,
+			});
+		}
+
+		dispatchWithSave({
+			type: "ADD_GROUP_ITEM",
+			groupId: groupId,
+			items: newItemsToAdd,
+		});
+	}
+
 	// This will force re-render
 	const language = globalStore.language;
 
@@ -523,6 +584,9 @@ export default observer(function Home() {
 														isProduct: true,
 													});
 												}}
+												onGetIngredients={() =>
+													getIngredients({ groupId: _group.id })
+												}
 												isHighlighted
 											/>
 
@@ -586,6 +650,11 @@ export default observer(function Home() {
 																	payload: _payload,
 																});
 															}}
+															onGetIngredients={() =>
+																getIngredients({
+																	groupId: _group.id,
+																})
+															}
 														/>
 													);
 												})}

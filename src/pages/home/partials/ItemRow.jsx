@@ -1,15 +1,23 @@
 import { globalStore } from "@/mobx/rootStore";
 import * as m from "@/paraglide/messages.js";
-import { ActionIcon, Group, Image, NumberInput, Select, Stack } from "@mantine/core";
+import { ActionIcon, Group, Image, NumberInput, Select, Stack, Tooltip } from "@mantine/core";
 import { useClipboard } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { IconClipboard, IconX } from "@tabler/icons-react";
 import { observer } from "mobx-react-lite";
 import { memo, useMemo } from "react";
 import { albionData } from "../../../data/items";
+import { IconHammer } from "@tabler/icons-react";
 
 export const ItemRow = observer(
-	({ label, item = {}, onChange = () => {}, onDelete, isHighlighted = false }) => {
+	({
+		label,
+		item = {},
+		onChange = () => {},
+		onGetIngredients,
+		onDelete,
+		isHighlighted = false,
+	}) => {
 		const clipboard = useClipboard();
 
 		const language = globalStore.language;
@@ -166,13 +174,23 @@ export const ItemRow = observer(
 					value={calculatedTotal}
 					readOnly
 				/>
-				{onDelete && (
-					<Stack justify="flex-end" mt="lg">
-						<ActionIcon variant="subtle" onClick={onDelete}>
-							<IconX />
-						</ActionIcon>
-					</Stack>
-				)}
+
+				<Group gap="xs" mt="lg" pr="xs">
+					{onGetIngredients && (
+						<Tooltip label="Get required items to craft">
+							<ActionIcon variant="subtle" onClick={onGetIngredients}>
+								<IconHammer />
+							</ActionIcon>
+						</Tooltip>
+					)}
+					{onDelete && (
+						<Tooltip label="Delete this component">
+							<ActionIcon color="red" variant="subtle" onClick={onDelete}>
+								<IconX />
+							</ActionIcon>
+						</Tooltip>
+					)}
+				</Group>
 			</Group>
 		);
 	},
