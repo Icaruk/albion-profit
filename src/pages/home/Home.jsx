@@ -451,24 +451,19 @@ export default observer(function Home() {
 
 		const productId = product?.id;
 
-		const url = new URL(
-			`https://gameinfo.albiononline.com/api/gameinfo/items/${productId}/data`,
+		// const itemData = await findItemById(productId);
+		const { response: itemData } = await dame.get(
+			`https://corsproxy.io/?https://gameinfo.albiononline.com/api/gameinfo/items/${productId}/data`,
 		);
-
-		const { isError, response } = await dame.get(url.toString());
 
 		setLoadingGroup(null);
 
-		if (isError) {
-			return;
-		}
-
 		const newItemsToAdd = [];
 
-		const craftingRequirements = response?.craftingRequirements ?? {};
-		const craftingResourceList = craftingRequirements?.craftingResourceList ?? [];
+		const craftingRequirements = itemData?.craftingRequirements ?? {};
+		const craftResourceList = craftingRequirements?.craftResourceList ?? [];
 
-		for (const _res of craftingResourceList) {
+		for (const _res of craftResourceList) {
 			newItemsToAdd.push({
 				id: _res.uniqueName,
 				quantity: _res.count,
@@ -584,9 +579,9 @@ export default observer(function Home() {
 														isProduct: true,
 													});
 												}}
-												onGetIngredients={() =>
-													getIngredients({ groupId: _group.id })
-												}
+												onGetIngredients={() => {
+													getIngredients({ groupId: _group.id });
+												}}
 												isHighlighted
 											/>
 
