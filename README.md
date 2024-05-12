@@ -9,6 +9,7 @@
 - ⚡ Better and faster than google sheets / excel.
 - 📚 All servers supported
 - ♾️ You can make endless groups with endless components.
+- 🔨 Crafting ingredients can be added automatically.
 - 🪄 It fetches prices for all the items inside each group, but It works without it!.
 - 🌐 Multilanguage: ![](https://flagsapi.com/GB/flat/16.png) ![](https://flagsapi.com/ES/flat/16.png) ![](https://flagsapi.com/FR/flat/16.png)
 - 💾 Save your calculations for later, all data is saved on your browser.
