@@ -66,7 +66,7 @@ export default function RowSummary({ group }) {
 						</Text>
 					</Group>
 					<Group justify="flex-end">
-						<Text>{m.earnings()}:</Text>
+						<Text>{m.earningsAfterTax()}:</Text>
 						<Text>
 							<NumberFormatter
 								thousandSeparator="."

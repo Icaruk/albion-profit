@@ -16,5 +16,6 @@
     "sellWithPremium": "{num} % (vendre avec premium)",
     "sellWithoutPremium": "{num} % (vendre sans premium)",
     "sellOrderWithPremium": "{num} % (ordre de vente avec premium)",
-    "sellOrderWithoutPremium": "{num} % (ordre de vente sans premium)"
+    "sellOrderWithoutPremium": "{num} % (ordre de vente sans premium)",
+    "earningsAfterTax": "Bénéfice après impôt"
 }

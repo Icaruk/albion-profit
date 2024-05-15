@@ -16,5 +16,6 @@
     "sellWithPremium": "{num}% (sell with premium)",
     "sellWithoutPremium": "{num}% (sell without premium)",
     "sellOrderWithPremium": "{num}% (sell order with premium)",
-    "sellOrderWithoutPremium": "{num}% (sell order without premium)"
+    "sellOrderWithoutPremium": "{num}% (sell order without premium)",
+    "earningsAfterTax": "Earnings after tax"
 }
