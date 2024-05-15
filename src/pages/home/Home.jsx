@@ -230,6 +230,7 @@ function reducer(state, action) {
 				for (const _item of items) {
 					newGroups[index].items.push({
 						..._item,
+						uid: generateUid(),
 						type: "ingredient",
 					});
 				}
@@ -237,6 +238,7 @@ function reducer(state, action) {
 			} else {
 				newGroups[index].items.push({
 					...items,
+					uid: generateUid(),
 					type: "ingredient",
 				});
 			}

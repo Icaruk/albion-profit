@@ -129,6 +129,7 @@ export const ItemRow = observer(
 				/>
 
 				<MemoizedSelect />
+
 				<NumberInput
 					label={m.quantity()}
 					allowNegative={false}
