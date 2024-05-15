@@ -4,7 +4,10 @@
 		"ignore": [
 			"**/node_modules/**",
 			"**/dist/**",
-			"src/paraglide"
+			"src/paraglide",
+			"src/data/scripts/itemData/itemData.json",
+			"src/data/scripts/items/items.json",
+			"src/data/items.js"
 		]
 	},
 	"organizeImports": {
@@ -24,9 +27,7 @@
 	},
 	"linter": {
 		"enabled": true,
-		"ignore": [
-			"dbschema/**"
-		],
+		"ignore": ["dbschema/**"],
 		"rules": {
 			"recommended": true,
 			"style": {
