@@ -17,7 +17,7 @@
 
 # WIP
 
-- Crafting ingredients must be added manually
+- 
 - Missing crystal weapons
 
 ---
@@ -27,8 +27,7 @@
 - [ ] Move groups
 - [ ] Detect tier writing "T4.0" on the search [using this](https://mantine.dev/core/select/#options-filtering)
 - [ ] Add "Custom" in cities
-- [ ] Market tax selector
-- [ ] Server selector
+
 
 # Done
 
@@ -39,6 +38,8 @@
 - [x] Duplicate groups
 - [x] Increment tier
 - [x] Increment enchant
+- [x] Market tax selector
+- [x] Server selector
 
 ---
 
