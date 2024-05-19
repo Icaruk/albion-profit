@@ -24,7 +24,6 @@
 
 # TODO
 
-- [ ] Move groups
 - [ ] Detect tier writing "T4.0" on the search [using this](https://mantine.dev/core/select/#options-filtering)
 - [ ] Add "Custom" in cities
 
@@ -40,6 +39,7 @@
 - [x] Increment enchant
 - [x] Market tax selector
 - [x] Server selector
+- [x] Move groups
 
 ---
 
