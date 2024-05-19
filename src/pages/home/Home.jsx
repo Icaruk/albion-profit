@@ -37,6 +37,11 @@ import { getGroupItemIds } from "./utils/group/getGroupItemIds";
 import { getGroupParts } from "./utils/group/getGroupParts";
 import { setGroupItemsPriceWithCity } from "./utils/group/setGroupIngredientsWithCity";
 import { buildAndFindItemId } from "./utils/item/buildAndFindItemid";
+import { IconArrowUp } from "@tabler/icons-react";
+import { IconArrowDown } from "@tabler/icons-react";
+import { useMediaQuery } from "@mantine/hooks";
+import { IconArrowRight } from "@tabler/icons-react";
+import { IconArrowLeft } from "@tabler/icons-react";
 
 class ItemGroupElement {
 	constructor({ type }) {
@@ -128,6 +133,32 @@ function reducer(state, action) {
 			});
 			newGroups[index] = newGroupWithData;
 		}
+
+		return {
+			...state,
+			groups: newGroups,
+		};
+	}
+	if (action.type === "MOVE_GROUP") {
+		// params:
+		//  - action.groupId
+		//  - action.direction (1, -1)
+
+		const newGroups = [...state.groups];
+
+		// Get the group index using id
+		const index = newGroups.findIndex((_group) => _group.id === action.groupId);
+		if (index === -1) return state;
+
+		const group = newGroups[index];
+
+		// Check if the group can be moved
+		if (action.direction === 1 && index === newGroups.length - 1) return state;
+		if (action.direction === -1 && index === 0) return state;
+
+		// Move the group
+		newGroups.splice(index, 1);
+		newGroups.splice(index + action.direction, 0, group);
 
 		return {
 			...state,
@@ -412,6 +443,8 @@ export default observer(function Home() {
 	const [loadingGroup, setLoadingGroup] = useState(null);
 	const [wallpaper] = useState(() => getRandomWallpaper());
 
+	const isSingleColumn = useMediaQuery("(width <= 1407px)");
+
 	const [parent] = useAutoAnimate();
 
 	function dispatchWithSave(...args) {
@@ -528,6 +561,42 @@ export default observer(function Home() {
 											</Text>
 
 											<Group>
+												<Group gap={0}>
+													<ActionIcon
+														variant="subtle"
+														onClick={() =>
+															dispatchWithSave({
+																type: "MOVE_GROUP",
+																groupId: _group.id,
+																direction: 1,
+															})
+														}
+													>
+														{isSingleColumn ? (
+															<IconArrowDown />
+														) : (
+															<IconArrowRight />
+														)}
+													</ActionIcon>
+
+													<ActionIcon
+														variant="subtle"
+														onClick={() =>
+															dispatchWithSave({
+																type: "MOVE_GROUP",
+																groupId: _group.id,
+																direction: -1,
+															})
+														}
+													>
+														{isSingleColumn ? (
+															<IconArrowUp />
+														) : (
+															<IconArrowLeft />
+														)}
+													</ActionIcon>
+												</Group>
+
 												<ActionIcon
 													variant="subtle"
 													onClick={() =>
