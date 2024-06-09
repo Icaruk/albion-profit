@@ -1,8 +1,8 @@
 export const locations = [
-	"Bridgewatch",
-	"Fort Sterling",
 	"Martlock",
-	"Thetford",
+	"Fort Sterling",
 	"Lymhurst",
+	"Bridgewatch",
+	"Thetford",
 	"Caerleon",
 ];
