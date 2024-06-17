@@ -1,4 +1,4 @@
-export function buildItemId({ id, tier, enchant }) {
+export function buildItemId({ id, tier, enchant, appendEnchantSymbol = false }) {
 	// T4_WOOD
 	// T4_WOOD_LEVEL1@1
 	// T4_WOOD_LEVEL2@2
@@ -22,7 +22,7 @@ export function buildItemId({ id, tier, enchant }) {
 		newId = newId.replace(/_LEVEL[0-8]{1}/i, "");
 		newId = newId.replace(/@[0-8]{1}/i, "");
 	} else if (enchant === 1) {
-		const isEnchanted = newId.includes("@");
+		const isEnchanted = newId.includes("@") || /_LEVEL[1-4]/.test(newId);
 
 		if (isEnchanted) {
 			newId = newId.replace(/_LEVEL[0-8]{1}/i, `_LEVEL${enchant}`);
@@ -39,6 +39,12 @@ export function buildItemId({ id, tier, enchant }) {
 	} else if (enchant !== undefined) {
 		newId = newId.replace(/_LEVEL[0-8]{1}/i, `_LEVEL${enchant}`);
 		newId = newId.replace(/@[0-8]{1}/i, `@${enchant}`);
+
+		if (appendEnchantSymbol) {
+			if (!newId.includes("@")) {
+				newId += `@${enchant}`;
+			}
+		}
 	}
 
 	return newId;

@@ -7,6 +7,8 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { BASENAME } from "../BASENAME";
 import Home from "./pages/home/Home";
 import { theme } from "./theme";
+import { useEffect } from "react";
+import { Helmet } from "react-helmet";
 
 export default function App() {
 	return (
@@ -17,6 +19,21 @@ export default function App() {
 					<Route path="/" element={<Home />} />
 				</Routes>
 			</BrowserRouter>
+
+			<Helmet>
+				<script async src="https://www.googletagmanager.com/gtag/js?id=G-NZ50J7EJH3" />
+				<script>
+					{`
+						window.dataLayer = window.dataLayer || [];
+						function gtag(){
+							dataLayer.push(arguments);
+						}
+						gtag('js', new Date());
+
+						gtag('config', 'G-NZ50J7EJH3');
+					`}
+				</script>
+			</Helmet>
 		</MantineProvider>
 	);
 }

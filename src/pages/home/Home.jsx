@@ -42,6 +42,8 @@ import { IconArrowDown } from "@tabler/icons-react";
 import { useMediaQuery } from "@mantine/hooks";
 import { IconArrowRight } from "@tabler/icons-react";
 import { IconArrowLeft } from "@tabler/icons-react";
+import { getItemIdComponents } from "./utils/item/getItemIdComponents";
+import { buildItemId } from "./utils/item/buildItemId";
 
 class ItemGroupElement {
 	constructor({ type }) {
@@ -242,6 +244,7 @@ function reducer(state, action) {
 		// params:
 		//  - action.groupId
 		//  - action.items?
+		//  - action.cleanIngredients?
 
 		const newGroups = [...state.groups];
 
@@ -251,6 +254,12 @@ function reducer(state, action) {
 
 		const items = action?.items;
 		const isMultipleItems = Array.isArray(items);
+
+		if (action?.cleanIngredients === true) {
+			newGroups[index].items = newGroups[index].items.filter((_item) => {
+				return _item.type !== "ingredient";
+			});
+		}
 
 		// Add only one empty item
 		if (!items) {
@@ -302,7 +311,7 @@ function reducer(state, action) {
 		const foundItem = group.items[itemIndex];
 
 		// Save old quantity
-		const oldQuantity = foundItem.quantity;
+		const oldQuantity = foundItem?.quantity;
 
 		// Merge
 		const newItem = { ...foundItem, ...action.payload };
@@ -486,22 +495,42 @@ export default observer(function Home() {
 
 		const productId = product?.id;
 
+		const { id, enchant } = getItemIdComponents(productId);
+
 		// const itemData = await findItemById(productId);
 		const { response: itemData } = await dame.get(
-			`https://corsproxy.io/?https://gameinfo.albiononline.com/api/gameinfo/items/${productId}/data`,
+			`https://corsproxy.io/?https://gameinfo.albiononline.com/api/gameinfo/items/${id}/data`,
 		);
 
 		setLoadingGroup(null);
 
 		const newItemsToAdd = [];
 
-		const craftingRequirements = itemData?.craftingRequirements ?? {};
+		let craftingRequirements = itemData?.craftingRequirements ?? {};
+
+		if (enchant) {
+			const enchantIndex = enchant - 1;
+			craftingRequirements =
+				itemData?.enchantments?.enchantments[enchantIndex]?.craftingRequirements ?? {};
+		}
+
 		const craftResourceList = craftingRequirements?.craftResourceList ?? [];
 
-		for (const _res of craftResourceList) {
+		for (const _resource of craftResourceList) {
+			const uniqueName = _resource.uniqueName;
+
+			const { tier, enchant } = getItemIdComponents(uniqueName);
+
+			const itemId = buildItemId({
+				id: uniqueName,
+				tier,
+				enchant,
+				appendEnchantSymbol: true,
+			});
+
 			newItemsToAdd.push({
-				id: _res.uniqueName,
-				quantity: _res.count,
+				id: itemId,
+				quantity: _resource.count,
 			});
 		}
 
@@ -509,6 +538,7 @@ export default observer(function Home() {
 			type: "ADD_GROUP_ITEM",
 			groupId: groupId,
 			items: newItemsToAdd,
+			cleanIngredients: true,
 		});
 	}
 

@@ -9,7 +9,8 @@
     },
   },
   "include": [
-    "src"
+    "src",
+    "BASENAME.js"
   ],
   "exclude": [
     "node_modules",

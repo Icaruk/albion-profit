@@ -1,38 +1,39 @@
 {
-  "name": "vite-min-template",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "paraglide-js compile --project ./project.inlang --outdir ./src\\paraglide && vite build",
-    "preview": "vite preview",
-    "postinstall": "paraglide-js compile --project ./project.inlang --outdir ./src\\paraglide"
-  },
-  "dependencies": {
-    "@formkit/auto-animate": "^0.8.2",
-    "@icaruk/debounce": "^1.1.0",
-    "@inlang/paraglide-vite": "^1.2.51",
-    "@mantine/core": "^7.9.1",
-    "@mantine/hooks": "^7.9.1",
-    "@mantine/notifications": "^7.9.1",
-    "@tabler/icons-react": "^3.3.0",
-    "dame": "^1.2.6",
-    "mobx": "^6.12.3",
-    "mobx-react-lite": "^4.0.7",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "react-router-dom": "^6.23.0"
-  },
-  "devDependencies": {
-    "@inlang/paraglide-js": "^1.8.0",
-    "@types/react": "^18.3.1",
-    "@types/react-dom": "^18.3.0",
-    "@vitejs/plugin-react": "^4.2.1",
-    "postcss": "^8.4.38",
-    "postcss-preset-mantine": "1.13.0",
-    "postcss-simple-vars": "^7.0.1",
-    "vite": "^5.2.11"
-  },
-  "packageManager": "pnpm@8.14.3"
+	"name": "vite-min-template",
+	"private": true,
+	"version": "0.0.0",
+	"type": "module",
+	"scripts": {
+		"dev": "vite",
+		"build": "paraglide-js compile --project ./project.inlang --outdir ./src\\paraglide && vite build",
+		"preview": "vite preview",
+		"postinstall": "paraglide-js compile --project ./project.inlang --outdir ./src\\paraglide"
+	},
+	"dependencies": {
+		"@formkit/auto-animate": "^0.8.2",
+		"@icaruk/debounce": "^1.1.0",
+		"@inlang/paraglide-vite": "^1.2.51",
+		"@mantine/core": "^7.9.1",
+		"@mantine/hooks": "^7.9.1",
+		"@mantine/notifications": "^7.9.1",
+		"@tabler/icons-react": "^3.3.0",
+		"dame": "^1.2.6",
+		"mobx": "^6.12.3",
+		"mobx-react-lite": "^4.0.7",
+		"react": "^18.3.1",
+		"react-dom": "^18.3.1",
+		"react-helmet": "^6.1.0",
+		"react-router-dom": "^6.23.0"
+	},
+	"devDependencies": {
+		"@inlang/paraglide-js": "^1.8.0",
+		"@types/react": "^18.3.1",
+		"@types/react-dom": "^18.3.0",
+		"@vitejs/plugin-react": "^4.2.1",
+		"postcss": "^8.4.38",
+		"postcss-preset-mantine": "1.13.0",
+		"postcss-simple-vars": "^7.0.1",
+		"vite": "^5.2.11"
+	},
+	"packageManager": "pnpm@9.3.0"
 }

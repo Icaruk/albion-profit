@@ -14,7 +14,7 @@ export default function RowSummary({ group }) {
 	const tax = group?.tax ?? 0;
 	const taxMultiplier = 1 - tax / 100;
 
-	const totalEarnings = Math.round(product.price * product.quantity * percentageToMultiplier);
+	const totalEarnings = Math.round(product?.price * product?.quantity * percentageToMultiplier);
 
 	for (const _ingredient of ingredients) {
 		totalCost += _ingredient.price * _ingredient.quantity;
