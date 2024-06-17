@@ -21,13 +21,16 @@ export default function App() {
 			</BrowserRouter>
 
 			<Helmet>
-				<script async src="https://www.googletagmanager.com/gtag/js?id=G-NZ50J7EJH3" />
+				{/* biome-ignore lint/style/useSelfClosingElements: <explanation> */}
+				<script
+					async
+					src="https://www.googletagmanager.com/gtag/js?id=G-NZ50J7EJH3"
+				></script>
+
 				<script>
 					{`
 						window.dataLayer = window.dataLayer || [];
-						function gtag(){
-							dataLayer.push(arguments);
-						}
+						function gtag(){dataLayer.push(arguments);}
 						gtag('js', new Date());
 
 						gtag('config', 'G-NZ50J7EJH3');
