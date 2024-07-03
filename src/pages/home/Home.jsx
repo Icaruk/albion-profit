@@ -44,6 +44,7 @@ import { IconArrowRight } from "@tabler/icons-react";
 import { IconArrowLeft } from "@tabler/icons-react";
 import { getItemIdComponents } from "./utils/item/getItemIdComponents";
 import { buildItemId } from "./utils/item/buildItemId";
+import { IconBrandReddit, IconBrandGithub } from "@tabler/icons-react";
 
 class ItemGroupElement {
 	constructor({ type }) {
@@ -569,7 +570,16 @@ export default observer(function Home() {
 
 					<Anchor href="https://github.com/Icaruk/albion-profit" target="_blank">
 						<Avatar variant="light">
-							<GithubIcon size={32} color="var(--mantine-color-dark-8)" />
+							<IconBrandGithub size={32} color="var(--mantine-color-dark-8)" />
+						</Avatar>
+					</Anchor>
+
+					<Anchor
+						href="https://www.reddit.com/r/albiononline/comments/1co93rm/i_created_a_tool_to_calculate_profits/"
+						target="_blank"
+					>
+						<Avatar variant="light">
+							<IconBrandReddit size={32} color="var(--mantine-color-orange-7)" />
 						</Avatar>
 					</Anchor>
 				</Group>
