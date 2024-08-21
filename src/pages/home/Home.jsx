@@ -45,6 +45,9 @@ import { IconArrowLeft } from "@tabler/icons-react";
 import { getItemIdComponents } from "./utils/item/getItemIdComponents";
 import { buildItemId } from "./utils/item/buildItemId";
 import { IconBrandReddit, IconBrandGithub } from "@tabler/icons-react";
+import { notifications } from "@mantine/notifications";
+import { IconX } from "@tabler/icons-react";
+import { IconCheck } from "@tabler/icons-react";
 
 class ItemGroupElement {
 	constructor({ type }) {
@@ -498,10 +501,10 @@ export default observer(function Home() {
 
 		const { id, enchant } = getItemIdComponents(productId);
 
+		const url = `https://gameinfo.albiononline.com/api/gameinfo/items/${id}/data`;
+
 		// const itemData = await findItemById(productId);
-		const { response: itemData } = await dame.get(
-			`https://corsproxy.io/?https://gameinfo.albiononline.com/api/gameinfo/items/${id}/data`,
-		);
+		const { response: itemData } = await dame.get(`https://corsproxy.io/?${url}`);
 
 		setLoadingGroup(null);
 
@@ -516,6 +519,24 @@ export default observer(function Home() {
 		}
 
 		const craftResourceList = craftingRequirements?.craftResourceList ?? [];
+
+		if (craftResourceList.length === 0) {
+			notifications.show({
+				color: "red",
+				icon: <IconX />,
+				title: "Item ingredients could not be found",
+				message:
+					"This tool uses Albion Online API to fetch the required items, but nothing was found.",
+				autoClose: 8000,
+			});
+
+			return;
+		}
+		notifications.show({
+			color: "green",
+			icon: <IconCheck />,
+			title: "Item ingredients found",
+		});
 
 		for (const _resource of craftResourceList) {
 			const uniqueName = _resource.uniqueName;
