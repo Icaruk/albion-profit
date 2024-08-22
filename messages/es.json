@@ -17,5 +17,6 @@
     "sellWithoutPremium": "{num} % (vender sin premium)",
     "sellOrderWithPremium": "{num} % (orden de venta con premium)",
     "sellOrderWithoutPremium": "{num} % (orden de venta sin premium)",
-    "earningsAfterTax": "Ganancias tras impuestos"
+    "earningsAfterTax": "Ganancias tras impuestos",
+    "modifierPercentageTooltip": "Porcentaje de modificador. Un valor de 20 aumentará el total del producto en un 20%. Por ejemplo, si el valor del producto es 100, el total será 120."
 }

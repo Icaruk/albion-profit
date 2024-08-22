@@ -591,7 +591,7 @@ export default observer(function Home() {
 
 					<Anchor href="https://github.com/Icaruk/albion-profit" target="_blank">
 						<Avatar variant="light">
-							<IconBrandGithub size={32} color="var(--mantine-color-dark-8)" />
+							<IconBrandGithub size={32} color="var(--mantine-color-dark-9)" />
 						</Avatar>
 					</Anchor>
 

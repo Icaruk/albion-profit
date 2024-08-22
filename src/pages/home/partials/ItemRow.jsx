@@ -1,13 +1,21 @@
 import { globalStore } from "@/mobx/rootStore";
 import * as m from "@/paraglide/messages.js";
-import { ActionIcon, Group, Image, NumberInput, Select, Stack, Tooltip } from "@mantine/core";
+import {
+	ActionIcon,
+	Group,
+	Image,
+	NumberInput,
+	Select,
+	Text,
+	ThemeIcon,
+	Tooltip,
+} from "@mantine/core";
 import { useClipboard } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import { IconClipboard, IconX } from "@tabler/icons-react";
+import { IconClipboard, IconHammer, IconHelp, IconX } from "@tabler/icons-react";
 import { observer } from "mobx-react-lite";
 import { memo, useMemo } from "react";
 import { albionData } from "../../../data/items";
-import { IconHammer } from "@tabler/icons-react";
 
 export const ItemRow = observer(
 	({
@@ -154,13 +162,24 @@ export const ItemRow = observer(
 				/>
 				{item?.type === "product" && (
 					<NumberInput
-						label="Mod. %"
+						label={
+							<Group wrap="nowrap" gap="xxxs">
+								<Text size="sm" fw="500">
+									Mod. %
+								</Text>
+								<Tooltip w={200} multiline label={m.modifierPercentageTooltip()}>
+									<ThemeIcon size="sm" variant="transparent" color="gray.5">
+										<IconHelp />
+									</ThemeIcon>
+								</Tooltip>
+							</Group>
+						}
 						allowNegative={true}
 						allowDecimal={false}
 						thousandSeparator="."
 						decimalSeparator=","
 						hideControls
-						w={64}
+						w={100}
 						value={item?.modifierPercentage}
 						onChange={(val) => handleChange("modifierPercentage", val)}
 					/>
