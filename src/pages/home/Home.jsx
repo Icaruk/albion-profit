@@ -1,4 +1,3 @@
-import { GithubIcon } from "@/assets/logos/GithubIcon";
 import { globalStore } from "@/mobx/rootStore";
 import * as m from "@/paraglide/messages.js";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
@@ -18,7 +17,22 @@ import {
 	Stack,
 	Text,
 } from "@mantine/core";
-import { IconCloudDownload, IconCopy, IconPlus, IconTrash } from "@tabler/icons-react";
+import { useMediaQuery } from "@mantine/hooks";
+import { notifications } from "@mantine/notifications";
+import {
+	IconArrowDown,
+	IconArrowLeft,
+	IconArrowRight,
+	IconArrowUp,
+	IconBrandGithub,
+	IconBrandReddit,
+	IconCheck,
+	IconCloudDownload,
+	IconCopy,
+	IconPlus,
+	IconTrash,
+	IconX,
+} from "@tabler/icons-react";
 import dame from "dame";
 import { observer } from "mobx-react-lite";
 import { useReducer, useState } from "react";
@@ -37,17 +51,8 @@ import { getGroupItemIds } from "./utils/group/getGroupItemIds";
 import { getGroupParts } from "./utils/group/getGroupParts";
 import { setGroupItemsPriceWithCity } from "./utils/group/setGroupIngredientsWithCity";
 import { buildAndFindItemId } from "./utils/item/buildAndFindItemid";
-import { IconArrowUp } from "@tabler/icons-react";
-import { IconArrowDown } from "@tabler/icons-react";
-import { useMediaQuery } from "@mantine/hooks";
-import { IconArrowRight } from "@tabler/icons-react";
-import { IconArrowLeft } from "@tabler/icons-react";
-import { getItemIdComponents } from "./utils/item/getItemIdComponents";
 import { buildItemId } from "./utils/item/buildItemId";
-import { IconBrandReddit, IconBrandGithub } from "@tabler/icons-react";
-import { notifications } from "@mantine/notifications";
-import { IconX } from "@tabler/icons-react";
-import { IconCheck } from "@tabler/icons-react";
+import { getItemIdComponents } from "./utils/item/getItemIdComponents";
 
 class ItemGroupElement {
 	constructor({ type }) {
@@ -499,12 +504,14 @@ export default observer(function Home() {
 
 		const productId = product?.id;
 
-		const { id, enchant } = getItemIdComponents(productId);
+		const { id, tier, enchant } = getItemIdComponents(productId);
 
 		const url = `https://gameinfo.albiononline.com/api/gameinfo/items/${id}/data`;
 
 		// const itemData = await findItemById(productId);
-		const { response: itemData } = await dame.get(`https://corsproxy.io/?${url}`);
+		const { response: itemData } = await dame.get(`https://corsproxy.io/?${url}`, {
+			timeout: 6000,
+		});
 
 		setLoadingGroup(null);
 
@@ -518,7 +525,97 @@ export default observer(function Home() {
 				itemData?.enchantments?.enchantments[enchantIndex]?.craftingRequirements ?? {};
 		}
 
+		/** @type {Array<{uniqueName: string, count: number}>} */
 		const craftResourceList = craftingRequirements?.craftResourceList ?? [];
+
+		/*
+			ore -> metalbar
+				TX_METALBAR + TX_ORE
+			
+			hide -> leather
+				TX_LEATHER + TX_HIDE
+				
+			cloth -> fiber
+				TX_FIBER + TX_CLOTH
+			
+			rock -> stoneblock
+				TX_STONEBLOCK + TX_ROCK
+			
+			wood -> planks
+			    TX_PLANKS + TX_WOOD
+			
+		*/
+
+		if (
+			["metalbar", "leather", "fiber", "stoneblock", "planks"].includes(itemData?.categoryId)
+		) {
+			const refinedToRaw = {
+				metalbar: "ore",
+				leather: "hide",
+				fiber: "cloth",
+				stoneblock: "rock",
+				planks: "wood",
+			};
+
+			const craftTierQuantity = {
+				2: {
+					refined: 0,
+					raw: 1,
+				},
+				3: {
+					refined: 1,
+					raw: 2,
+				},
+				4: {
+					refined: 1,
+					raw: 2,
+				},
+				5: {
+					refined: 1,
+					raw: 3,
+				},
+				6: {
+					refined: 1,
+					raw: 4,
+				},
+				7: {
+					refined: 1,
+					raw: 5,
+				},
+				8: {
+					refined: 1,
+					raw: 5,
+				},
+			};
+
+			const refinedCount = craftTierQuantity[tier].refined;
+			const rawCount = craftTierQuantity[tier].raw;
+
+			if (refinedCount) {
+				const previousRefinedComponent = buildAndFindItemId({
+					itemId: productId,
+					tierChange: -1,
+				});
+
+				craftResourceList.push({
+					uniqueName: previousRefinedComponent.itemId,
+					count: 1,
+				});
+			}
+
+			if (rawCount) {
+				const rawItemId = `T${tier}_${refinedToRaw[itemData?.categoryId].toUpperCase()}`;
+
+				const rawComponent = buildAndFindItemId({
+					itemId: rawItemId,
+				});
+
+				craftResourceList.push({
+					uniqueName: rawComponent.itemId,
+					count: rawCount,
+				});
+			}
+		}
 
 		if (craftResourceList.length === 0) {
 			notifications.show({
