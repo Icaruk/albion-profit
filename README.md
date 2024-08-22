@@ -17,7 +17,6 @@
 
 # WIP
 
-- 
 - Missing crystal weapons
 
 ---
