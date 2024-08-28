@@ -1,5 +1,7 @@
 # Albion profit
 
+![](https://img.shields.io/badge/up--npm-%20?style=flat&logo=rocket&logoColor=rgb(56%2C%20167%2C%20205)&label=updated%20with&color=rgb(74%2C%20100%2C%20206)&link=https%3A%2F%2Fgithub.com%2FIcaruk%2Fup-npm)
+
 [Albion Profit](https://icaruk.github.io/albion-profit/) is a tool that enables users to semi-automatically calculate the profit of any combination of one product with multiple ingredients. 
 
 ![km1rXBM](https://github.com/Icaruk/albion-profit/assets/10779469/db0d4cbf-a43a-479f-9168-d749b00369ad)
