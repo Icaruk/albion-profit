@@ -505,6 +505,7 @@ export default observer(function Home() {
 		const productId = product?.id;
 
 		const { id, tier, enchant } = getItemIdComponents(productId);
+		console.log({ id, tier, enchant });
 
 		const url = `https://gameinfo.albiononline.com/api/gameinfo/items/${id}/data`;
 
@@ -518,15 +519,28 @@ export default observer(function Home() {
 		const newItemsToAdd = [];
 
 		let craftingRequirements = itemData?.craftingRequirements ?? {};
+		let enchantZeroNotFound = false;
 
-		if (enchant) {
+		if (Object.keys(craftingRequirements).length === 0) {
 			const enchantIndex = enchant - 1;
-			craftingRequirements =
-				itemData?.enchantments?.enchantments[enchantIndex]?.craftingRequirements ?? {};
+
+			let enchantData = itemData?.enchantments?.enchantments[enchantIndex];
+
+			if (!enchantData) {
+				enchantData = itemData?.enchantments?.enchantments[enchantIndex + 1];
+				enchantZeroNotFound = true;
+			}
+
+			craftingRequirements = enchantData?.craftingRequirements ?? {};
 		}
 
 		/** @type {Array<{uniqueName: string, count: number}>} */
-		const craftResourceList = craftingRequirements?.craftResourceList ?? [];
+		let craftResourceList = craftingRequirements?.craftResourceList ?? [];
+
+		if (enchantZeroNotFound) {
+			// Temporary fix when enchant 0 is not found, enchant 1 is used instead and only the first resource is used
+			craftResourceList = [craftResourceList[0]];
+		}
 
 		/*
 			ore -> metalbar
