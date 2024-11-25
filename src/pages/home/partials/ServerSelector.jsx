@@ -9,8 +9,8 @@ export const ServerSelector = observer(() => {
 			w={120}
 			value={globalStore.server}
 			data={[
-				{ label: "West", value: "west" },
-				{ label: "East", value: "east" },
+				{ label: "America", value: "west" },
+				{ label: "Asia", value: "east" },
 				{ label: "Europe", value: "europe" },
 			]}
 			onChange={(_val) => {
