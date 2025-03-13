@@ -25,6 +25,7 @@
 
 # TODO
 
+- [ ] Import/export groups
 - [ ] Detect tier writing "T4.0" on the search [using this](https://mantine.dev/core/select/#options-filtering)
 - [ ] Add "Custom" in cities
 
