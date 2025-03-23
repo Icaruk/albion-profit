@@ -522,12 +522,10 @@ export default observer(function Home() {
 		let enchantZeroNotFound = false;
 
 		if (Object.keys(craftingRequirements).length === 0) {
-			const enchantIndex = enchant - 1;
-
-			let enchantData = itemData?.enchantments?.enchantments[enchantIndex];
+			let enchantData = itemData?.enchantments?.enchantments[enchant];
 
 			if (!enchantData) {
-				enchantData = itemData?.enchantments?.enchantments[enchantIndex + 1];
+				enchantData = itemData?.enchantments?.enchantments[enchant + 1];
 				enchantZeroNotFound = true;
 			}
 
@@ -559,6 +557,12 @@ export default observer(function Home() {
 			    TX_PLANKS + TX_WOOD
 			
 		*/
+
+		if (["potion", "cooked"].includes(itemData?.categoryId)) {
+			if (enchant === 0) {
+				craftResourceList.pop();
+			}
+		}
 
 		if (
 			["metalbar", "leather", "fiber", "stoneblock", "planks"].includes(itemData?.categoryId)
