@@ -510,7 +510,7 @@ export default observer(function Home() {
 		const url = `https://gameinfo.albiononline.com/api/gameinfo/items/${id}/data`;
 
 		// const itemData = await findItemById(productId);
-		const { response: itemData } = await dame.get(`https://corsproxy.io/?${url}`, {
+		const { response: itemData } = await dame.get(`https://corsproxy.io/?url=${url}`, {
 			timeout: 6000,
 		});
 
