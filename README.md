@@ -17,14 +17,12 @@
 - 💾 Save your calculations for later, all data is saved on your browser.
 - 👉 Click on the item's icon to copy the item's name to your clipboard, so you can easily search on the marketplace for real-time price.
 
-# WIP
-
-- Missing crystal weapons
-
 ---
 
 # TODO
 
+- [ ] Add crystal weapons and items
+- [ ] Import/export groups
 - [ ] Detect tier writing "T4.0" on the search [using this](https://mantine.dev/core/select/#options-filtering)
 - [ ] Add "Custom" in cities
 
