@@ -12,7 +12,7 @@ export async function findItemById(id) {
 		}
 	}
 
-	if (foundItemData?._itemData?.craftingRequirements) {
+	if (foundItemData?._itemData) {
 		return foundItemData;
 	}
 
