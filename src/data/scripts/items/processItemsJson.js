@@ -435,11 +435,16 @@ for (const _item of items) {
 	// Find itemData
 	for (const _itemData of itemData) {
 		if (_itemData.uniqueName === _item.UniqueName) {
-			_item._itemData = {
-				craftingRequirements: _itemData.craftingRequirements,
-				enchantments: _itemData.enchantments,
-				categoryId: _itemData.categoryId,
-			};
+			if (
+				_itemData.craftingRequirements ||
+				_itemData.enchantments?.[0]?.craftingRequirements
+			) {
+				_item._itemData = {
+					craftingRequirements: _itemData.craftingRequirements,
+					enchantments: _itemData.enchantments,
+					categoryId: _itemData.categoryId,
+				};
+			}
 
 			break;
 		}

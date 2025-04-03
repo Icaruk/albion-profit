@@ -507,7 +507,6 @@ export default observer(function Home() {
 		const productId = product?.id;
 
 		const { id, tier, enchant } = getItemIdComponents(productId);
-		console.log({ id, tier, enchant });
 
 		const { _itemData: itemData } = await findItemById(productId);
 
