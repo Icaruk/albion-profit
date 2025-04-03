@@ -40,8 +40,7 @@ export const ItemRow = observer(
 					continue;
 				}
 
-				// _item.UniqueName = "T8_SHOES_LEATHER_MORGANA@1"
-				const itemId = _item.UniqueName;
+				const itemId = _item.UniqueName; // "T8_SHOES_LEATHER_MORGANA@1"
 
 				const parts = itemId.match(/T([0-9])[^@]*@?([0-9])?/);
 

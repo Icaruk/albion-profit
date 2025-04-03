@@ -1,6 +1,8 @@
+import { findItemById } from "@/data/scripts/items/utils/findItemById";
 import { globalStore } from "@/mobx/rootStore";
 import * as m from "@/paraglide/messages.js";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
+import debounce from "@icaruk/debounce";
 import {
 	ActionIcon,
 	Anchor,
@@ -466,7 +468,7 @@ export default observer(function Home() {
 	const [parent] = useAutoAnimate();
 
 	function dispatchWithSave(...args) {
-		saveToLocalStorage(state);
+		debounce(2000, () => saveToLocalStorage(state), "dispatchWithSave");
 		dispatch(...args);
 	}
 
@@ -507,12 +509,7 @@ export default observer(function Home() {
 		const { id, tier, enchant } = getItemIdComponents(productId);
 		console.log({ id, tier, enchant });
 
-		const url = `https://gameinfo.albiononline.com/api/gameinfo/items/${id}/data`;
-
-		// const itemData = await findItemById(productId);
-		const { response: itemData } = await dame.get(`https://corsproxy.io/?url=${url}`, {
-			timeout: 6000,
-		});
+		const { _itemData: itemData } = await findItemById(productId);
 
 		setLoadingGroup(null);
 
