@@ -66,7 +66,7 @@ class ItemGroupElement {
 		this.price = 0;
 		this.location = "";
 		this.priceData = [];
-		this.modifierPercentage = 0;
+		this.returnRate = 0;
 	}
 }
 

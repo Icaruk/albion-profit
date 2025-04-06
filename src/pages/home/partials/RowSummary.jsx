@@ -9,7 +9,7 @@ export default function RowSummary({ group }) {
 
 	const { product, ingredients } = getGroupParts(group);
 
-	const percentageToMultiplier = 1 + product?.modifierPercentage / 100;
+	const percentageToMultiplier = 1 + product?.returnRate / 100;
 
 	const tax = group?.tax ?? 0;
 	const taxMultiplier = 1 - tax / 100;

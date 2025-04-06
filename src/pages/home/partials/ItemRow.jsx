@@ -118,7 +118,7 @@ export const ItemRow = observer(
 			};
 		}
 
-		const percentageToMultiplier = 1 + (item?.modifierPercentage ?? 0) / 100;
+		const percentageToMultiplier = 1 + (item?.returnRate ?? 0) / 100;
 		const calculatedTotal = Math.round(item?.quantity * item?.price * percentageToMultiplier);
 
 		return (
@@ -164,9 +164,9 @@ export const ItemRow = observer(
 						label={
 							<Group wrap="nowrap" gap="xxxs">
 								<Text size="sm" fw="500">
-									Mod. %
+									Return %
 								</Text>
-								<Tooltip w={200} multiline label={m.modifierPercentageTooltip()}>
+								<Tooltip w={200} multiline label={m.returnRateTooltip()}>
 									<ThemeIcon size="sm" variant="transparent" color="gray.5">
 										<IconHelp />
 									</ThemeIcon>
@@ -179,8 +179,8 @@ export const ItemRow = observer(
 						decimalSeparator=","
 						hideControls
 						w={100}
-						value={item?.modifierPercentage}
-						onChange={(val) => handleChange("modifierPercentage", val)}
+						value={item?.returnRate}
+						onChange={(val) => handleChange("returnRate", val)}
 					/>
 				)}
 				<NumberInput
