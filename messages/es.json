@@ -18,5 +18,5 @@
 	"sellOrderWithPremium": "{num} % (orden de venta con premium)",
 	"sellOrderWithoutPremium": "{num} % (orden de venta sin premium)",
 	"earningsAfterTax": "Ganancias tras impuestos",
-	"returnRateTooltip": "Al fabricar o refinar un objeto, es posible que te devuelvan cierta cantidad de los materiales utilizados para fabricarlo. La cantidad de recursos devueltos depende de la Tasa de Devolución de Recursos."
+	"modifierPercentageTooltip": "Al fabricar o refinar un objeto, es posible que te devuelvan cierta cantidad de los materiales utilizados para fabricarlo. La cantidad de recursos devueltos depende de la Tasa de Devolución de Recursos."
 }

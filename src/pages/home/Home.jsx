@@ -10,6 +10,7 @@ import {
 	Button,
 	Card,
 	Center,
+	Checkbox,
 	Code,
 	Divider,
 	Group,
@@ -18,6 +19,7 @@ import {
 	SimpleGrid,
 	Stack,
 	Text,
+	Tooltip,
 } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
@@ -306,6 +308,7 @@ function reducer(state, action) {
 		//  - action.itemUid
 		//  - action.payload
 		//  - action.isProduct
+		//  - action.bindQuantity
 
 		const newGroups = [...state.groups];
 
@@ -331,7 +334,7 @@ function reducer(state, action) {
 		newGroups[index].items[itemIndex] = newItem;
 
 		// Check if we need to increment other items quantity
-		if (action.isProduct) {
+		if (action.isProduct && action.bindQuantity) {
 			// Calculate increment multiplier between oldQuantity and newItem.quantity
 
 			// old 1 ---> 1
@@ -461,6 +464,7 @@ export default observer(function Home() {
 		return loadedState || initialState;
 	});
 	const [loadingGroup, setLoadingGroup] = useState(null);
+	const [bindQuantity, setBindQuantity] = useState(true);
 	const [wallpaper] = useState(() => getRandomWallpaper());
 
 	const isSingleColumn = useMediaQuery("(width <= 1407px)");
@@ -690,6 +694,15 @@ export default observer(function Home() {
 					<ServerSelector />
 				</Group>
 
+				<Tooltip label={m.bindQuantityTooltip()}>
+					<Checkbox
+						label={m.bindQuantity()}
+						onChange={(ev) => {
+							setBindQuantity(ev.target.checked);
+						}}
+					/>
+				</Tooltip>
+
 				<Group align="center">
 					<Button
 						variant={isDebugMode ? "filled" : "outline"}
@@ -820,6 +833,7 @@ export default observer(function Home() {
 														itemUid: _payload.uid,
 														payload: _payload,
 														isProduct: true,
+														bindQuantity,
 													});
 												}}
 												onGetIngredients={() => {
@@ -886,13 +900,9 @@ export default observer(function Home() {
 																	groupId: _group.id,
 																	itemUid: _payload.uid,
 																	payload: _payload,
+																	bindQuantity,
 																});
 															}}
-															// onGetIngredients={() =>
-															// 	getIngredients({
-															// 		groupId: _group.id,
-															// 	})
-															// }
 														/>
 													);
 												})}

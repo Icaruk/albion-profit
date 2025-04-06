@@ -18,5 +18,5 @@
 	"sellOrderWithPremium": "{num} % (ordre de vente avec premium)",
 	"sellOrderWithoutPremium": "{num} % (ordre de vente sans premium)",
 	"earningsAfterTax": "Bénéfice après impôt",
-	"returnRateTooltip": "Lorsque vous fabriquez ou raffinez un objet, il se peut que l'on vous rende une certaine quantité de matériaux utilisés pour fabriquer cet objet. La quantité de ressources restituées dépend du taux de restitution des ressources."
+	"modifierPercentageTooltip": "Lorsque vous fabriquez ou raffinez un objet, il se peut que l'on vous rende une certaine quantité de matériaux utilisés pour fabriquer cet objet. La quantité de ressources restituées dépend du taux de restitution des ressources."
 }
