@@ -18,7 +18,7 @@
 	"sellOrderWithPremium": "{num}% (sell order with premium)",
 	"sellOrderWithoutPremium": "{num}% (sell order without premium)",
 	"earningsAfterTax": "Earnings after tax",
-	"modifierPercentageTooltip": "When crafting or refining an item, you may be given back a certain amount of materials used to make that item. The amount of returned resources depends on the Resource Return Rate.",
+	"returnRateTooltip": "When crafting or refining an item, you may be given back a certain amount of materials used to make that item. The amount of returned resources depends on the Resource Return Rate.",
 	"bindQuantityTooltip": "Changing the product quantity will change the components quantities with the same ratio.",
 	"bindQuantity": "Bind quantity"
 }
