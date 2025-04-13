@@ -51,7 +51,7 @@ import { TaxSelector } from "./partials/TaxSelector";
 import TierSelector from "./partials/TierSelector";
 import { getRandomWallpaper } from "./utils/getRandomWallpaper";
 import { generateUid } from "./utils/group/generateUid";
-import { getGroupItemIds } from "./utils/group/getGroupItemIds";
+import { getGroupItemIdsForFetch } from "./utils/group/getGroupItemIdsForFetch";
 import { getGroupParts } from "./utils/group/getGroupParts";
 import { setGroupItemsPriceWithCity } from "./utils/group/setGroupIngredientsWithCity";
 import { buildAndFindItemId } from "./utils/item/buildAndFindItemid";
@@ -480,7 +480,7 @@ export default observer(function Home() {
 		setLoadingGroup(groupId);
 
 		const group = state.groups.find((_group) => _group.id === groupId);
-		const itemIdListStr = getGroupItemIds({ group });
+		const itemIdListStr = getGroupItemIdsForFetch({ group });
 
 		const url = new URL(
 			`https://${globalStore.server}.albion-online-data.com/api/v2/stats/prices/${itemIdListStr}`,
