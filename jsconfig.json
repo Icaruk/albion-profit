@@ -8,10 +8,6 @@
       ]
     },
   },
-  "include": [
-    "src",
-    "BASENAME.js"
-  ],
   "exclude": [
     "node_modules",
     "dist",

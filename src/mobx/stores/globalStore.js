@@ -2,17 +2,26 @@ import { makeAutoObservable } from "mobx";
 import construct from "../utils/construct";
 import persist from "../utils/persist";
 
+import { IndexedDB } from "@/pages/home/Home";
 import { setLanguageTag } from "@/paraglide/runtime.js";
 
 const defaultProperties = {
 	language: "en",
 	server: "europe",
 	debugMode: false,
+	bindQuantity: true,
+	indexedDb: null,
 };
 
 export class GlobalStore {
+	language = defaultProperties.language;
+	server = defaultProperties.server;
+	debugMode = defaultProperties.debugMode;
+	bindQuantity = defaultProperties.bindQuantity;
+	indexedDb = defaultProperties.indexedDb;
+
 	constructor() {
-		construct(this, defaultProperties);
+		Object.assign(this, defaultProperties);
 
 		makeAutoObservable(this);
 		persist(this, "globalStore");
@@ -50,7 +59,10 @@ export class GlobalStore {
 		this.server = server;
 	};
 
-	reset() {
-		construct(this, defaultProperties);
+	/**
+	 * @returns {IndexedDB}
+	 */
+	getIndexedDb() {
+		return this.indexedDb;
 	}
 }

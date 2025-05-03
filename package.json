@@ -5,6 +5,7 @@
 	"type": "module",
 	"scripts": {
 		"dev": "vite",
+		"mongodb:start": "mongod --dbpath ./src/data/mongodb/data/db --port 27018",
 		"build": "paraglide-js compile --project ./project.inlang --outdir ./src\\paraglide && vite build",
 		"preview": "vite preview",
 		"postinstall": "paraglide-js compile --project ./project.inlang --outdir ./src\\paraglide"
@@ -12,28 +13,28 @@
 	"dependencies": {
 		"@formkit/auto-animate": "^0.8.2",
 		"@icaruk/debounce": "^1.1.0",
-		"@inlang/paraglide-vite": "^1.2.51",
-		"@mantine/core": "^7.9.1",
-		"@mantine/hooks": "^7.9.1",
-		"@mantine/notifications": "^7.9.1",
-		"@tabler/icons-react": "^3.3.0",
-		"dame": "^1.2.6",
-		"mobx": "^6.12.3",
-		"mobx-react-lite": "^4.0.7",
+		"@inlang/paraglide-vite": "^1.4.0",
+		"@mantine/core": "^7.17.7",
+		"@mantine/hooks": "^7.17.7",
+		"@mantine/notifications": "^7.17.7",
+		"@tabler/icons-react": "^3.31.0",
+		"dame": "^1.2.7",
+		"mobx": "^6.13.7",
+		"mobx-react-lite": "^4.1.0",
 		"react": "^18.3.1",
 		"react-dom": "^18.3.1",
 		"react-helmet": "^6.1.0",
 		"react-router-dom": "^6.23.0"
 	},
 	"devDependencies": {
-		"@inlang/paraglide-js": "^1.8.0",
+		"@inlang/paraglide-js": "^2.0.12",
 		"@types/react": "^18.3.1",
 		"@types/react-dom": "^18.3.0",
-		"@vitejs/plugin-react": "^4.2.1",
-		"postcss": "^8.4.38",
-		"postcss-preset-mantine": "1.13.0",
+		"@vitejs/plugin-react": "^4.4.1",
+		"postcss": "^8.5.3",
+		"postcss-preset-mantine": "1.17.0",
 		"postcss-simple-vars": "^7.0.1",
-		"vite": "^5.2.11"
+		"vite": "^6.3.4"
 	},
 	"packageManager": "pnpm@9.12.1"
 }

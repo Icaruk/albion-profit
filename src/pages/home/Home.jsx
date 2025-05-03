@@ -1,64 +1,36 @@
-import { findItemById } from "@/data/scripts/items/utils/findItemById";
 import { globalStore } from "@/mobx/rootStore";
+import { GroupStore } from "@/mobx/stores/groupStore";
 import * as m from "@/paraglide/messages.js";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import debounce from "@icaruk/debounce";
 import {
-	ActionIcon,
 	Anchor,
 	Avatar,
 	Button,
-	Card,
 	Center,
 	Checkbox,
-	Code,
-	Divider,
 	Group,
 	Image,
+	Loader,
 	ScrollArea,
 	SimpleGrid,
-	Stack,
-	Text,
+	Space,
 	Tooltip,
 } from "@mantine/core";
-import { useMediaQuery } from "@mantine/hooks";
-import { notifications } from "@mantine/notifications";
-import {
-	IconArrowDown,
-	IconArrowLeft,
-	IconArrowRight,
-	IconArrowUp,
-	IconBrandGithub,
-	IconBrandReddit,
-	IconCheck,
-	IconCloudDownload,
-	IconCopy,
-	IconPlus,
-	IconTrash,
-	IconX,
-} from "@tabler/icons-react";
-import dame from "dame";
+import { useMediaQuery, useResizeObserver } from "@mantine/hooks";
+import { IconBrandGithub, IconBrandReddit, IconPlus } from "@tabler/icons-react";
+import { observe, toJS } from "mobx";
 import { observer } from "mobx-react-lite";
-import { useReducer, useState } from "react";
-import { locations } from "../../data/locations";
+import { useMemo, useState } from "react";
+import { useEffect } from "react";
 import classes from "./Home.module.css";
-import { ItemRow } from "./partials/ItemRow";
+import { ItemGroup } from "./partials/ItemGroup";
 import { LanguageSelector } from "./partials/LanguageSelector";
-import LocationsSelector from "./partials/LocationsSelector";
-import RowSummary from "./partials/RowSummary";
 import { ServerSelector } from "./partials/ServerSelector";
-import { TaxSelector } from "./partials/TaxSelector";
-import TierSelector from "./partials/TierSelector";
 import { getRandomWallpaper } from "./utils/getRandomWallpaper";
 import { generateUid } from "./utils/group/generateUid";
-import { getGroupItemIdsForFetch } from "./utils/group/getGroupItemIdsForFetch";
-import { getGroupParts } from "./utils/group/getGroupParts";
-import { setGroupItemsPriceWithCity } from "./utils/group/setGroupIngredientsWithCity";
-import { buildAndFindItemId } from "./utils/item/buildAndFindItemid";
-import { buildItemId } from "./utils/item/buildItemId";
-import { getItemIdComponents } from "./utils/item/getItemIdComponents";
 
-class ItemGroupElement {
+export class ItemGroupElement {
 	constructor({ type }) {
 		this.type = type;
 		this.uid = generateUid();
@@ -72,7 +44,7 @@ class ItemGroupElement {
 	}
 }
 
-class ItemGroup {
+export class ItemGroupEntity {
 	constructor({ name }) {
 		this.id = generateUid();
 		this.name = name ?? "";
@@ -84,886 +56,434 @@ class ItemGroup {
 	}
 }
 
-/**
- * Finds the index of a group in the state array by its ID.
- * @param {Object} groups `state.groups`
- * @param {string} id
- * @return {{
- * 	index: number,
- * 	group: ItemGroup
- * }}
- */
-function getGroupIndexById(groups, id) {
-	const index = groups.findIndex((_group) => _group.id === id);
-	if (index === -1)
-		return {
-			index: -1,
-			group: null,
-		};
+export class IndexedDB {
+	db;
 
-	return {
-		index: index,
-		group: groups[index],
-	};
-}
+	init = async () => {
+		return new Promise((resolve, reject) => {
+			let db;
+			const request = window.indexedDB.open("albion-profit", 2);
 
-function reducer(state, action) {
-	if (action.type === "ADD_GROUP") {
-		const newGroups = [...state.groups, new ItemGroup({})];
+			request.onerror = (event) => {
+				const errMsg = "Could not init IndexedDB";
+				console.error(errMsg);
+				reject(errMsg);
+			};
 
-		return {
-			...state,
-			groups: newGroups,
-		};
-	}
+			// This event is only triggered when the database is first created
+			// or when the version changes
+			request.onupgradeneeded = (event) => {
+				const db = event.target.result;
 
-	if (action.type === "EDIT_GROUP") {
-		// params:
-		//  - action.groupId
-		//  - action.payload
-
-		const newGroups = [...state.groups];
-
-		// Get the group index using id
-		const index = newGroups.findIndex((_group) => _group.id === action.groupId);
-		if (index === -1) return state;
-
-		const group = newGroups[index];
-
-		// Merge
-		const newGroup = {
-			...group,
-			...action.payload,
-		};
-
-		// Set the group
-		newGroups[index] = newGroup;
-
-		// Check if location has been changed
-		if (newGroup.location !== group.location) {
-			// Set group ingredients price
-			const newGroupWithData = setGroupItemsPriceWithCity({
-				group: newGroups[index],
-				location: newGroup.location,
-			});
-			newGroups[index] = newGroupWithData;
-		}
-
-		return {
-			...state,
-			groups: newGroups,
-		};
-	}
-	if (action.type === "MOVE_GROUP") {
-		// params:
-		//  - action.groupId
-		//  - action.direction (1, -1)
-
-		const newGroups = [...state.groups];
-
-		// Get the group index using id
-		const index = newGroups.findIndex((_group) => _group.id === action.groupId);
-		if (index === -1) return state;
-
-		const group = newGroups[index];
-
-		// Check if the group can be moved
-		if (action.direction === 1 && index === newGroups.length - 1) return state;
-		if (action.direction === -1 && index === 0) return state;
-
-		// Move the group
-		newGroups.splice(index, 1);
-		newGroups.splice(index + action.direction, 0, group);
-
-		return {
-			...state,
-			groups: newGroups,
-		};
-	}
-	if (action.type === "DELETE_GROUP") {
-		const newGroups = [...state.groups];
-
-		// Get the group index using id
-		const index = newGroups.findIndex((_group) => _group.id === action.id);
-		if (index === -1) return state;
-
-		// Remove the group
-		newGroups.splice(index, 1);
-
-		return {
-			...state,
-			groups: newGroups,
-		};
-	}
-	if (action.type === "DUPLICATE_GROUP") {
-		const newGroups = [...state.groups];
-
-		const { index } = getGroupIndexById(newGroups, action.id);
-		if (index === -1) return state;
-
-		const clonedGroup = JSON.parse(JSON.stringify(newGroups[index]));
-		clonedGroup.name = `${clonedGroup.name}_copy`;
-		clonedGroup.id = generateUid();
-
-		// Insert the same group after the index
-		newGroups.splice(index + 1, 0, clonedGroup);
-
-		return {
-			...state,
-			groups: newGroups,
-		};
-	}
-	if (action.type === "CHANGE_GROUP_TIER") {
-		// action.type
-		// action.groupId
-		// action.tierLevelChange
-		// action.enchantLevelChange
-
-		const newGroups = [...state.groups];
-		const { index, group } = getGroupIndexById(newGroups, action.groupId);
-
-		const tierChange = action?.tierLevelChange ?? 0;
-		const enchantChange = action?.enchantLevelChange ?? 0;
-
-		// Iterate each group and find if the new tier is valid
-		for (const _item of group.items) {
-			if (!["product", "ingredient"].includes(_item.type)) {
-				continue;
-			}
-
-			const { item, itemId } = buildAndFindItemId({
-				itemId: _item.id,
-				tierChange,
-				enchantChange,
-			});
-
-			if (item) {
-				_item.id = itemId;
-				_item.price = 0;
-				_item.priceData = [];
-			}
-		}
-
-		// Set the group
-		newGroups[index] = group;
-
-		return {
-			...state,
-			groups: newGroups,
-		};
-	}
-
-	if (action.type === "ADD_GROUP_ITEM") {
-		// params:
-		//  - action.groupId
-		//  - action.items?
-		//  - action.cleanIngredients?
-
-		const newGroups = [...state.groups];
-
-		// Get the group index
-		const index = newGroups.findIndex((_group) => _group.id === action.groupId);
-		if (index === -1) return state;
-
-		const items = action?.items;
-		const isMultipleItems = Array.isArray(items);
-
-		if (action?.cleanIngredients === true) {
-			newGroups[index].items = newGroups[index].items.filter((_item) => {
-				return _item.type !== "ingredient";
-			});
-		}
-
-		// Add only one empty item
-		if (!items) {
-			newGroups[index].items.push(new ItemGroupElement({ type: "ingredient" }));
-		} else {
-			// Add multiple items
-			if (isMultipleItems) {
-				for (const _item of items) {
-					newGroups[index].items.push({
-						..._item,
-						uid: generateUid(),
-						type: "ingredient",
-					});
+				// Create the groups object store with id as the key path
+				if (!db.objectStoreNames.contains("groups")) {
+					db.createObjectStore("groups", { keyPath: "id" });
+					console.log("Created 'groups' object store");
 				}
-				// Add one item
-			} else {
-				newGroups[index].items.push({
-					...items,
-					uid: generateUid(),
-					type: "ingredient",
-				});
-			}
-		}
+			};
 
-		return {
-			...state,
-			groups: newGroups,
-		};
-	}
-	if (action.type === "EDIT_GROUP_ITEM") {
-		// params:
-		//  - action.groupId
-		//  - action.itemUid
-		//  - action.payload
-		//  - action.isProduct
-		//  - action.bindQuantity
+			request.onsuccess = (event) => {
+				db = event.target.result;
 
-		const newGroups = [...state.groups];
+				db.onerror = (event) => {
+					console.error(`Database error: ${event.target.error?.message}`);
+				};
 
-		// Get the group index
-		const index = newGroups.findIndex((_group) => _group.id === action.groupId);
-		if (index === -1) return state;
+				console.log("IndexedDB initialized");
 
-		const group = newGroups[index];
+				this.db = db;
 
-		// Get the item index
-		const itemIndex = group.items.findIndex((_item) => _item.uid === action.itemUid);
-		if (!itemIndex === -1) return state;
-
-		const foundItem = group.items[itemIndex];
-
-		// Save old quantity
-		const oldQuantity = foundItem?.quantity;
-
-		// Merge
-		const newItem = { ...foundItem, ...action.payload };
-
-		// Set the item
-		newGroups[index].items[itemIndex] = newItem;
-
-		// Check if we need to increment other items quantity
-		if (action.isProduct && action.bindQuantity) {
-			// Calculate increment multiplier between oldQuantity and newItem.quantity
-
-			// old 1 ---> 1
-			// new 2 --> X
-			// mult = 2 * 1 / 1 = 2
-
-			// old 10 ---> 1
-			// new 12 --> X
-			// mult = 12 * 1 / 10 = 1.2
-
-			const incrementMultiplier = (newItem.quantity || 1) / (oldQuantity || 1);
-
-			// Iterate all ingredients
-			const { ingredients } = getGroupParts(group);
-
-			for (const _ingredient of ingredients) {
-				_ingredient.quantity = _ingredient.quantity * incrementMultiplier;
-			}
-		}
-
-		return {
-			...state,
-			groups: newGroups,
-		};
-	}
-	if (action.type === "DELETE_GROUP_ITEM") {
-		// params:
-		//  - action.groupId
-		//  - action.itemUid
-
-		const newGroups = [...state.groups];
-
-		// Get the group index
-		const index = newGroups.findIndex((_group) => _group.id === action.groupId);
-		if (index === -1) return state;
-
-		let group = newGroups[index];
-
-		// Get the item index
-		const foundItem = group.items.find((_item) => _item.uid === action.itemUid);
-		if (foundItem === -1) return state;
-
-		// Remove the item
-		group = group.items.filter((_item) => _item.uid !== action.itemUid);
-		newGroups[index].items = group;
-
-		return {
-			...state,
-			groups: newGroups,
-		};
-	}
-
-	if (action.type === "SET_GROUP_PRICE_DATA") {
-		// params:
-		//  - action.groupId
-		//  - action.payload
-
-		/**
-		 * @type {Array<{
-		 * city: string,
-		 * item_id: string,
-		 * quality: number,
-		 * sell_price_max: number,
-		 * sell_price_min: number,
-		 * }>}
-		 */
-		const payload = action.payload;
-
-		const newGroups = [...state.groups];
-
-		// Get the group index
-		const index = newGroups.findIndex((_group) => _group.id === action.groupId);
-		if (index === -1) return state;
-
-		const group = newGroups[index];
-
-		// Set price data
-		newGroups[index].priceData = payload;
-
-		if (!group.location) {
-			newGroups[index].location = locations[0];
-		}
-
-		// Set group ingredients price
-		const newGroupWithData = setGroupItemsPriceWithCity({
-			group: newGroups[index],
-			location: group?.location,
+				resolve(db);
+			};
 		});
-		newGroups[index] = newGroupWithData;
+	};
 
-		return {
-			...state,
-			groups: newGroups,
-		};
-	}
+	add = async (storeName, data) => {
+		return new Promise((resolve, reject) => {
+			const transaction = this.db.transaction(storeName, "readwrite");
+			const objectStore = transaction.objectStore(storeName);
 
-	return state;
-}
+			const request = objectStore.put(data);
 
-const initialState = {
-	groups: [new ItemGroup({})],
-};
+			request.onsuccess = (event) => {
+				console.log(`[IDB] ADD ${storeName} ${data.id}`);
+				resolve(event.target.result);
+			};
 
-function saveToLocalStorage(state) {
-	const str = JSON.stringify(state);
-	if (str) {
-		localStorage.setItem("state", str);
-		console.log("state saved");
-	}
+			request.onerror = (event) => {
+				console.error(`[IDB] ADD ERROR ${storeName}: ${event.target.error.message}`);
+				reject(event.target.error);
+			};
+		});
+	};
+
+	getAll = async (storeName) => {
+		return new Promise((resolve, reject) => {
+			const transaction = this.db.transaction(storeName, "readonly");
+			const objectStore = transaction.objectStore(storeName);
+			const request = objectStore.getAll();
+
+			request.onsuccess = (event) => {
+				console.log(`[IDB] GET ALL ${storeName}`);
+				resolve(event.target.result);
+			};
+
+			request.onerror = (event) => {
+				console.error(`[IDB] GET ALL ERROR ${storeName}: ${event.target.error.message}`);
+				reject(event.target.error);
+			};
+		});
+	};
+
+	deleteOne = async (storeName, id) => {
+		return new Promise((resolve, reject) => {
+			const transaction = this.db.transaction(storeName, "readwrite");
+			const objectStore = transaction.objectStore(storeName);
+			const request = objectStore.delete(id);
+
+			request.onsuccess = (event) => {
+				console.log(`[IDB] DELETE ${storeName} ${id} `);
+				resolve(event.target.result);
+			};
+
+			request.onerror = (event) => {
+				console.log(
+					`[IDB] ERROR DELETE ${storeName} ${id}: ${event.target.error.message} `,
+				);
+				reject(event.target.error);
+			};
+		});
+	};
 }
 
 function loadFromLocalStorage() {
 	const str = localStorage.getItem("state");
 	if (!str) return null;
+
 	try {
-		const parsed = JSON.parse(str);
+		const parsedGroup = JSON.parse(str);
+
+		if (!Array.isArray(parsedGroup)) {
+			return [];
+		}
+
+		for (let _i = 0; _i < parsedGroup.length; ++_i) {
+			const primitiveGroup = parsedGroup[_i];
+			const groupEntity = new GroupStore(primitiveGroup);
+
+			parsedGroup[_i] = groupEntity;
+		}
+
 		console.log("state loaded");
-		return parsed;
+
+		return parsedGroup;
 	} catch (err) {
 		return null;
 	}
 }
 
 export default observer(function Home() {
-	const [state, dispatch] = useReducer(reducer, null, () => {
-		const loadedState = loadFromLocalStorage();
-		return loadedState || initialState;
-	});
-	const [loadingGroup, setLoadingGroup] = useState(null);
-	const [bindQuantity, setBindQuantity] = useState(true);
+	const [isInitialized, setIsInitialized] = useState(false);
+
+	/** @type {[GroupStore[], React.Dispatch<React.SetStateAction<GroupStore[]>>]} */
+	const [groups, setGroups] = useState([new GroupStore()]);
+
 	const [wallpaper] = useState(() => getRandomWallpaper());
 
 	const isSingleColumn = useMediaQuery("(width <= 1407px)");
+	const [ref, rect] = useResizeObserver();
 
 	const [parent] = useAutoAnimate();
 
-	function dispatchWithSave(...args) {
-		debounce(2000, () => saveToLocalStorage(state), "dispatchWithSave");
-		dispatch(...args);
-	}
-
-	async function getPrices({ groupId }) {
-		setLoadingGroup(groupId);
-
-		const group = state.groups.find((_group) => _group.id === groupId);
-		const itemIdListStr = getGroupItemIdsForFetch({ group });
-
-		const url = new URL(
-			`https://${globalStore.server}.albion-online-data.com/api/v2/stats/prices/${itemIdListStr}`,
-		);
-		url.searchParams.append("locations", locations.join(","));
-
-		const { isError, response } = await dame.get(url.toString());
-
-		setLoadingGroup(null);
-
-		if (isError) {
-			return;
-		}
-
-		dispatchWithSave({
-			type: "SET_GROUP_PRICE_DATA",
-			groupId: groupId,
-			payload: response,
-		});
-	}
-
-	async function getIngredients({ groupId }) {
-		setLoadingGroup(groupId);
-
-		const group = state.groups.find((_group) => _group.id === groupId);
-		const { product } = getGroupParts(group);
-
-		const productId = product?.id;
-
-		const { id, tier, enchant } = getItemIdComponents(productId);
-
-		const { _itemData: itemData } = await findItemById(productId);
-
-		setLoadingGroup(null);
-
-		const newItemsToAdd = [];
-
-		let craftingRequirements = itemData?.craftingRequirements ?? {};
-		let enchantZeroNotFound = false;
-
-		if (Object.keys(craftingRequirements).length === 0) {
-			let enchantData = itemData?.enchantments?.enchantments[enchant];
-
-			if (!enchantData) {
-				enchantData = itemData?.enchantments?.enchantments[enchant + 1];
-				enchantZeroNotFound = true;
-			}
-
-			craftingRequirements = enchantData?.craftingRequirements ?? {};
-		}
-
-		/** @type {Array<{uniqueName: string, count: number}>} */
-		let craftResourceList = craftingRequirements?.craftResourceList ?? [];
-
-		if (enchantZeroNotFound) {
-			// Temporary fix when enchant 0 is not found, enchant 1 is used instead and only the first resource is used
-			craftResourceList = [craftResourceList[0]];
-		}
-
-		/*
-			ore -> metalbar
-				TX_METALBAR + TX_ORE
-			
-			hide -> leather
-				TX_LEATHER + TX_HIDE
-				
-			cloth -> fiber
-				TX_FIBER + TX_CLOTH
-			
-			rock -> stoneblock
-				TX_STONEBLOCK + TX_ROCK
-			
-			wood -> planks
-			    TX_PLANKS + TX_WOOD
-			
-		*/
-
-		if (["potion", "cooked"].includes(itemData?.categoryId)) {
-			if (enchant === 0) {
-				craftResourceList.pop();
-			}
-		}
-
-		if (
-			["metalbar", "leather", "fiber", "stoneblock", "planks"].includes(itemData?.categoryId)
-		) {
-			const refinedToRaw = {
-				metalbar: "ore",
-				leather: "hide",
-				fiber: "cloth",
-				stoneblock: "rock",
-				planks: "wood",
-			};
-
-			const craftTierQuantity = {
-				2: {
-					refined: 0,
-					raw: 1,
-				},
-				3: {
-					refined: 1,
-					raw: 2,
-				},
-				4: {
-					refined: 1,
-					raw: 2,
-				},
-				5: {
-					refined: 1,
-					raw: 3,
-				},
-				6: {
-					refined: 1,
-					raw: 4,
-				},
-				7: {
-					refined: 1,
-					raw: 5,
-				},
-				8: {
-					refined: 1,
-					raw: 5,
-				},
-			};
-
-			const refinedCount = craftTierQuantity[tier].refined;
-			const rawCount = craftTierQuantity[tier].raw;
-
-			if (refinedCount) {
-				const previousRefinedComponent = buildAndFindItemId({
-					itemId: productId,
-					tierChange: -1,
-				});
-
-				craftResourceList.push({
-					uniqueName: previousRefinedComponent.itemId,
-					count: 1,
-				});
-			}
-
-			if (rawCount) {
-				const rawItemId = `T${tier}_${refinedToRaw[itemData?.categoryId].toUpperCase()}`;
-
-				const rawComponent = buildAndFindItemId({
-					itemId: rawItemId,
-				});
-
-				craftResourceList.push({
-					uniqueName: rawComponent.itemId,
-					count: rawCount,
-				});
-			}
-		}
-
-		if (craftResourceList.length === 0) {
-			notifications.show({
-				color: "red",
-				icon: <IconX />,
-				title: "Item ingredients could not be found",
-				message:
-					"This tool uses Albion Online API to fetch the required items, but nothing was found.",
-				autoClose: 8000,
-			});
-
-			return;
-		}
-		notifications.show({
-			color: "green",
-			icon: <IconCheck />,
-			title: "Item ingredients found",
-		});
-
-		for (const _resource of craftResourceList) {
-			const uniqueName = _resource.uniqueName;
-
-			const { tier, enchant } = getItemIdComponents(uniqueName);
-
-			const itemId = buildItemId({
-				id: uniqueName,
-				tier,
-				enchant,
-				appendEnchantSymbol: true,
-			});
-
-			newItemsToAdd.push({
-				id: itemId,
-				quantity: _resource.count,
-			});
-		}
-
-		dispatchWithSave({
-			type: "ADD_GROUP_ITEM",
-			groupId: groupId,
-			items: newItemsToAdd,
-			cleanIngredients: true,
-		});
-	}
-
-	// This will force re-render
-	const language = globalStore.language;
-
 	const isDebugMode = globalStore.debugMode;
+	const bindQuantity = globalStore.bindQuantity;
+
+	function handleLoad() {
+		const state = loadFromLocalStorage();
+
+		if (!state) {
+			return;
+		}
+
+		setGroups(state);
+	}
+
+	async function loadFromIndexedDB() {
+		try {
+			const indexedDb = globalStore.getIndexedDb();
+			if (!indexedDb || !indexedDb.db) {
+				console.log("IndexedDB not initialized yet");
+				return null;
+			}
+
+			const groups = await indexedDb.getAll("groups");
+			if (groups && groups.length > 0) {
+				console.log("Loaded groups from IndexedDB:", groups.length);
+				return groups;
+			}
+			return null;
+		} catch (error) {
+			console.error("Error loading from IndexedDB:", error);
+			return null;
+		}
+	}
+
+	useEffect(() => {
+		(async () => {
+			const indexedDB = new IndexedDB();
+			await indexedDB.init();
+			globalStore.indexedDb = indexedDB;
+
+			const indexedDBGroups = await loadFromIndexedDB();
+
+			if (indexedDBGroups && indexedDBGroups.length > 0) {
+				const builtGroups = [];
+
+				for (const _group of indexedDBGroups) {
+					builtGroups.push(new GroupStore(_group, true));
+				}
+
+				setGroups(builtGroups);
+			}
+
+			setIsInitialized(true);
+		})();
+	}, []);
+
+	function handleAddGroup() {
+		setGroups((prev) => {
+			const groupsClone = [...prev];
+
+			let newOrder = 0;
+
+			for (const _groupStore of groupsClone) {
+				if (_groupStore.order > newOrder) {
+					newOrder = _groupStore.order;
+				}
+			}
+
+			const newGroup = new GroupStore({ order: newOrder + 1 });
+			groupsClone.push(newGroup);
+
+			// Save the new group to IndexedDB
+			const indexedDb = globalStore.getIndexedDb();
+			if (indexedDb?.db) {
+				indexedDb.add("groups", newGroup.toPrimitives());
+			}
+
+			return groupsClone;
+		});
+	}
+
+	function handleDeleteGroup(id) {
+		setGroups((_prev) => {
+			const groupsClone = [..._prev];
+			const idx = groupsClone.findIndex((_groupStore) => _groupStore.id === id);
+
+			if (idx !== -1) {
+				groupsClone.splice(idx, 1);
+
+				// Delete from IndexedDB
+				const indexedDb = globalStore.getIndexedDb();
+				if (indexedDb?.db) {
+					indexedDb.deleteOne("groups", id);
+				}
+			}
+
+			return groupsClone;
+		});
+	}
+
+	function handleDuplicateGroup(id) {
+		setGroups((_prev) => {
+			const groupsClone = [..._prev];
+			const idx = groupsClone.findIndex((_groupStore) => _groupStore.id === id);
+
+			if (idx !== -1) {
+				const clonedGroup = groupsClone[idx].cloneGroup();
+
+				// Insert the same group after the index
+				groupsClone.splice(idx + 1, 0, clonedGroup);
+
+				// Save the cloned group to IndexedDB
+				const indexedDb = globalStore.getIndexedDb();
+				if (indexedDb?.db) {
+					indexedDb.add("groups", clonedGroup.toPrimitives());
+				}
+			}
+
+			return groupsClone;
+		});
+	}
+
+	function handleMoveGroup(id, direction) {
+		setGroups((_prev) => {
+			const groupsClone = [..._prev];
+			const idx = groupsClone.findIndex((_groupStore) => _groupStore.id === id);
+
+			if (idx === -1) {
+				return groupsClone;
+			}
+
+			// Check if the group can be moved
+			if (direction === 1 && idx === groupsClone.length - 1) {
+				return groupsClone;
+			}
+			if (direction === -1 && idx === 0) {
+				return groupsClone;
+			}
+
+			const prevGroup = groupsClone[Math.max(0, idx - 1)];
+			const currentGroup = groupsClone[idx];
+			const nextGroup = groupsClone[idx + 1];
+
+			const currentOrder = currentGroup.order;
+
+			if (direction === 1) {
+				currentGroup.order = nextGroup.order;
+				nextGroup.order = currentOrder;
+
+				// Update both groups in IndexedDB
+				const indexedDb = globalStore.getIndexedDb();
+				if (indexedDb?.db) {
+					indexedDb.add("groups", currentGroup.toPrimitives());
+					indexedDb.add("groups", nextGroup.toPrimitives());
+				}
+			} else {
+				currentGroup.order = prevGroup.order;
+				prevGroup.order = currentOrder;
+
+				// Update both groups in IndexedDB
+				const indexedDb = globalStore.getIndexedDb();
+				if (indexedDb?.db) {
+					indexedDb.add("groups", currentGroup.toPrimitives());
+					indexedDb.add("groups", prevGroup.toPrimitives());
+				}
+			}
+
+			return groupsClone;
+		});
+	}
+
+	const { headerHeight } = useMemo(() => {
+		// temporal fix for margin-inline and margin-block... automatically applied by Mantine?
+		if (ref?.current?.style?.margin) {
+			ref.current.style.margin = 0;
+		}
+
+		return {
+			headerHeight: rect.height,
+		};
+	}, [rect]);
+
+	const sortedGroups = (groups ?? []).sort((a, b) => a.order - b.order);
+
+	if (!isInitialized) {
+		return <Loader />;
+	}
 
 	return (
 		<div className={classes.mainContainer}>
 			<Image className={classes.image} src={wallpaper} />
 
-			<Group my="xs" mx="md" justify="space-between">
-				<Group>
-					<LanguageSelector />
-					<ServerSelector />
-				</Group>
-
-				<Tooltip label={m.bindQuantityTooltip()}>
-					<Checkbox
-						label={m.bindQuantity()}
-						onChange={(ev) => {
-							setBindQuantity(ev.target.checked);
-						}}
-					/>
-				</Tooltip>
-
-				<Group align="center">
-					<Button
-						variant={isDebugMode ? "filled" : "outline"}
-						onClick={() => {
-							globalStore.debugMode = !isDebugMode;
-						}}
-					>
-						{isDebugMode ? "Debug mode enabled" : "Debug mode"}
-					</Button>
-
-					<Anchor href="https://github.com/Icaruk/albion-profit" target="_blank">
-						<Avatar variant="light">
-							<IconBrandGithub size={32} color="var(--mantine-color-dark-9)" />
-						</Avatar>
-					</Anchor>
-
-					<Anchor
-						href="https://www.reddit.com/r/albiononline/comments/1co93rm/i_created_a_tool_to_calculate_profits/"
-						target="_blank"
-					>
-						<Avatar variant="light">
-							<IconBrandReddit size={32} color="var(--mantine-color-orange-7)" />
-						</Avatar>
-					</Anchor>
-				</Group>
-			</Group>
-
 			<ScrollArea w="100%">
+				<Group
+					ref={ref}
+					my="xs"
+					mx="md"
+					justify="space-between"
+					style={{
+						backgroundColor: "rgba(0, 0, 0, 0.4)",
+						backdropFilter: "blur(6px)",
+						position: "absolute",
+						left: 0,
+						top: 0,
+						zIndex: 90,
+						width: "100%",
+						margin: 0,
+					}}
+					px="sm"
+					py="xs"
+				>
+					<Group>
+						<LanguageSelector />
+						<ServerSelector />
+					</Group>
+
+					<Tooltip label={m.bindQuantityTooltip()}>
+						<Checkbox
+							label={m.bindQuantity()}
+							onChange={(ev) => {
+								globalStore.bindQuantity = ev.target.checked;
+							}}
+							checked={bindQuantity}
+						/>
+					</Tooltip>
+
+					<Group align="center">
+						<Button
+							variant={isDebugMode ? "filled" : "outline"}
+							onClick={() => {
+								globalStore.debugMode = !isDebugMode;
+							}}
+						>
+							Debug mode
+						</Button>
+
+						<Anchor href="https://github.com/Icaruk/albion-profit" target="_blank">
+							<Avatar variant="light">
+								<IconBrandGithub size={32} />
+							</Avatar>
+						</Anchor>
+
+						<Anchor
+							href="https://www.reddit.com/r/albiononline/comments/1co93rm/i_created_a_tool_to_calculate_profits/"
+							target="_blank"
+						>
+							<Avatar variant="light">
+								<IconBrandReddit size={32} color="var(--mantine-color-orange-7)" />
+							</Avatar>
+						</Anchor>
+					</Group>
+				</Group>
+
+				<Space h={headerHeight} />
+
 				<Center>
 					<SimpleGrid p="md" ref={parent} cols={{ base: 1, xl: 2 }}>
-						{state?.groups?.map((_group, _idx) => {
-							const group = state.groups.find((_g) => _g.id === _group.id);
-							const { product, ingredients } = getGroupParts(group);
+						{sortedGroups?.map((_groupStore, _idx) => {
+							const group = _groupStore;
+
+							if (!group) {
+								return null;
+							}
 
 							return (
-								<Card key={_group.id}>
-									<Stack gap="md">
-										<Group justify="space-between">
-											<Text size="xs" c="dimmed">
-												{m.group()} {_idx + 1}
-											</Text>
-
-											<Group>
-												<Group gap={0}>
-													<ActionIcon
-														variant="subtle"
-														onClick={() =>
-															dispatchWithSave({
-																type: "MOVE_GROUP",
-																groupId: _group.id,
-																direction: 1,
-															})
-														}
-													>
-														{isSingleColumn ? (
-															<IconArrowDown />
-														) : (
-															<IconArrowRight />
-														)}
-													</ActionIcon>
-
-													<ActionIcon
-														variant="subtle"
-														onClick={() =>
-															dispatchWithSave({
-																type: "MOVE_GROUP",
-																groupId: _group.id,
-																direction: -1,
-															})
-														}
-													>
-														{isSingleColumn ? (
-															<IconArrowUp />
-														) : (
-															<IconArrowLeft />
-														)}
-													</ActionIcon>
-												</Group>
-
-												<ActionIcon
-													variant="subtle"
-													onClick={() =>
-														dispatchWithSave({
-															type: "DUPLICATE_GROUP",
-															id: _group.id,
-														})
-													}
-												>
-													<IconCopy />
-												</ActionIcon>
-
-												<ActionIcon
-													color="red"
-													variant="subtle"
-													onClick={() =>
-														dispatchWithSave({
-															type: "DELETE_GROUP",
-															id: _group.id,
-														})
-													}
-												>
-													<IconTrash />
-												</ActionIcon>
-											</Group>
-										</Group>
-
-										<LocationsSelector
-											location={group.location}
-											onChange={({ location }) => {
-												dispatchWithSave({
-													type: "EDIT_GROUP",
-													groupId: _group.id,
-													payload: {
-														location,
-													},
-												});
-											}}
-										/>
-
-										<Stack>
-											<ItemRow
-												label={m.result()}
-												item={product}
-												onChange={(_payload) => {
-													dispatchWithSave({
-														type: "EDIT_GROUP_ITEM",
-														groupId: _group.id,
-														itemUid: _payload.uid,
-														payload: _payload,
-														isProduct: true,
-														bindQuantity,
-													});
-												}}
-												onGetIngredients={() => {
-													getIngredients({ groupId: _group.id });
-												}}
-												isHighlighted
-											/>
-
-											<Group align="center">
-												<TierSelector
-													onTierChange={(tier) => {
-														dispatchWithSave({
-															type: "CHANGE_GROUP_TIER",
-															groupId: _group.id,
-															tierLevelChange: tier,
-														});
-													}}
-													onEnchantChange={(enchant) => {
-														dispatchWithSave({
-															type: "CHANGE_GROUP_TIER",
-															groupId: _group.id,
-															enchantLevelChange: enchant,
-														});
-													}}
-												/>
-
-												<TaxSelector
-													tax={group.tax}
-													onChange={(tax) => {
-														dispatchWithSave({
-															type: "EDIT_GROUP",
-															groupId: _group.id,
-															payload: {
-																tax,
-															},
-														});
-													}}
-												/>
-											</Group>
-
-											<Divider
-												my="xs"
-												label={m.components()}
-												labelPosition="center"
-											/>
-
-											<Stack gap="2">
-												{ingredients.map((_ingredient, _idx) => {
-													return (
-														<ItemRow
-															key={_ingredient.uid}
-															label={`Component ${_idx + 1}`}
-															item={_ingredient}
-															onDelete={() => {
-																dispatchWithSave({
-																	type: "DELETE_GROUP_ITEM",
-																	groupId: _group.id,
-																	itemUid: _ingredient.uid,
-																});
-															}}
-															onChange={(_payload) => {
-																dispatchWithSave({
-																	type: "EDIT_GROUP_ITEM",
-																	groupId: _group.id,
-																	itemUid: _payload.uid,
-																	payload: _payload,
-																	bindQuantity,
-																});
-															}}
-														/>
-													);
-												})}
-											</Stack>
-
-											<Group grow>
-												<Button
-													leftSection={<IconPlus />}
-													variant="light"
-													onClick={() => {
-														dispatchWithSave({
-															type: "ADD_GROUP_ITEM",
-															groupId: _group.id,
-														});
-													}}
-												>
-													{m.addComponent()}
-												</Button>
-
-												<Button
-													rightSection={<IconCloudDownload />}
-													variant="light"
-													onClick={() => {
-														getPrices({ groupId: _group.id });
-													}}
-													loading={loadingGroup === _group.id}
-												>
-													{m.fetchPrices()}
-												</Button>
-											</Group>
-
-											<Group
-												justify={isDebugMode ? "space-between" : "flex-end"}
-												gap="xl"
-											>
-												{isDebugMode && (
-													<Code block>
-														{JSON.stringify(
-															{
-																productId: product?.id,
-																ingredientIds: ingredients.map(
-																	(i) => i.id,
-																),
-															},
-															null,
-															2,
-														)}
-													</Code>
-												)}
-
-												<RowSummary group={group} />
-											</Group>
-										</Stack>
-									</Stack>
-								</Card>
+								<ItemGroup
+									key={group.id}
+									groupStore={_groupStore}
+									index={_idx}
+									onDelete={({ id }) => {
+										handleDeleteGroup(id);
+									}}
+									onDuplicate={({ id }) => {
+										handleDuplicateGroup(id);
+									}}
+									onMove={({ id, direction }) => {
+										handleMoveGroup(id, direction);
+									}}
+									isSingleColumn={isSingleColumn}
+									bindQuantity={bindQuantity}
+									isDebugMode={isDebugMode}
+								/>
 							);
 						})}
 
 						<Button
 							leftSection={<IconPlus />}
-							onClick={() => dispatchWithSave({ type: "ADD_GROUP" })}
+							onClick={() => {
+								handleAddGroup();
+							}}
 						>
 							{m.addGroup()}
 						</Button>

@@ -3,7 +3,7 @@ import { getGroupParts } from "../utils/group/getGroupParts";
 
 import * as m from "@/paraglide/messages.js";
 
-export default function RowSummary({ group }) {
+function ItemSummary({ group = {}, isPerUnit = false }) {
 	let totalCost = 0;
 	let totalProfit = 0;
 
@@ -14,10 +14,14 @@ export default function RowSummary({ group }) {
 	const tax = group?.tax ?? 0;
 	const taxMultiplier = 1 - tax / 100;
 
-	const totalEarnings = Math.round(product?.price * product?.quantity * percentageToMultiplier);
+	const productQuantity = isPerUnit ? 1 : product?.quantity;
+
+	const totalEarnings = Math.round(product?.price * productQuantity * percentageToMultiplier);
 
 	for (const _ingredient of ingredients) {
-		totalCost += _ingredient.price * _ingredient.quantity;
+		const quantity = isPerUnit ? _ingredient.originalQuantity : _ingredient.quantity;
+
+		totalCost += _ingredient.price * quantity;
 	}
 
 	totalCost = Math.round(totalCost);
@@ -29,65 +33,106 @@ export default function RowSummary({ group }) {
 
 	const isGoodProfit = totalProfit >= 0;
 
+	if (!isPerUnit && productQuantity === 1) {
+		return null;
+	}
+
 	return (
-		<Stack gap={0}>
-			<Group justify="flex-end">
-				<Stack gap={0}>
-					<Group justify="flex-end">
-						<Text>{m.resultValue()}:</Text>
-						<Text>
-							<NumberFormatter
-								thousandSeparator="."
-								decimalSeparator=","
-								value={totalEarnings}
-							/>
-						</Text>
-					</Group>
+		<Stack gap={0} w={300}>
+			<Text ta="center" size="md" fw="bold" c={isGoodProfit ? "green.6" : "red.5"}>
+				{isPerUnit ? "Per unit" : `${productQuantity} units`}
+			</Text>
 
-					<Group justify="flex-end">
-						<Text>{m.cost()}:</Text>
-						<Text>
-							<NumberFormatter
-								thousandSeparator="."
-								decimalSeparator=","
-								value={totalCost}
-							/>
-						</Text>
-					</Group>
+			<Table variant="vertical" layout="fixed" withTableBorder>
+				<Table.Tbody>
+					<Table.Tr>
+						<Table.Th w={160}>{m.resultValue()}:</Table.Th>
+						<Table.Td>
+							<Text ta="right" ff="monospace" size="sm">
+								<NumberFormatter
+									thousandSeparator="."
+									decimalSeparator=","
+									value={totalEarnings}
+								/>
+							</Text>
+						</Table.Td>
+					</Table.Tr>
 
-					<Group justify="flex-end">
-						<Text>{m.earnings()}:</Text>
-						<Text>
-							<NumberFormatter
-								thousandSeparator="."
-								decimalSeparator=","
-								value={totalProfit}
-							/>
-						</Text>
-					</Group>
-					<Group justify="flex-end">
-						<Text>{m.earningsAfterTax()}:</Text>
-						<Text>
-							<NumberFormatter
-								thousandSeparator="."
-								decimalSeparator=","
-								value={totalProfitAfterTax}
-							/>
-						</Text>
-					</Group>
+					<Table.Tr>
+						<Table.Th w={160}>{m.cost()}:</Table.Th>
+						<Table.Td>
+							<Text ta="right" ff="monospace" size="sm">
+								<NumberFormatter
+									thousandSeparator="."
+									decimalSeparator=","
+									value={totalCost}
+								/>
+							</Text>
+						</Table.Td>
+					</Table.Tr>
 
-					<Group justify="flex-end">
-						<Text>% {m.earnings()}:</Text>
-						<Text c={isGoodProfit ? "green" : "red"}>
-							<NumberFormatter
-								thousandSeparator="."
-								decimalSeparator=","
-								value={totalProfitPercentage.toFixed(1)}
-								suffix="%"
-							/>
-						</Text>
-					</Group>
-				</Stack>
+					<Table.Tr>
+						<Table.Th w={160}>{m.earnings()}:</Table.Th>
+						<Table.Td>
+							<Text ta="right" ff="monospace" size="sm">
+								<NumberFormatter
+									thousandSeparator="."
+									decimalSeparator=","
+									value={totalProfit}
+								/>
+							</Text>
+						</Table.Td>
+					</Table.Tr>
+
+					<Table.Tr>
+						<Table.Th w={160}>% {m.earningsAfterTax()}:</Table.Th>
+						<Table.Td>
+							<Text
+								ta="right"
+								ff="monospace"
+								size="sm"
+								fw="bold"
+								c={isGoodProfit ? "green.6" : "red.5"}
+							>
+								<NumberFormatter
+									thousandSeparator="."
+									decimalSeparator=","
+									value={totalProfitAfterTax}
+								/>
+							</Text>
+						</Table.Td>
+					</Table.Tr>
+
+					<Table.Tr>
+						<Table.Th w={160}>% {m.earnings()}:</Table.Th>
+						<Table.Td>
+							<Text
+								ta="right"
+								ff="monospace"
+								size="sm"
+								c={isGoodProfit ? "green.6" : "red.5"}
+							>
+								<NumberFormatter
+									thousandSeparator="."
+									decimalSeparator=","
+									value={totalProfitPercentage.toFixed(1)}
+									suffix="%"
+								/>
+							</Text>
+						</Table.Td>
+					</Table.Tr>
+				</Table.Tbody>
+			</Table>
+		</Stack>
+	);
+}
+
+export default function RowSummary({ group }) {
+	return (
+		<Stack gap={0} w="100%">
+			<Group justify="center">
+				<ItemSummary group={group} isPerUnit />
+				<ItemSummary group={group} />
 			</Group>
 		</Stack>
 	);

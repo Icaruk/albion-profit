@@ -1,7 +1,7 @@
 .mainContainer {
 	height: 95vh;
 	overflow: hidden;
-	
+
 	display: flex;
 	flex-direction: column;
 }
