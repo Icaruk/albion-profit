@@ -20,5 +20,6 @@
 	"earningsAfterTax": "Ganancias tras impuestos",
 	"returnRateTooltip": "Al fabricar o refinar un objeto, es posible que te devuelvan cierta cantidad de los materiales utilizados para fabricarlo. La cantidad de recursos devueltos depende de la Tasa de Devolución de Recursos.",
 	"bindQuantityTooltip": "Cambiar la cantidad de producto cambiará las cantidades de los componentes con la misma proporción.",
-	"bindQuantity": "Enlazar cantidad"
+	"bindQuantity": "Enlazar cantidad",
+	"sellOrderPriceChangeCountBeforeLoss": "Los tiempos en que el precio puede cambiarse antes de perder ganancias"
 }
