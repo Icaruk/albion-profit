@@ -18,10 +18,8 @@ import {
 	IconX,
 } from "@tabler/icons-react";
 import dame from "dame";
-import { toJS } from "mobx";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
-import { IndexedDB } from "../Home";
 import { getGroupItemIdsForFetch } from "../utils/group/getGroupItemIdsForFetch";
 import { getGroupParts } from "../utils/group/getGroupParts";
 import { buildAndFindItemId } from "../utils/item/buildAndFindItemid";
@@ -74,6 +72,7 @@ export const ItemGroup = observer(
 			const url = new URL(
 				`https://${globalStore.server}.albion-online-data.com/api/v2/stats/prices/${itemIdListStr}`,
 			);
+
 			url.searchParams.append("locations", locations.join(","));
 
 			const { isError, response } = await dame.get(url.toString());

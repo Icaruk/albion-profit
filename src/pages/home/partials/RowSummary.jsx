@@ -1,7 +1,8 @@
-import { Group, NumberFormatter, Stack, Table, Text } from "@mantine/core";
+import { Group, NumberFormatter, Space, Stack, Table, Text } from "@mantine/core";
 import { getGroupParts } from "../utils/group/getGroupParts";
 
 import * as m from "@/paraglide/messages.js";
+import { TAXES } from "./TaxSelector";
 
 function ItemSummary({ group = {}, isPerUnit = false }) {
 	let totalCost = 0;
@@ -33,9 +34,25 @@ function ItemSummary({ group = {}, isPerUnit = false }) {
 
 	const isGoodProfit = totalProfit >= 0;
 
-	if (!isPerUnit && productQuantity === 1) {
-		return null;
+	let priceChangeBeforeLossCount = 0;
+	let REMAINING_SAFE_ITERATIONS = 1000;
+
+	if (isPerUnit && isGoodProfit && tax > 0) {
+		let remainingProfit = totalProfitAfterTax;
+		const priceChangeCost = Math.max(totalProfit * (tax / 100), 1);
+
+		while (remainingProfit > 0) {
+			if (REMAINING_SAFE_ITERATIONS <= 0) {
+				break;
+			}
+
+			REMAINING_SAFE_ITERATIONS--;
+			remainingProfit = remainingProfit - priceChangeCost;
+			priceChangeBeforeLossCount++;
+		}
 	}
+
+	const isSellOrder = [TAXES.sellOrderWithPremium, TAXES.sellOrderWithoutPremium].includes(tax);
 
 	return (
 		<Stack gap={0} w={300}>
@@ -123,6 +140,27 @@ function ItemSummary({ group = {}, isPerUnit = false }) {
 					</Table.Tr>
 				</Table.Tbody>
 			</Table>
+
+			<Space h="md" />
+
+			{isPerUnit && isSellOrder && (
+				<Table variant="vertical" layout="fixed" withTableBorder>
+					<Table.Tbody>
+						<Table.Tr>
+							<Table.Th w={250}>{m.sellOrderPriceChangeCountBeforeLoss()}:</Table.Th>
+							<Table.Td>
+								<Text ta="right" ff="monospace" size="sm">
+									<NumberFormatter
+										thousandSeparator="."
+										decimalSeparator=","
+										value={priceChangeBeforeLossCount}
+									/>
+								</Text>
+							</Table.Td>
+						</Table.Tr>
+					</Table.Tbody>
+				</Table>
+			)}
 		</Stack>
 	);
 }
