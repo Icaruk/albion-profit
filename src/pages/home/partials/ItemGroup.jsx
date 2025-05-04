@@ -281,9 +281,11 @@ export const ItemGroup = observer(
 							{m.group()} {index + 1}
 						</Text>
 
-						<Text size="md">
-							{group.id}_{group.order}
-						</Text>
+						{globalStore.debugMode && (
+							<Text size="md">
+								{group.id}_{group.order}
+							</Text>
+						)}
 
 						<Group>
 							<Group gap={0}>
