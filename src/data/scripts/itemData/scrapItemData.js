@@ -27,7 +27,7 @@ for await (const _item of albionData) {
 
 	if (isError) {
 		errorCount++;
-		await new Promise((resolve) => setTimeout(resolve, 1000));
+		await new Promise((resolve) => setTimeout(resolve, 600));
 	} else {
 		await new Promise((resolve) => setTimeout(resolve, 100));
 	}

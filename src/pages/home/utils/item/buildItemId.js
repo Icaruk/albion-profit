@@ -32,7 +32,8 @@ export function buildItemId({ id, tier, enchant, appendEnchantSymbol = false }) 
 
 			if (underscoreCount === 1) {
 				newId += `_LEVEL${enchant}@${enchant}`;
-			} else if (underscoreCount === 2) {
+				// } else if (underscoreCount === 2) { // old
+			} else {
 				newId += `@${enchant}`;
 			}
 		}

@@ -3,10 +3,14 @@
 import fs from "node:fs";
 import path from "node:path";
 import itemData from "../itemData/itemData.json" with { type: "json" };
+import { getOrFetchItemData } from "../itemData/utils.js";
 import items from "./items.json" with { type: "json" };
 
 const filename = "items_p2.json";
 const filepath = path.join("./src/data/scripts/items", filename);
+
+const simpleFilename = "items2.js";
+const simpleFilepath = path.join("./src/data", simpleFilename);
 
 /**
  * @typedef {Object} ItemData
@@ -375,11 +379,12 @@ if (fs.existsSync(filepath)) {
 }
 
 fs.writeFileSync(filepath, "[");
+fs.writeFileSync(simpleFilepath, "export const albionData = [");
 
 let currentCount = 0;
 const maxIndex = items.length - 1;
 
-for (const _item of items) {
+for await (const _item of items) {
 	/*
 		{
 			"LocalizationNameVariable": "@ITEMS_UNIQUE_HIDEOUT",
@@ -423,6 +428,25 @@ for (const _item of items) {
 		}
 	*/
 
+	let trailingComma = "";
+
+	if (currentCount < maxIndex) {
+		trailingComma = ",";
+	}
+
+	// Append to simple file
+	const simpleItem = {
+		LocalizationNameVariable: _item.LocalizationNameVariable,
+		LocalizedNames: {
+			"EN-US": _item.LocalizedNames?.["EN-US"] ?? "missing",
+			"ES-ES": _item.LocalizedNames?.["ES-ES"] ?? "missing",
+			"FR-FR": _item.LocalizedNames?.["FR-FR"] ?? "missing",
+		},
+		UniqueName: _item.UniqueName,
+	};
+
+	fs.appendFileSync(simpleFilepath, `${JSON.stringify(simpleItem)}${trailingComma}\n`);
+
 	_item.LocalizationDescriptionVariable = undefined;
 	_item.LocalizedNames = {
 		"EN-US": _item.LocalizedNames?.["EN-US"] ?? "missing",
@@ -433,26 +457,10 @@ for (const _item of items) {
 	_item.Index = undefined;
 
 	// Find itemData
-	for (const _itemData of itemData) {
-		if (_itemData.uniqueName === _item.UniqueName) {
-			if (
-				_itemData.craftingRequirements ||
-				_itemData.enchantments?.[0]?.craftingRequirements
-			) {
-				_item._itemData = {
-					craftingRequirements: _itemData.craftingRequirements,
-					enchantments: _itemData.enchantments,
-					categoryId: _itemData.categoryId,
-				};
-			}
+	const itemData = await getOrFetchItemData(_item.UniqueName);
 
-			break;
-		}
-	}
-
-	let trailingComma = "";
-	if (currentCount < maxIndex) {
-		trailingComma = ",";
+	if (itemData) {
+		_item._itemData = itemData;
 	}
 
 	currentCount++;

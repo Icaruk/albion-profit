@@ -1,6 +1,14 @@
+import * as m from "@/paraglide/messages.js";
 import { Select } from "@mantine/core";
 import { IconReceiptTax } from "@tabler/icons-react";
-import * as m from "@/paraglide/messages.js";
+
+export const TAXES = {
+	noTax: 0,
+	sellWithPremium: 4,
+	sellWithoutPremium: 8,
+	sellOrderWithPremium: 6.5,
+	sellOrderWithoutPremium: 10.5,
+};
 
 export function TaxSelector({ tax, onChange = () => {} }) {
 	return (
@@ -9,11 +17,23 @@ export function TaxSelector({ tax, onChange = () => {} }) {
 			value={String(tax)}
 			onChange={(val) => onChange(+val)}
 			data={[
-				{ value: "0", label: m.noTax() },
-				{ value: "4", label: m.sellWithPremium({ num: 4 }) },
-				{ value: "8", label: m.sellWithoutPremium({ num: 8 }) },
-				{ value: "6.5", label: m.sellOrderWithPremium({ num: 6.5 }) },
-				{ value: "10.5", label: m.sellOrderWithoutPremium({ num: 10.5 }) },
+				{ value: TAXES.noTax.toString(), label: m.noTax() },
+				{
+					value: TAXES.sellWithPremium.toString(),
+					label: m.sellWithPremium({ num: TAXES.sellWithPremium }),
+				},
+				{
+					value: TAXES.sellWithoutPremium.toString(),
+					label: m.sellWithoutPremium({ num: TAXES.sellWithoutPremium }),
+				},
+				{
+					value: TAXES.sellOrderWithPremium.toString(),
+					label: m.sellOrderWithPremium({ num: TAXES.sellOrderWithPremium }),
+				},
+				{
+					value: TAXES.sellOrderWithoutPremium.toString(),
+					label: m.sellOrderWithoutPremium({ num: TAXES.sellOrderWithoutPremium }),
+				},
 			]}
 			leftSection={<IconReceiptTax />}
 		/>
