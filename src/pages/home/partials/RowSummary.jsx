@@ -39,7 +39,7 @@ function ItemSummary({ group = {}, isPerUnit = false }) {
 
 	if (isPerUnit && isGoodProfit && tax > 0) {
 		let remainingProfit = totalProfitAfterTax;
-		const priceChangeCost = Math.max(totalProfit * (tax / 100), 1);
+		const priceChangeCost = Math.max(totalProfit * 0.025, 1);
 
 		while (remainingProfit > 0) {
 			if (REMAINING_SAFE_ITERATIONS <= 0) {
