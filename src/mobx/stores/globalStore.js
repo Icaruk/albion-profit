@@ -1,5 +1,4 @@
 import { makeAutoObservable } from "mobx";
-import construct from "../utils/construct";
 import persist from "../utils/persist";
 
 import { IndexedDB } from "@/pages/home/Home";
@@ -21,10 +20,12 @@ export class GlobalStore {
 	indexedDb = defaultProperties.indexedDb;
 
 	constructor() {
-		Object.assign(this, defaultProperties);
-
 		makeAutoObservable(this);
+
+		Object.assign(this, defaultProperties);
 		persist(this, "globalStore");
+
+		this.setLanguage(this.language);
 	}
 
 	/**

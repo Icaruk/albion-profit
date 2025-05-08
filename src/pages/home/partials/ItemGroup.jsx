@@ -27,7 +27,7 @@ import { buildItemId } from "../utils/item/buildItemId";
 import { getItemIdComponents } from "../utils/item/getItemIdComponents";
 import { ItemWithComponents } from "./ItemWithComponents";
 import LocationsSelector from "./LocationsSelector";
-import RowSummary from "./RowSummary";
+import { RowSummary } from "./RowSummary";
 import { TaxSelector } from "./TaxSelector";
 import TierSelector from "./TierSelector";
 

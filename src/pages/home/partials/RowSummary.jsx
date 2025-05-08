@@ -1,28 +1,38 @@
 import { Group, NumberFormatter, Space, Stack, Table, Text } from "@mantine/core";
 import { getGroupParts } from "../utils/group/getGroupParts";
 
+import { findItemById } from "@/data/scripts/items/utils/findItemById";
+import { globalStore } from "@/mobx/rootStore";
 import * as m from "@/paraglide/messages.js";
+import { autorun } from "mobx";
+import { observer } from "mobx-react-lite";
 import { TAXES } from "./TaxSelector";
 
-function ItemSummary({ group = {}, isPerUnit = false }) {
+const ItemSummary = observer(({ group = {}, isPerUnit = false }) => {
+	// listen language changes
+	globalStore.language;
+
 	let totalCost = 0;
 	let totalProfit = 0;
 
 	const { product, ingredients } = getGroupParts(group);
 
-	const percentageToMultiplier = 1 + product?.returnRate / 100;
+	const percentageToMultiplier = 1 - product?.returnRate / 100;
 
 	const tax = group?.tax ?? 0;
 	const taxMultiplier = 1 - tax / 100;
 
 	const productQuantity = isPerUnit ? 1 : product?.quantity;
 
-	const totalEarnings = Math.round(product?.price * productQuantity * percentageToMultiplier);
+	const totalEarnings = Math.round(product?.price * productQuantity);
 
 	for (const _ingredient of ingredients) {
 		const quantity = isPerUnit ? _ingredient.originalQuantity : _ingredient.quantity;
 
-		totalCost += _ingredient.price * quantity;
+		const isArtifact = new RegExp(/arti|efact/gi).test(_ingredient.id);
+		const multiplier = isArtifact ? 1 : percentageToMultiplier;
+
+		totalCost += Math.round(_ingredient.price * quantity * multiplier);
 	}
 
 	totalCost = Math.round(totalCost);
@@ -163,9 +173,9 @@ function ItemSummary({ group = {}, isPerUnit = false }) {
 			)}
 		</Stack>
 	);
-}
+});
 
-export default function RowSummary({ group }) {
+export const RowSummary = observer(({ group }) => {
 	return (
 		<Stack gap={0} w="100%">
 			<Group justify="center">
@@ -174,4 +184,4 @@ export default function RowSummary({ group }) {
 			</Group>
 		</Stack>
 	);
-}
+});

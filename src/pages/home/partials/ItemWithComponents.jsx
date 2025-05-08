@@ -119,8 +119,7 @@ export const ItemWithComponents = observer(
 			};
 		}
 
-		const percentageToMultiplier = 1 + (item?.returnRate ?? 0) / 100;
-		const calculatedTotal = Math.round(item?.quantity * item?.price * percentageToMultiplier);
+		const calculatedTotal = Math.round(item?.quantity * item?.price);
 
 		return (
 			<Group h="100%" style={style} p={4} gap="md">
@@ -145,7 +144,7 @@ export const ItemWithComponents = observer(
 					allowDecimal={false}
 					thousandSeparator="."
 					decimalSeparator=","
-					min={1}
+					min={0}
 					max={999_999}
 					w={70}
 					value={item?.quantity}
@@ -183,6 +182,8 @@ export const ItemWithComponents = observer(
 						hideControls
 						w={100}
 						value={item?.returnRate}
+						min={0}
+						max={100}
 						onChange={(val) => handleChange("returnRate", val)}
 					/>
 				)}
