@@ -1,14 +1,14 @@
 import "@mantine/core/styles.css";
 import "@mantine/notifications/styles.css";
+import '@mantine/charts/styles.css';
 
 import { MantineProvider } from "@mantine/core";
 import { Notifications } from "@mantine/notifications";
+import { Helmet } from "react-helmet";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { BASENAME } from "../BASENAME";
 import Home from "./pages/home/Home";
 import { theme } from "./theme";
-import { useEffect } from "react";
-import { Helmet } from "react-helmet";
 
 export default function App() {
 	return (

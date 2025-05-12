@@ -21,5 +21,6 @@
 	"returnRateTooltip": "Al fabricar o refinar un objeto, es posible que te devuelvan cierta cantidad de los materiales utilizados para fabricarlo. La cantidad de recursos devueltos depende de la Tasa de Devolución de Recursos.",
 	"bindQuantityTooltip": "Cambiar la cantidad de producto cambiará las cantidades de los componentes con la misma proporción.",
 	"bindQuantity": "Enlazar cantidad",
-	"sellOrderPriceChangeCountBeforeLoss": "Número de cambios de precio antes de pérdidas"
+	"sellOrderPriceChangeCountBeforeLoss": "Número de cambios de precio antes de pérdidas",
+	"priceIsLockedTooltip": "Este bloqueo hará que el precio no pueda ser editado automáticamente"
 }

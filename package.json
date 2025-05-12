@@ -14,17 +14,20 @@
 		"@formkit/auto-animate": "^0.8.2",
 		"@icaruk/debounce": "^1.1.0",
 		"@inlang/paraglide-vite": "^1.4.0",
+		"@mantine/charts": "^8.0.0",
 		"@mantine/core": "^7.17.7",
 		"@mantine/hooks": "^7.17.7",
 		"@mantine/notifications": "^7.17.7",
 		"@tabler/icons-react": "^3.31.0",
 		"dame": "^1.2.7",
+		"dayjs": "^1.11.13",
 		"mobx": "^6.13.7",
 		"mobx-react-lite": "^4.1.0",
 		"react": "^18.3.1",
 		"react-dom": "^18.3.1",
 		"react-helmet": "^6.1.0",
-		"react-router-dom": "^6.23.0"
+		"react-router-dom": "^6.23.0",
+		"recharts": "2"
 	},
 	"devDependencies": {
 		"@inlang/paraglide-js": "^2.0.12",

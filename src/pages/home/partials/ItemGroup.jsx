@@ -12,7 +12,6 @@ import {
 	IconArrowUp,
 	IconCheck,
 	IconCloudDownload,
-	IconCopy,
 	IconPlus,
 	IconTrash,
 	IconX,
@@ -68,23 +67,35 @@ export const ItemGroup = observer(
 			setIsLoading(true);
 
 			const itemIdListStr = getGroupItemIdsForFetch({ group });
+			const locationWithCommas = locations.join(",");
 
-			const url = new URL(
+			const currentPriceUrl = new URL(
 				`https://${globalStore.server}.albion-online-data.com/api/v2/stats/prices/${itemIdListStr}`,
 			);
+			currentPriceUrl.searchParams.append("locations", locationWithCommas);
 
-			url.searchParams.append("locations", locations.join(","));
+			const priceHistoryUrl = new URL(
+				`https://${globalStore.server}.albion-online-data.com/api/v2/stats/history/${product.id}`,
+			);
 
-			const { isError, response } = await dame.get(url.toString());
+			const [currentPriceResponse, priceHistoryResponse] = await Promise.all([
+				dame.get(currentPriceUrl.toString()),
+				dame.get(priceHistoryUrl.toString()),
+			]);
+
+			const { isError: currentPriceHasError, response: currentPriceData } =
+				currentPriceResponse;
+			const { response: priceHistoryData } = priceHistoryResponse;
 
 			setIsLoading(false);
 
-			if (isError) {
+			if (currentPriceHasError) {
 				return;
 			}
 
 			_groupStore.setGroupPriceData({
-				payload: response,
+				currentPriceData,
+				priceHistoryData,
 			});
 		}
 
@@ -315,14 +326,14 @@ export const ItemGroup = observer(
 								</ActionIcon>
 							</Group>
 
-							<ActionIcon
+							{/* <ActionIcon
 								variant="subtle"
 								onClick={() => {
 									onDuplicate({ id: group.id });
 								}}
 							>
 								<IconCopy />
-							</ActionIcon>
+							</ActionIcon> */}
 
 							<ActionIcon
 								color="red"
@@ -463,6 +474,8 @@ export const ItemGroup = observer(
 									)}
 								</Code>
 							)}
+
+							{/* <ItemPriceHistoryStats group={group} /> */}
 
 							<RowSummary group={group} />
 						</Group>

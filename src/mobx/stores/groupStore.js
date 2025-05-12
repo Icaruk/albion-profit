@@ -17,7 +17,9 @@ export class ItemGroupElement {
 		this.price = 0;
 		this.location = locations[0];
 		this.priceData = [];
+		this.priceHistoryData = [];
 		this.returnRate = 0;
+		this.isLocked = false;
 	}
 }
 
@@ -219,12 +221,14 @@ export class GroupStore {
 
 	/**
 	 * @param {{
-	 * 	payload: SetGroupPriceDataPayload
+	 * 	currentPriceData: SetGroupPriceDataPayload
+	 * 	priceHistoryData: {}
 	 * }} params
 	 */
-	setGroupPriceData = ({ payload }) => {
+	setGroupPriceData = ({ currentPriceData, priceHistoryData }) => {
 		// Set price data
-		this.priceData = payload;
+		this.priceData = observable(currentPriceData);
+		this.priceHistoryData = observable(priceHistoryData);
 
 		if (!this.location) {
 			this.location = locations[0];
@@ -234,9 +238,10 @@ export class GroupStore {
 		const newGroupWithData = setGroupItemsPriceWithCity({
 			group: this,
 			location: this?.location,
+			skipLocked: true,
 		});
 
-		Object.assign(this, newGroupWithData);
+		Object.assign(this, observable(newGroupWithData));
 	};
 
 	cloneGroup = (data = {}) => {

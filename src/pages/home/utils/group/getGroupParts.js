@@ -1,3 +1,9 @@
+import { ItemGroup, ItemGroupElement } from "@/mobx/stores/groupStore";
+
+/**
+ * @param {ItemGroup} group
+ * @returns {{product: ItemGroupElement, ingredients: ItemGroupElement[]}}
+ */
 export function getGroupParts(group) {
 	if (!group) {
 		return {

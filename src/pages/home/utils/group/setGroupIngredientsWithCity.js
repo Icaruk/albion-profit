@@ -1,8 +1,16 @@
 import { locations } from "../../../../data/locations";
 
-export function setGroupItemsPriceWithCity({ group = {}, location = locations[0] }) {
+export function setGroupItemsPriceWithCity({
+	group = {},
+	location = locations[0],
+	skipLocked = false,
+}) {
 	const newGroupItems = group.items.map((_item) => {
 		if (!_item?.price === undefined) {
+			return _item;
+		}
+
+		if (skipLocked && _item.isLocked) {
 			return _item;
 		}
 

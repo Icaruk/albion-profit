@@ -14,9 +14,31 @@ import {
 import { useClipboard } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { IconClipboard, IconHammer, IconHelp, IconX } from "@tabler/icons-react";
+import { IconLock } from "@tabler/icons-react";
 import { observer } from "mobx-react-lite";
 import { memo, useMemo } from "react";
 import { albionData } from "../../../data/items";
+
+export const LockedPriceButton = ({ item, onChange = {} }) => {
+	return (
+		<Tooltip label={m.priceIsLockedTooltip()}>
+			<ThemeIcon
+				size="sm"
+				variant="transparent"
+				color={item.isLocked ? "blue.3" : "gray.9"}
+				style={{ cursor: "pointer" }}
+				onClick={() => {
+					onChange({
+						uid: item.uid,
+						isLocked: !item.isLocked,
+					});
+				}}
+			>
+				<IconLock />
+			</ThemeIcon>
+		</Tooltip>
+	);
+};
 
 export const ItemWithComponents = observer(
 	({
@@ -87,17 +109,17 @@ export const ItemWithComponents = observer(
 					value={item?.id}
 					limit={16}
 					onChange={(value) => {
-						handleChange("id", value);
+						handleChange({ id: value });
 					}}
 					searchable
 				/>
 			);
 		}, [itemList]);
 
-		function handleChange(key, value) {
+		function handleChange(newItem = {}) {
 			onChange({
 				uid: item?.uid, // mandatory to identify the item
-				[key]: value,
+				...newItem,
 			});
 		}
 
@@ -148,8 +170,9 @@ export const ItemWithComponents = observer(
 					max={999_999}
 					w={70}
 					value={item?.quantity}
-					onChange={(val) => handleChange("quantity", val)}
+					onChange={(val) => handleChange({ quantity: val })}
 				/>
+
 				<NumberInput
 					label={m.price()}
 					allowNegative={false}
@@ -159,8 +182,15 @@ export const ItemWithComponents = observer(
 					hideControls
 					w={100}
 					value={item?.price}
-					onChange={(val) => handleChange("price", val)}
+					onChange={(val) => handleChange({ price: val, isLocked: true })}
+					rightSection={
+						<LockedPriceButton
+							item={item}
+							onChange={({ isLocked }) => handleChange({ isLocked })}
+						/>
+					}
 				/>
+
 				{item?.type === "product" && (
 					<NumberInput
 						label={
@@ -184,7 +214,7 @@ export const ItemWithComponents = observer(
 						value={item?.returnRate}
 						min={0}
 						max={100}
-						onChange={(val) => handleChange("returnRate", val)}
+						onChange={(val) => handleChange({ returnRate: val })}
 					/>
 				)}
 				<NumberInput
