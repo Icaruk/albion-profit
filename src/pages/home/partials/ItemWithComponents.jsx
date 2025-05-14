@@ -1,6 +1,5 @@
 import { globalStore } from "@/mobx/rootStore";
 import * as m from "@/paraglide/messages.js";
-import debounce from "@icaruk/debounce";
 import {
 	ActionIcon,
 	Group,
@@ -13,8 +12,7 @@ import {
 } from "@mantine/core";
 import { useClipboard } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import { IconClipboard, IconHammer, IconHelp, IconX } from "@tabler/icons-react";
-import { IconLock } from "@tabler/icons-react";
+import { IconClipboard, IconHelp, IconLock, IconX } from "@tabler/icons-react";
 import { observer } from "mobx-react-lite";
 import { memo, useMemo } from "react";
 import { albionData } from "../../../data/items";
@@ -228,13 +226,6 @@ export const ItemWithComponents = observer(
 					readOnly
 				/>
 				<Group gap="xs" mt="lg" pr="xs">
-					{onGetIngredients && (
-						<Tooltip label="Get required items to craft">
-							<ActionIcon variant="subtle" onClick={onGetIngredients}>
-								<IconHammer />
-							</ActionIcon>
-						</Tooltip>
-					)}
 					{onDelete && (
 						<Tooltip label="Delete this component">
 							<ActionIcon color="red" variant="subtle" onClick={onDelete}>

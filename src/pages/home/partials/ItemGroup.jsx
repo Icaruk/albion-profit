@@ -3,7 +3,19 @@ import { findItemById } from "@/data/scripts/items/utils/findItemById";
 import { globalStore } from "@/mobx/rootStore";
 import { GroupStore } from "@/mobx/stores/groupStore";
 import * as m from "@/paraglide/messages.js";
-import { ActionIcon, Button, Card, Code, Divider, Group, Stack, Text } from "@mantine/core";
+import {
+	ActionIcon,
+	Box,
+	Button,
+	Card,
+	Code,
+	Container,
+	Divider,
+	Group,
+	SimpleGrid,
+	Stack,
+	Text,
+} from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import {
 	IconArrowDown,
@@ -16,14 +28,17 @@ import {
 	IconTrash,
 	IconX,
 } from "@tabler/icons-react";
+import { IconHammer } from "@tabler/icons-react";
 import dame from "dame";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
+import { Tooltip } from "recharts";
 import { getGroupItemIdsForFetch } from "../utils/group/getGroupItemIdsForFetch";
 import { getGroupParts } from "../utils/group/getGroupParts";
 import { buildAndFindItemId } from "../utils/item/buildAndFindItemid";
 import { buildItemId } from "../utils/item/buildItemId";
 import { getItemIdComponents } from "../utils/item/getItemIdComponents";
+import { ItemPriceHistoryStats } from "./ItemPriceHistoryStats";
 import { ItemWithComponents } from "./ItemWithComponents";
 import LocationsSelector from "./LocationsSelector";
 import { RowSummary } from "./RowSummary";
@@ -284,49 +299,37 @@ export const ItemGroup = observer(
 			return null;
 		}
 
-		return (
-			<Card key={_groupStore.id}>
-				<Stack gap="md">
-					<Group justify="space-between">
-						<Text size="xs" c="dimmed">
-							{m.group()} {index + 1}
-						</Text>
+		function GroupActions() {
+			return (
+				<Group>
+					<Group gap={0}>
+						<ActionIcon
+							variant="subtle"
+							onClick={() => {
+								onMove({
+									id: group.id,
+									direction: 1,
+								});
+							}}
+						>
+							{isSingleColumn ? <IconArrowDown /> : <IconArrowRight />}
+						</ActionIcon>
 
-						{globalStore.debugMode && (
-							<Text size="md">
-								{group.id}_{group.order}
-							</Text>
-						)}
+						<ActionIcon
+							variant="subtle"
+							disabled={index === 0}
+							onClick={() => {
+								onMove({
+									id: group.id,
+									direction: -1,
+								});
+							}}
+						>
+							{isSingleColumn ? <IconArrowUp /> : <IconArrowLeft />}
+						</ActionIcon>
+					</Group>
 
-						<Group>
-							<Group gap={0}>
-								<ActionIcon
-									variant="subtle"
-									onClick={() => {
-										onMove({
-											id: group.id,
-											direction: 1,
-										});
-									}}
-								>
-									{isSingleColumn ? <IconArrowDown /> : <IconArrowRight />}
-								</ActionIcon>
-
-								<ActionIcon
-									variant="subtle"
-									disabled={index === 0}
-									onClick={() => {
-										onMove({
-											id: group.id,
-											direction: -1,
-										});
-									}}
-								>
-									{isSingleColumn ? <IconArrowUp /> : <IconArrowLeft />}
-								</ActionIcon>
-							</Group>
-
-							{/* <ActionIcon
+					{/* <ActionIcon
 								variant="subtle"
 								onClick={() => {
 									onDuplicate({ id: group.id });
@@ -335,152 +338,216 @@ export const ItemGroup = observer(
 								<IconCopy />
 							</ActionIcon> */}
 
-							<ActionIcon
-								color="red"
-								variant="subtle"
-								onClick={() => {
-									onDelete({ id: group.id });
-								}}
-							>
-								<IconTrash />
-							</ActionIcon>
-						</Group>
-					</Group>
+					<ActionIcon
+						color="red"
+						variant="subtle"
+						onClick={() => {
+							onDelete({ id: group.id });
+						}}
+					>
+						<IconTrash />
+					</ActionIcon>
+				</Group>
+			);
+		}
 
-					<LocationsSelector
-						location={group.location}
-						onChange={({ location }) => {
+		function ProductOptions() {
+			return (
+				<Group justify="space-evenly">
+					<TierSelector
+						onTierChange={(tier) => {
+							_groupStore.changeGroupTier({
+								tierLevelChange: tier,
+							});
+							handleOnChange();
+						}}
+						onEnchantChange={(enchant) => {
+							_groupStore.changeGroupTier({
+								enchantLevelChange: enchant,
+							});
+							handleOnChange();
+						}}
+					/>
+
+					<TaxSelector
+						tax={_groupStore.tax}
+						onChange={(tax) => {
 							_groupStore.editGroup({
 								payload: {
-									location,
+									tax,
 								},
 							});
 							handleOnChange();
 						}}
 					/>
 
-					<Stack>
-						<ItemWithComponents
-							label={m.result()}
-							item={product}
-							onChange={(_payload) => {
-								_groupStore.editGroupItem({
-									itemUid: _payload.uid,
-									payload: _payload,
-									isProduct: true,
-									bindQuantity,
+					<Group justify="flex-start">
+						<Box>
+							<Button
+								size="xs"
+								variant={hasIngredients ? "transparent" : "light"}
+								onClick={() => {
+									getIngredients();
+									handleOnChange();
+								}}
+								leftSection={<IconHammer />}
+							>
+								Get components
+							</Button>
+						</Box>
+					</Group>
+				</Group>
+			);
+		}
+
+		function ComponentActions() {
+			return (
+				<Group grow>
+					<Button
+						leftSection={<IconPlus />}
+						variant="light"
+						onClick={() => {
+							_groupStore.addGroupItem({});
+							handleOnChange();
+						}}
+					>
+						{m.addComponent()}
+					</Button>
+
+					<Button
+						rightSection={<IconCloudDownload />}
+						variant="light"
+						onClick={() => {
+							getPrices({ groupId: group.id });
+							handleOnChange();
+						}}
+						loading={isLoading}
+					>
+						{m.fetchPrices()}
+					</Button>
+				</Group>
+			);
+		}
+
+		function ItemDataTable() {
+			return (
+				<Group justify="center">
+					<Container fluid>
+						{isDebugMode && (
+							<Code block>
+								{JSON.stringify(
+									{
+										productId: product?.id,
+										ingredientIds: ingredients.map((i) => i.id),
+									},
+									null,
+									2,
+								)}
+							</Code>
+						)}
+
+						<RowSummary group={group} />
+					</Container>
+				</Group>
+			);
+		}
+
+		function ComponentList() {
+			return (
+				<Stack gap="2">
+					{ingredients.map((_ingredient, _idx) => {
+						return (
+							<ItemWithComponents
+								key={_ingredient.uid}
+								label={`Component ${_idx + 1}`}
+								item={_ingredient}
+								onDelete={() => {
+									_groupStore.deleteGroupItem({
+										itemUid: _ingredient.uid,
+									});
+									handleOnChange();
+								}}
+								onChange={(_payload) => {
+									_groupStore.editGroupItem({
+										itemUid: _payload.uid,
+										payload: _payload,
+										bindQuantity,
+									});
+									handleOnChange();
+								}}
+							/>
+						);
+					})}
+				</Stack>
+			);
+		}
+
+		const hasIngredients = group?.items?.length > 1;
+		const hasPriceHistoryData = group?.priceHistoryData;
+
+		return (
+			<Card key={_groupStore.id}>
+				<SimpleGrid p="md" ref={parent} cols={1} spacing="lg" w={850}>
+					<Stack gap="md">
+						<Group justify="space-between">
+							<Text size="xs" c="dimmed">
+								{m.group()} {index + 1}
+							</Text>
+
+							{globalStore.debugMode && (
+								<Text size="md">
+									{group.id}_{group.order}
+								</Text>
+							)}
+
+							<GroupActions />
+						</Group>
+
+						<LocationsSelector
+							location={group.location}
+							onChange={({ location }) => {
+								_groupStore.editGroup({
+									payload: {
+										location,
+									},
 								});
 								handleOnChange();
 							}}
-							onGetIngredients={() => {
-								getIngredients();
-								handleOnChange();
-							}}
-							isHighlighted
 						/>
 
-						<Group align="center">
-							<TierSelector
-								onTierChange={(tier) => {
-									_groupStore.changeGroupTier({
-										tierLevelChange: tier,
+						<Stack>
+							<ItemWithComponents
+								label={m.result()}
+								item={product}
+								onChange={(_payload) => {
+									_groupStore.editGroupItem({
+										itemUid: _payload.uid,
+										payload: _payload,
+										isProduct: true,
+										bindQuantity,
 									});
 									handleOnChange();
 								}}
-								onEnchantChange={(enchant) => {
-									_groupStore.changeGroupTier({
-										enchantLevelChange: enchant,
-									});
-									handleOnChange();
-								}}
+								isHighlighted
 							/>
 
-							<TaxSelector
-								tax={_groupStore.tax}
-								onChange={(tax) => {
-									_groupStore.editGroup({
-										payload: {
-											tax,
-										},
-									});
-									handleOnChange();
-								}}
-							/>
-						</Group>
+							<ProductOptions />
 
-						<Divider my="xs" label={m.components()} labelPosition="center" />
+							<Divider my="xs" label={m.components()} labelPosition="center" />
 
-						<Stack gap="2">
-							{ingredients.map((_ingredient, _idx) => {
-								return (
-									<ItemWithComponents
-										key={_ingredient.uid}
-										label={`Component ${_idx + 1}`}
-										item={_ingredient}
-										onDelete={() => {
-											_groupStore.deleteGroupItem({
-												itemUid: _ingredient.uid,
-											});
-											handleOnChange();
-										}}
-										onChange={(_payload) => {
-											_groupStore.editGroupItem({
-												itemUid: _payload.uid,
-												payload: _payload,
-												bindQuantity,
-											});
-											handleOnChange();
-										}}
-									/>
-								);
-							})}
+							<ComponentList />
+							<ComponentActions />
+
+							<Divider my="xs" label="Item data" labelPosition="center" />
+
+							<ItemDataTable />
 						</Stack>
-
-						<Group grow>
-							<Button
-								leftSection={<IconPlus />}
-								variant="light"
-								onClick={() => {
-									_groupStore.addGroupItem({});
-									handleOnChange();
-								}}
-							>
-								{m.addComponent()}
-							</Button>
-
-							<Button
-								rightSection={<IconCloudDownload />}
-								variant="light"
-								onClick={() => {
-									getPrices({ groupId: group.id });
-									handleOnChange();
-								}}
-								loading={isLoading}
-							>
-								{m.fetchPrices()}
-							</Button>
-						</Group>
-
-						<Group justify={isDebugMode ? "space-between" : "flex-end"} gap="xl">
-							{isDebugMode && (
-								<Code block>
-									{JSON.stringify(
-										{
-											productId: product?.id,
-											ingredientIds: ingredients.map((i) => i.id),
-										},
-										null,
-										2,
-									)}
-								</Code>
-							)}
-
-							{/* <ItemPriceHistoryStats group={group} /> */}
-
-							<RowSummary group={group} />
-						</Group>
 					</Stack>
-				</Stack>
+
+					<Stack>
+						<ItemPriceHistoryStats group={group} />
+					</Stack>
+				</SimpleGrid>
 			</Card>
 		);
 	},

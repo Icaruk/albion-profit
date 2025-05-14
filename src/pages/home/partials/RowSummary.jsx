@@ -1,8 +1,9 @@
-import { Group, NumberFormatter, Space, Stack, Table, Text } from "@mantine/core";
+import { Group, NumberFormatter, Space, Stack, Table, Text, useMatches } from "@mantine/core";
 import { getGroupParts } from "../utils/group/getGroupParts";
 
 import { globalStore } from "@/mobx/rootStore";
 import * as m from "@/paraglide/messages.js";
+import { useMediaQuery } from "@mantine/hooks";
 import { observer } from "mobx-react-lite";
 import { TAXES } from "./TaxSelector";
 
@@ -74,12 +75,16 @@ const ItemSummary = observer(({ group = {}, isPerUnit = false }) => {
 				{isPerUnit ? "Per unit" : `${productQuantity} units`}
 			</Text>
 
-			<Table variant="vertical" layout="fixed" withTableBorder>
+			<Table variant="vertical" layout="fixed" withTableBorder withColumnBorders>
 				<Table.Tbody>
 					<Table.Tr>
-						<Table.Th w={160}>{m.resultValue()}:</Table.Th>
+						<Table.Th w={160}>
+							<Text ta="right" size="sm">
+								{m.resultValue()}:
+							</Text>
+						</Table.Th>
 						<Table.Td>
-							<Text ta="right" ff="monospace" size="sm">
+							<Text ta="left" ff="monospace" size="sm">
 								<NumberFormatter
 									thousandSeparator="."
 									decimalSeparator=","
@@ -90,9 +95,13 @@ const ItemSummary = observer(({ group = {}, isPerUnit = false }) => {
 					</Table.Tr>
 
 					<Table.Tr>
-						<Table.Th w={160}>{m.cost()}:</Table.Th>
+						<Table.Th w={160}>
+							<Text ta="right" size="sm">
+								{m.cost()}:
+							</Text>
+						</Table.Th>
 						<Table.Td>
-							<Text ta="right" ff="monospace" size="sm">
+							<Text ta="left" ff="monospace" size="sm">
 								<NumberFormatter
 									thousandSeparator="."
 									decimalSeparator=","
@@ -103,9 +112,13 @@ const ItemSummary = observer(({ group = {}, isPerUnit = false }) => {
 					</Table.Tr>
 
 					<Table.Tr>
-						<Table.Th w={160}>{m.earnings()}:</Table.Th>
+						<Table.Th w={160}>
+							<Text ta="right" size="sm">
+								{m.earnings()}:
+							</Text>
+						</Table.Th>
 						<Table.Td>
-							<Text ta="right" ff="monospace" size="sm">
+							<Text ta="left" ff="monospace" size="sm">
 								<NumberFormatter
 									thousandSeparator="."
 									decimalSeparator=","
@@ -116,10 +129,14 @@ const ItemSummary = observer(({ group = {}, isPerUnit = false }) => {
 					</Table.Tr>
 
 					<Table.Tr>
-						<Table.Th w={160}>% {m.earningsAfterTax()}:</Table.Th>
+						<Table.Th w={160}>
+							<Text ta="right" size="sm">
+								% {m.earningsAfterTax()}:
+							</Text>
+						</Table.Th>
 						<Table.Td>
 							<Text
-								ta="right"
+								ta="left"
 								ff="monospace"
 								size="sm"
 								fw="bold"
@@ -135,10 +152,14 @@ const ItemSummary = observer(({ group = {}, isPerUnit = false }) => {
 					</Table.Tr>
 
 					<Table.Tr>
-						<Table.Th w={160}>% {m.earnings()}:</Table.Th>
+						<Table.Th w={160}>
+							<Text ta="right" size="sm">
+								% {m.earnings()}:
+							</Text>
+						</Table.Th>
 						<Table.Td>
 							<Text
-								ta="right"
+								ta="left"
 								ff="monospace"
 								size="sm"
 								c={isGoodProfit ? "green.6" : "red.5"}
@@ -158,12 +179,12 @@ const ItemSummary = observer(({ group = {}, isPerUnit = false }) => {
 			<Space h="md" />
 
 			{isPerUnit && isSellOrder && (
-				<Table variant="vertical" layout="fixed" withTableBorder>
+				<Table variant="vertical" layout="fixed" withTableBorder withColumnBorders>
 					<Table.Tbody>
 						<Table.Tr>
 							<Table.Th w={250}>{m.sellOrderPriceChangeCountBeforeLoss()}:</Table.Th>
 							<Table.Td>
-								<Text ta="right" ff="monospace" size="sm">
+								<Text ta="left" ff="monospace" size="sm">
 									<NumberFormatter
 										thousandSeparator="."
 										decimalSeparator=","
@@ -180,9 +201,14 @@ const ItemSummary = observer(({ group = {}, isPerUnit = false }) => {
 });
 
 export const RowSummary = observer(({ group }) => {
+	const wrap = useMatches({
+		base: "wrap",
+		sm: "nowrap",
+	});
+
 	return (
-		<Stack gap={0} w="100%">
-			<Group justify="center" align="flex-start">
+		<Stack gap={0}>
+			<Group justify="center" align="flex-start" wrap={wrap}>
 				<ItemSummary group={group} isPerUnit />
 				<ItemSummary group={group} />
 			</Group>

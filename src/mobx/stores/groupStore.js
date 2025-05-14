@@ -6,6 +6,14 @@ import { getGroupParts } from "@/pages/home/utils/group/getGroupParts";
 import { setGroupItemsPriceWithCity } from "@/pages/home/utils/group/setGroupIngredientsWithCity";
 import { buildAndFindItemId } from "@/pages/home/utils/item/buildAndFindItemid";
 
+/**
+ * @typedef {Object} PriceHistoryData
+ * @property {{avg_price: number, item_count: number, timestamp: string}[]} data
+ * @property {string} item_id
+ * @property {string} location
+ * @property {number} quality
+ */
+
 export class ItemGroupElement {
 	constructor({ type }) {
 		this.type = type;
@@ -17,15 +25,13 @@ export class ItemGroupElement {
 		this.price = 0;
 		this.location = locations[0];
 		this.priceData = [];
+		/** @type {PriceHistoryData[]} */
 		this.priceHistoryData = [];
 		this.returnRate = 0;
 		this.isLocked = false;
 	}
 }
 
-/**
- *
- */
 export class ItemGroup {
 	constructor(data, keepId = false) {
 		this.id = keepId ? data.id : generateUid();

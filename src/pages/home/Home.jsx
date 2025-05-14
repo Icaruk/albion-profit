@@ -2,10 +2,10 @@ import { globalStore } from "@/mobx/rootStore";
 import { GroupStore } from "@/mobx/stores/groupStore";
 import * as m from "@/paraglide/messages.js";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
-import debounce from "@icaruk/debounce";
 import {
 	Anchor,
 	Avatar,
+	Box,
 	Button,
 	Center,
 	Checkbox,
@@ -15,14 +15,14 @@ import {
 	ScrollArea,
 	SimpleGrid,
 	Space,
+	Stack,
 	Tooltip,
+	useMatches,
 } from "@mantine/core";
-import { useMediaQuery, useResizeObserver } from "@mantine/hooks";
+import { useResizeObserver } from "@mantine/hooks";
 import { IconBrandGithub, IconBrandReddit, IconPlus } from "@tabler/icons-react";
-import { observe, toJS } from "mobx";
 import { observer } from "mobx-react-lite";
-import { useMemo, useState } from "react";
-import { useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import classes from "./Home.module.css";
 import { ItemGroup } from "./partials/ItemGroup";
 import { LanguageSelector } from "./partials/LanguageSelector";
@@ -190,7 +190,11 @@ export default observer(function Home() {
 
 	const [wallpaper] = useState(() => getRandomWallpaper());
 
-	const isSingleColumn = useMediaQuery("(width <= 1407px)");
+	const isSingleColumn = useMatches({
+		base: true,
+		xl: false,
+	});
+
 	const [ref, rect] = useResizeObserver();
 
 	const [parent] = useAutoAnimate();
@@ -451,6 +455,7 @@ export default observer(function Home() {
 
 				<Center>
 					<SimpleGrid p="md" ref={parent} cols={{ base: 1, xl: 2 }}>
+						{/* <Stack ref={parent} p="md"> */}
 						{sortedGroups?.map((_groupStore, _idx) => {
 							const group = _groupStore;
 
@@ -479,6 +484,7 @@ export default observer(function Home() {
 							);
 						})}
 
+						{/* <Center> */}
 						<Button
 							leftSection={<IconPlus />}
 							onClick={() => {
@@ -487,6 +493,8 @@ export default observer(function Home() {
 						>
 							{m.addGroup()}
 						</Button>
+						{/* </Center> */}
+						{/* </Stack> */}
 					</SimpleGrid>
 				</Center>
 			</ScrollArea>
