@@ -29,6 +29,7 @@ import {
 	IconX,
 } from "@tabler/icons-react";
 import { IconHammer } from "@tabler/icons-react";
+import { IconCopy } from "@tabler/icons-react";
 import dame from "dame";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
@@ -97,7 +98,7 @@ export const ItemGroup = observer(
 		groupStore = {},
 		index,
 		onDelete = () => {},
-		// onDuplicate = () => {},
+		onDuplicate = () => {},
 		onMove = () => {},
 		isSingleColumn = false,
 		bindQuantity = false,
@@ -360,14 +361,14 @@ export const ItemGroup = observer(
 						</ActionIcon>
 					</Group>
 
-					{/* <ActionIcon
-								variant="subtle"
-								onClick={() => {
-									onDuplicate({ id: group.id });
-								}}
-							>
-								<IconCopy />
-							</ActionIcon> */}
+					<ActionIcon
+						variant="subtle"
+						onClick={() => {
+							onDuplicate({ id: group.id });
+						}}
+					>
+						<IconCopy />
+					</ActionIcon>
 
 					<ActionIcon
 						color="red"

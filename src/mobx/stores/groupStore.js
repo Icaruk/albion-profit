@@ -252,7 +252,7 @@ export class GroupStore {
 
 	cloneGroup = (data = {}) => {
 		const newData = {
-			...this,
+			...this.toPrimitives(),
 			...data,
 		};
 		const newInstance = new GroupStore(newData);
