@@ -39,14 +39,7 @@ export const LockedPriceButton = ({ item, onChange = {} }) => {
 };
 
 export const ItemWithComponents = observer(
-	({
-		label,
-		item = {},
-		onChange = () => {},
-		onGetIngredients,
-		onDelete,
-		isHighlighted = false,
-	}) => {
+	({ label, item = {}, onChange = () => {}, onDelete, isHighlighted = false }) => {
 		const clipboard = useClipboard();
 
 		const language = globalStore.language;

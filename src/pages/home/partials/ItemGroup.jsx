@@ -32,6 +32,7 @@ import { IconHammer } from "@tabler/icons-react";
 import dame from "dame";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
+import { memo } from "react";
 import { Tooltip } from "recharts";
 import { getGroupItemIdsForFetch } from "../utils/group/getGroupItemIdsForFetch";
 import { getGroupParts } from "../utils/group/getGroupParts";
@@ -44,6 +45,36 @@ import LocationsSelector from "./LocationsSelector";
 import { RowSummary } from "./RowSummary";
 import { TaxSelector } from "./TaxSelector";
 import TierSelector from "./TierSelector";
+
+function ComponentList({ ingredients, groupStore, handleOnChange, bindQuantity = false }) {
+	return (
+		<Stack gap="2">
+			{ingredients.map((_ingredient, _idx) => {
+				return (
+					<ItemWithComponents
+						key={_ingredient.uid}
+						label={`Component ${_idx + 1}`}
+						item={_ingredient}
+						onDelete={() => {
+							groupStore.deleteGroupItem({
+								itemUid: _ingredient.uid,
+							});
+							handleOnChange();
+						}}
+						onChange={(_payload) => {
+							groupStore.editGroupItem({
+								itemUid: _payload.uid,
+								payload: _payload,
+								bindQuantity,
+							});
+							handleOnChange();
+						}}
+					/>
+				);
+			})}
+		</Stack>
+	);
+}
 
 /**
  * @typedef ItemGroupParams
@@ -66,7 +97,7 @@ export const ItemGroup = observer(
 		groupStore = {},
 		index,
 		onDelete = () => {},
-		onDuplicate = () => {},
+		// onDuplicate = () => {},
 		onMove = () => {},
 		isSingleColumn = false,
 		bindQuantity = false,
@@ -452,38 +483,7 @@ export const ItemGroup = observer(
 			);
 		}
 
-		function ComponentList() {
-			return (
-				<Stack gap="2">
-					{ingredients.map((_ingredient, _idx) => {
-						return (
-							<ItemWithComponents
-								key={_ingredient.uid}
-								label={`Component ${_idx + 1}`}
-								item={_ingredient}
-								onDelete={() => {
-									_groupStore.deleteGroupItem({
-										itemUid: _ingredient.uid,
-									});
-									handleOnChange();
-								}}
-								onChange={(_payload) => {
-									_groupStore.editGroupItem({
-										itemUid: _payload.uid,
-										payload: _payload,
-										bindQuantity,
-									});
-									handleOnChange();
-								}}
-							/>
-						);
-					})}
-				</Stack>
-			);
-		}
-
 		const hasIngredients = group?.items?.length > 1;
-		const hasPriceHistoryData = group?.priceHistoryData;
 
 		return (
 			<Card key={_groupStore.id}>
@@ -535,7 +535,12 @@ export const ItemGroup = observer(
 
 							<Divider my="xs" label={m.components()} labelPosition="center" />
 
-							<ComponentList />
+							<ComponentList
+								ingredients={ingredients}
+								groupStore={_groupStore}
+								handleOnChange={handleOnChange}
+								bindQuantity={bindQuantity}
+							/>
 							<ComponentActions />
 
 							<Divider my="xs" label="Item data" labelPosition="center" />
