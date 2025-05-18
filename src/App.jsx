@@ -1,6 +1,6 @@
 import "@mantine/core/styles.css";
 import "@mantine/notifications/styles.css";
-import '@mantine/charts/styles.css';
+import "@mantine/charts/styles.css";
 
 import { MantineProvider } from "@mantine/core";
 import { Notifications } from "@mantine/notifications";
@@ -21,10 +21,17 @@ export default function App() {
 			</BrowserRouter>
 
 			<Helmet>
-				{/* biome-ignore lint/style/useSelfClosingElements: <explanation> */}
+				{/* biome-ignore lint/style/useSelfClosingElements: google analytics */}
 				<script
 					async
 					src="https://www.googletagmanager.com/gtag/js?id=G-NZ50J7EJH3"
+				></script>
+
+				{/* biome-ignore lint/style/useSelfClosingElements: cloudflare analytics */}
+				<script
+					defer
+					src="https://static.cloudflareinsights.com/beacon.min.js"
+					data-cf-beacon='{"token": "5f816857667d4d10b2b94c12d4b2af43"}'
 				></script>
 
 				<script>
