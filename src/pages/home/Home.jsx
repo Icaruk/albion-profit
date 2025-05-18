@@ -341,6 +341,10 @@ export default observer(function Home() {
 			const currentGroup = groupsClone[idx];
 			const nextGroup = groupsClone[idx + 1];
 
+			if (currentGroup.order === nextGroup.order) {
+				nextGroup.order++;
+			}
+
 			const currentOrder = currentGroup.order;
 
 			if (direction === 1) {
