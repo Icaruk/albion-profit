@@ -22,5 +22,12 @@
 	"bindQuantityTooltip": "La modification de la quantité de produit modifiera les quantités de composants avec le même rapport.",
 	"bindQuantity": "Lien quantité",
 	"sellOrderPriceChangeCountBeforeLoss": "Nombre de variations de prix avant pertes",
-	"priceIsLockedTooltip": "Ce verrou empêchera la modification automatique du prix."
+	"priceIsLockedTooltip": "Ce verrou empêchera la modification automatique du prix.",
+	"shoppingList": "Liste de courses",
+	"removeAll": "Supprimer tout",
+	"emptyShoppingListHint": "Pour ajouter des éléments cliquez sur",
+	"getComponents": "Obtenir des composants",
+	"deleteThisComponent": "Supprimer ce composant",
+	"removeFromShoppingList": "Supprimer de la liste de courses",
+	"addToShoppingList": "Ajouter à la liste de courses"
 }
