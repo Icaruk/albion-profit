@@ -5,30 +5,38 @@ import { useAutoAnimate } from "@formkit/auto-animate/react";
 import {
 	Anchor,
 	Avatar,
-	Box,
+	Badge,
 	Button,
 	Center,
 	Checkbox,
+	Chip,
+	Drawer,
+	Grid,
 	Group,
 	Image,
+	Indicator,
 	Loader,
 	ScrollArea,
 	SimpleGrid,
 	Space,
-	Stack,
+	Text,
 	Tooltip,
 	useMatches,
 } from "@mantine/core";
-import { useResizeObserver } from "@mantine/hooks";
+import { useClipboard, useResizeObserver } from "@mantine/hooks";
+import { notifications } from "@mantine/notifications";
 import { IconBrandGithub, IconBrandReddit, IconPlus } from "@tabler/icons-react";
+import { IconClipboard } from "@tabler/icons-react";
 import { observer } from "mobx-react-lite";
 import { useEffect, useMemo, useState } from "react";
 import classes from "./Home.module.css";
 import { ItemGroup } from "./partials/ItemGroup";
 import { LanguageSelector } from "./partials/LanguageSelector";
 import { ServerSelector } from "./partials/ServerSelector";
+import { ShoppingList, ShoppingListButton } from "./partials/ShoppingList";
 import { getRandomWallpaper } from "./utils/getRandomWallpaper";
 import { generateUid } from "./utils/group/generateUid";
+import { getShoppingListItems } from "./utils/group/getGroupShoppingListItems";
 
 export class ItemGroupElement {
 	constructor({ type }) {
@@ -156,6 +164,11 @@ export class IndexedDB {
 	};
 }
 
+const VIEW_MODES = {
+	profit: "profit",
+	shoppingList: "shoppingList",
+};
+
 function loadFromLocalStorage() {
 	const str = localStorage.getItem("state");
 	if (!str) return null;
@@ -188,6 +201,8 @@ export default observer(function Home() {
 	/** @type {[GroupStore[], React.Dispatch<React.SetStateAction<GroupStore[]>>]} */
 	const [groups, setGroups] = useState([new GroupStore()]);
 
+	const [showShoppingList, setShowShoppingList] = useState(false);
+
 	const [wallpaper] = useState(() => getRandomWallpaper());
 
 	const isSingleColumn = useMatches({
@@ -195,9 +210,10 @@ export default observer(function Home() {
 		xl: false,
 	});
 
-	const [ref, rect] = useResizeObserver();
+	const [resizeObserverRef, rect] = useResizeObserver();
+	const clipboard = useClipboard();
 
-	const [parent] = useAutoAnimate();
+	const [parentAutoAnimate] = useAutoAnimate();
 
 	const isDebugMode = globalStore.debugMode;
 	const bindQuantity = globalStore.bindQuantity;
@@ -375,8 +391,8 @@ export default observer(function Home() {
 
 	const { headerHeight } = useMemo(() => {
 		// temporal fix for margin-inline and margin-block... automatically applied by Mantine?
-		if (ref?.current?.style?.margin) {
-			ref.current.style.margin = 0;
+		if (resizeObserverRef?.current?.style?.margin) {
+			resizeObserverRef.current.style.margin = 0;
 		}
 
 		return {
@@ -391,15 +407,16 @@ export default observer(function Home() {
 	}
 
 	return (
-		<div className={classes.mainContainer}>
+		<div className={classes.mainContainer} ref={parentAutoAnimate}>
 			<Image className={classes.image} src={wallpaper} />
 
 			<ScrollArea w="100%">
-				<Group
-					ref={ref}
-					my="xs"
-					mx="md"
-					justify="space-between"
+				<Grid
+					ref={resizeObserverRef}
+					// my="xs"
+					// mx="md"
+					px="sm"
+					py="xs"
 					style={{
 						backgroundColor: "rgba(0, 0, 0, 0.4)",
 						backdropFilter: "blur(6px)",
@@ -410,56 +427,67 @@ export default observer(function Home() {
 						width: "100%",
 						margin: 0,
 					}}
-					px="sm"
-					py="xs"
 				>
-					<Group>
-						<LanguageSelector />
-						<ServerSelector />
-					</Group>
+					<Grid.Col span={4}>
+						<Group justify="flex-start">
+							<LanguageSelector />
+							<ServerSelector />
 
-					<Tooltip label={m.bindQuantityTooltip()}>
-						<Checkbox
-							label={m.bindQuantity()}
-							onChange={(ev) => {
-								globalStore.bindQuantity = ev.target.checked;
-							}}
-							checked={bindQuantity}
+							<Tooltip label={m.bindQuantityTooltip()}>
+								<Checkbox
+									label={m.bindQuantity()}
+									onChange={(ev) => {
+										globalStore.bindQuantity = ev.target.checked;
+									}}
+									checked={bindQuantity}
+								/>
+							</Tooltip>
+						</Group>
+					</Grid.Col>
+
+					<Grid.Col span={4}>
+						<ShoppingListButton
+							value={showShoppingList}
+							onClick={(val) => setShowShoppingList(!val)}
 						/>
-					</Tooltip>
+					</Grid.Col>
 
-					<Group align="center">
-						<Button
-							variant={isDebugMode ? "filled" : "outline"}
-							onClick={() => {
-								globalStore.debugMode = !isDebugMode;
-							}}
-						>
-							Debug mode
-						</Button>
+					<Grid.Col span={4}>
+						<Group justify="flex-end">
+							<Button
+								variant={isDebugMode ? "filled" : "outline"}
+								onClick={() => {
+									globalStore.debugMode = !isDebugMode;
+								}}
+							>
+								Debug mode
+							</Button>
 
-						<Anchor href="https://github.com/Icaruk/albion-profit" target="_blank">
-							<Avatar variant="light">
-								<IconBrandGithub size={32} />
-							</Avatar>
-						</Anchor>
+							<Anchor href="https://github.com/Icaruk/albion-profit" target="_blank">
+								<Avatar variant="light">
+									<IconBrandGithub size={32} />
+								</Avatar>
+							</Anchor>
 
-						<Anchor
-							href="https://www.reddit.com/r/albiononline/comments/1co93rm/i_created_a_tool_to_calculate_profits/"
-							target="_blank"
-						>
-							<Avatar variant="light">
-								<IconBrandReddit size={32} color="var(--mantine-color-orange-7)" />
-							</Avatar>
-						</Anchor>
-					</Group>
-				</Group>
+							<Anchor
+								href="https://www.reddit.com/r/albiononline/comments/1co93rm/i_created_a_tool_to_calculate_profits/"
+								target="_blank"
+							>
+								<Avatar variant="light">
+									<IconBrandReddit
+										size={32}
+										color="var(--mantine-color-orange-7)"
+									/>
+								</Avatar>
+							</Anchor>
+						</Group>
+					</Grid.Col>
+				</Grid>
 
 				<Space h={headerHeight} />
 
 				<Center>
-					<SimpleGrid p="md" ref={parent} cols={{ base: 1, xl: 2 }}>
-						{/* <Stack ref={parent} p="md"> */}
+					<SimpleGrid p="md" cols={{ base: 1, xl: 2 }}>
 						{sortedGroups?.map((_groupStore, _idx) => {
 							const group = _groupStore;
 
@@ -488,7 +516,6 @@ export default observer(function Home() {
 							);
 						})}
 
-						{/* <Center> */}
 						<Button
 							leftSection={<IconPlus />}
 							onClick={() => {
@@ -497,11 +524,36 @@ export default observer(function Home() {
 						>
 							{m.addGroup()}
 						</Button>
-						{/* </Center> */}
-						{/* </Stack> */}
 					</SimpleGrid>
 				</Center>
 			</ScrollArea>
+
+			<Drawer
+				opened={showShoppingList}
+				onClose={() => setShowShoppingList(false)}
+				title={
+					<Group>
+						<Text fw="bold" ta="center" size="lg">
+							Shopping list
+						</Text>
+
+						<Badge>BETA</Badge>
+					</Group>
+				}
+			>
+				<ShoppingList
+					groups={groups}
+					onCopy={(text) => {
+						clipboard.copy(text);
+
+						notifications.show({
+							color: "green",
+							icon: <IconClipboard />,
+							title: "Item has been copied to clipboard",
+						});
+					}}
+				/>
+			</Drawer>
 		</div>
 	);
 });

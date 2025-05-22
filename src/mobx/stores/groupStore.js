@@ -16,6 +16,7 @@ import { buildAndFindItemId } from "@/pages/home/utils/item/buildAndFindItemid";
 
 export class ItemGroupElement {
 	constructor({ type }) {
+		/** @type {"product" | "ingredient"} */
 		this.type = type;
 		this.uid = generateUid();
 		this.id = "";
@@ -29,6 +30,7 @@ export class ItemGroupElement {
 		this.priceHistoryData = [];
 		this.returnRate = 0;
 		this.isLocked = false;
+		this.isInShoppingList = false;
 	}
 }
 
@@ -54,6 +56,7 @@ export class GroupStore {
 	constructor(data, keepId = false) {
 		this.id = keepId ? data.id : generateUid();
 		this.name = data?.name ?? "";
+		/** @type {ItemGroupElement[]} */
 		this.items = data?.items ?? [
 			new ItemGroupElement({ type: "product" }),
 			new ItemGroupElement({ type: "ingredient" }),
@@ -248,6 +251,16 @@ export class GroupStore {
 		});
 
 		Object.assign(this, observable(newGroupWithData));
+	};
+
+	removeAllFromShoppingList = () => {
+		for (const item of this.items) {
+			item.isInShoppingList = false;
+		}
+	};
+
+	atLeastOneItemIsInShoppingList = () => {
+		return this.items.some((_item) => _item.isInShoppingList === true);
 	};
 
 	cloneGroup = (data = {}) => {

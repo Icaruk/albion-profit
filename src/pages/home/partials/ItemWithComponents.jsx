@@ -12,7 +12,14 @@ import {
 } from "@mantine/core";
 import { useClipboard } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import { IconClipboard, IconHelp, IconLock, IconX } from "@tabler/icons-react";
+import {
+	IconClipboard,
+	IconHelp,
+	IconLock,
+	IconShoppingCartPlus,
+	IconX,
+} from "@tabler/icons-react";
+import { IconShoppingCartMinus } from "@tabler/icons-react";
 import { observer } from "mobx-react-lite";
 import { memo, useMemo } from "react";
 import { albionData } from "../../../data/items";
@@ -38,8 +45,35 @@ export const LockedPriceButton = ({ item, onChange = {} }) => {
 	);
 };
 
+export const ItemImage = ({ itemId, onCopy }) => {
+	return (
+		<Image
+			h={56}
+			w={56}
+			src={
+				itemId
+					? `https://render.albiononline.com/v1/item/${itemId}.png`
+					: "https://render.albiononline.com/v1/spell/HASTE.png"
+			}
+			mt={6}
+			onClick={onCopy}
+			style={{ cursor: "pointer" }}
+			onError={(ev) => {
+				ev.currentTarget.src = "https://render.albiononline.com/v1/spell/HASTE.png";
+			}}
+		/>
+	);
+};
+
 export const ItemWithComponents = observer(
-	({ label, item = {}, onChange = () => {}, onDelete, isHighlighted = false }) => {
+	({
+		label,
+		item = {},
+		onChange = () => {},
+		onDelete,
+		onShoppingListClick,
+		isHighlighted = false,
+	}) => {
 		const clipboard = useClipboard();
 
 		const language = globalStore.language;
@@ -98,7 +132,7 @@ export const ItemWithComponents = observer(
 					placeholder="Pick value"
 					data={itemList}
 					value={item?.id}
-					limit={16}
+					limit={24}
 					onChange={(value) => {
 						handleChange({ id: value });
 					}}
@@ -134,22 +168,18 @@ export const ItemWithComponents = observer(
 
 		const calculatedTotal = Math.round(item?.quantity * item?.price);
 
+		const isProduct = item?.type === "product";
+		const isInShoppingList = item.isInShoppingList;
+
 		return (
-			<Group h="100%" style={style} p={4} gap="md">
-				<Image
-					h={56}
-					src={
-						item?.id
-							? `https://render.albiononline.com/v1/item/${item?.id}.png`
-							: "https://render.albiononline.com/v1/spell/HASTE.png"
-					}
-					mt={6}
-					onClick={() => handleCopyItemId()}
-					style={{ cursor: "pointer" }}
-					onError={(ev) => {
-						ev.currentTarget.src = "https://render.albiononline.com/v1/spell/HASTE.png";
-					}}
-				/>
+			<Group
+				h="100%"
+				style={style}
+				p={4}
+				gap="md"
+				opacity={item.quantity === 0 ? 0.4 : undefined}
+			>
+				<ItemImage itemId={item?.id} onCopy={handleCopyItemId} />
 				<MemoizedSelect />
 				<NumberInput
 					label={m.quantity()}
@@ -180,9 +210,10 @@ export const ItemWithComponents = observer(
 							onChange={({ isLocked }) => handleChange({ isLocked })}
 						/>
 					}
+					error={!item?.price}
 				/>
 
-				{item?.type === "product" && (
+				{isProduct && (
 					<NumberInput
 						label={
 							<Group wrap="nowrap" gap="xxxs">
@@ -220,9 +251,32 @@ export const ItemWithComponents = observer(
 				/>
 				<Group gap="xs" mt="lg" pr="xs">
 					{onDelete && (
-						<Tooltip label="Delete this component">
+						<Tooltip label={m.deleteThisComponent()}>
 							<ActionIcon color="red" variant="subtle" onClick={onDelete}>
 								<IconX />
+							</ActionIcon>
+						</Tooltip>
+					)}
+					{onShoppingListClick && (
+						<Tooltip
+							label={
+								isInShoppingList
+									? m.removeFromShoppingList()
+									: m.addToShoppingList()
+							}
+						>
+							<ActionIcon
+								variant="subtle"
+								onClick={() => {
+									onShoppingListClick(item);
+								}}
+								color={isInShoppingList ? "gray" : "blue"}
+							>
+								{isInShoppingList ? (
+									<IconShoppingCartMinus />
+								) : (
+									<IconShoppingCartPlus />
+								)}
 							</ActionIcon>
 						</Tooltip>
 					)}

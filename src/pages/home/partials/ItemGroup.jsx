@@ -62,6 +62,15 @@ function ComponentList({ ingredients, groupStore, handleOnChange, bindQuantity =
 							});
 							handleOnChange();
 						}}
+						onShoppingListClick={(currValue) => {
+							groupStore.editGroupItem({
+								itemUid: currValue.uid,
+								payload: {
+									isInShoppingList: !currValue.isInShoppingList,
+								},
+							});
+							handleOnChange();
+						}}
 						onChange={(_payload) => {
 							groupStore.editGroupItem({
 								itemUid: _payload.uid,
@@ -424,7 +433,7 @@ export const ItemGroup = observer(
 								}}
 								leftSection={<IconHammer />}
 							>
-								Get components
+								{m.getComponents()}
 							</Button>
 						</Box>
 					</Group>
@@ -485,10 +494,18 @@ export const ItemGroup = observer(
 		}
 
 		const hasIngredients = group?.items?.length > 1;
+		const atLeastOneItemIsInShoppingList = group.atLeastOneItemIsInShoppingList();
 
 		return (
-			<Card key={_groupStore.id}>
-				<SimpleGrid p="md" ref={parent} cols={1} spacing="lg" w={850}>
+			<Card
+				key={_groupStore.id}
+				style={{
+					outline: atLeastOneItemIsInShoppingList
+						? "3px solid var(--mantine-color-blue-5)"
+						: undefined,
+				}}
+			>
+				<SimpleGrid cols={1} spacing="lg" maw={850}>
 					<Stack gap="md">
 						<Group justify="space-between">
 							<Text size="xs" c="dimmed">

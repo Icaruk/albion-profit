@@ -22,5 +22,12 @@
 	"bindQuantityTooltip": "Changing the product quantity will change the components quantities with the same ratio.",
 	"bindQuantity": "Bind quantity",
 	"sellOrderPriceChangeCountBeforeLoss": "Number of price changes before losses",
-	"priceIsLockedTooltip": "This lock will prevent the price from being automatically edited."
+	"priceIsLockedTooltip": "This lock will prevent the price from being automatically edited.",
+	"shoppingList": "Shopping list",
+	"removeAll": "Remove all",
+	"emptyShoppingListHint": "To add items click on",
+	"getComponents": "Get components",
+	"deleteThisComponent": "Delete this component",
+	"removeFromShoppingList": "Remove from shopping list",
+	"addToShoppingList": "Add to shopping list"
 }
