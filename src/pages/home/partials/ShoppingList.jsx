@@ -71,7 +71,9 @@ export const ShoppingList = observer(({ groups = [], onCopy }) => {
 				{shoppingListItems.map((_shoppingListItem) => {
 					const itemData = findItemById(_shoppingListItem.id);
 
-					const translatedName = itemData.LocalizedNames[globalStore.getItemLangKey()];
+					const translatedName =
+						itemData?.LocalizedNames[globalStore.getItemLangKey()] ??
+						_shoppingListItem.id;
 					const isReady = _shoppingListItem.owningQuantity >= _shoppingListItem.quantity;
 
 					return (
@@ -104,7 +106,7 @@ export const ShoppingList = observer(({ groups = [], onCopy }) => {
 								w={60}
 								value={_shoppingListItem.owningQuantity}
 								onChange={(ev) => {
-									_shoppingListItem.owningQuantity = ev.target.value;
+									_shoppingListItem.owningQuantity = Number(ev.target.value) || 0;
 								}}
 							/>
 
