@@ -49,6 +49,13 @@ import { RowSummary } from "./RowSummary";
 import { TaxSelector } from "./TaxSelector";
 import TierSelector from "./TierSelector";
 
+/**
+ * @param {Object} params
+ * @param {[]} params.ingredients
+ * @param {GroupStore} params.groupStore
+ * @param {(params: any) => void} params.handleOnChange
+ * @param {boolean} params.bindQuantity
+ */
 function ComponentList({ ingredients, groupStore, handleOnChange, bindQuantity = false }) {
 	return (
 		<Stack gap="2">

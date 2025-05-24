@@ -3,7 +3,6 @@ import { getGroupParts } from "../utils/group/getGroupParts";
 
 import { globalStore } from "@/mobx/rootStore";
 import * as m from "@/paraglide/messages.js";
-import { useMediaQuery } from "@mantine/hooks";
 import { observer } from "mobx-react-lite";
 import { TAXES } from "./TaxSelector";
 

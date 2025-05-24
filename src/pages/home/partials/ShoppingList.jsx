@@ -1,28 +1,21 @@
 import { findItemById } from "@/data/utils/findItemById";
-import { globalStore, groupStore } from "@/mobx/rootStore";
+import { globalStore } from "@/mobx/rootStore";
 import { GroupStore } from "@/mobx/stores/groupStore";
 import * as m from "@/paraglide/messages.js";
 import {
-	ActionIcon,
 	Alert,
 	Button,
 	Card,
-	Center,
 	Checkbox,
 	Chip,
 	Group,
 	Input,
-	InputWrapper,
 	Stack,
 	Text,
 	TextInput,
-	ThemeIcon,
 	alpha,
 } from "@mantine/core";
-import { IconX } from "@tabler/icons-react";
-import { IconShoppingCartPlus } from "@tabler/icons-react";
-import { IconTrash } from "@tabler/icons-react";
-import { IconCheck } from "@tabler/icons-react";
+import { IconShoppingCartPlus, IconTrash } from "@tabler/icons-react";
 import { observer } from "mobx-react-lite";
 import {
 	getShoppingListItems,
