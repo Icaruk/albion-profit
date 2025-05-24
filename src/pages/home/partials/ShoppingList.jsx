@@ -88,7 +88,7 @@ export const ShoppingList = observer(({ groups = [], onCopy }) => {
 						>
 							<ItemImage
 								itemId={_shoppingListItem?.id}
-								onCopy={() => onCopy(_shoppingListItem.id)}
+								onCopy={() => onCopy(translatedName)}
 							/>
 
 							<TextInput label="Item name" value={translatedName} readOnly />
