@@ -2,10 +2,27 @@ import { findItemById } from "@/data/utils/findItemById";
 import { globalStore, groupStore } from "@/mobx/rootStore";
 import { GroupStore } from "@/mobx/stores/groupStore";
 import * as m from "@/paraglide/messages.js";
-import { Alert, Button, Card, Center, Chip, Group, Stack, Text, TextInput } from "@mantine/core";
+import {
+	ActionIcon,
+	Alert,
+	Button,
+	Card,
+	Center,
+	Checkbox,
+	Chip,
+	Group,
+	Input,
+	InputWrapper,
+	Stack,
+	Text,
+	TextInput,
+	ThemeIcon,
+	alpha,
+} from "@mantine/core";
 import { IconX } from "@tabler/icons-react";
 import { IconShoppingCartPlus } from "@tabler/icons-react";
 import { IconTrash } from "@tabler/icons-react";
+import { IconCheck } from "@tabler/icons-react";
 import { observer } from "mobx-react-lite";
 import {
 	getShoppingListItems,
@@ -30,50 +47,99 @@ export const ShoppingList = observer(({ groups = [], onCopy }) => {
 	const isEmptyList = shoppingListItems.length === 0;
 
 	return (
-		<Center pt="md">
-			<Card>
-				{isEmptyList && (
-					<Alert variant="light" color="blue" title="Empty list">
-						<Group gap="xs">
-							{m.emptyShoppingListHint()}
-							<IconShoppingCartPlus size={24} />
-						</Group>
-					</Alert>
+		<Card>
+			{isEmptyList && (
+				<Alert variant="light" color="blue" title="Empty list">
+					<Group gap="xs">
+						{m.emptyShoppingListHint()}
+						<IconShoppingCartPlus size={24} />
+					</Group>
+				</Alert>
+			)}
+
+			<Stack>
+				{!isEmptyList && (
+					<Button
+						variant="subtle"
+						leftSection={<IconTrash />}
+						onClick={() => removeAllFromShoppingList({ groups })}
+					>
+						{m.removeAll()}
+					</Button>
 				)}
 
-				<Stack>
-					{!isEmptyList && (
-						<Button
-							variant="light"
-							leftSection={<IconTrash />}
-							onClick={() => removeAllFromShoppingList({ groups })}
+				{shoppingListItems.map((_shoppingListItem) => {
+					const itemData = findItemById(_shoppingListItem.id);
+
+					const translatedName = itemData.LocalizedNames[globalStore.getItemLangKey()];
+					const isReady = _shoppingListItem.owningQuantity >= _shoppingListItem.quantity;
+
+					return (
+						<Group
+							key={_shoppingListItem.id}
+							p="xs"
+							style={{
+								backgroundColor: isReady
+									? alpha("var(--mantine-color-green-2)", 0.05)
+									: undefined,
+							}}
 						>
-							{m.removeAll()}
-						</Button>
-					)}
+							<ItemImage
+								itemId={_shoppingListItem?.id}
+								onCopy={() => onCopy(_shoppingListItem.id)}
+							/>
 
-					{shoppingListItems.map((_shoppingListItem) => {
-						const itemData = findItemById(_shoppingListItem.id);
+							<TextInput label="Item name" value={translatedName} readOnly />
 
-						const translatedName =
-							itemData.LocalizedNames[globalStore.getItemLangKey()];
+							<TextInput
+								label={<Text size="xs">Required</Text>}
+								w={60}
+								value={_shoppingListItem.quantity}
+								readOnly
+								variant="filled"
+							/>
 
-						return (
-							<Group key={_shoppingListItem.id}>
-								<ItemImage itemId={_shoppingListItem?.id} onCopy={onCopy} />
+							<TextInput
+								label={<Text size="xs">Owned</Text>}
+								w={60}
+								value={_shoppingListItem.owningQuantity}
+								onChange={(ev) => {
+									_shoppingListItem.owningQuantity = ev.target.value;
+								}}
+							/>
 
-								<TextInput value={translatedName} readOnly />
+							<TextInput
+								label={<Text size="xs">Pending</Text>}
+								w={60}
+								value={
+									_shoppingListItem.quantity - _shoppingListItem.owningQuantity
+								}
+								readOnly
+								variant="filled"
+							/>
 
-								<IconX size={16} />
-								<Text size="xl" fw="bold">
-									{_shoppingListItem.quantity}
-								</Text>
-							</Group>
-						);
-					})}
-				</Stack>
-			</Card>
-		</Center>
+							<Input.Wrapper label=" ">
+								<Group justify="center">
+									<Checkbox
+										checked={isReady}
+										label="Ready"
+										radius="xl"
+										onChange={(ev) => {
+											if (ev.target.checked) {
+												_shoppingListItem.owningQuantity =
+													_shoppingListItem.quantity;
+											} else {
+												_shoppingListItem.owningQuantity = 0;
+											}
+										}}
+									/>
+								</Group>
+							</Input.Wrapper>
+						</Group>
+					);
+				})}
+			</Stack>
+		</Card>
 	);
 });
 

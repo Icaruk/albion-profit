@@ -1,11 +1,27 @@
+// @ts-check
+
 import { makeAutoObservable } from "mobx";
 import persist from "../utils/persist";
 
-import { IndexedDB } from "@/pages/home/Home";
+import { IndexedDB } from "@/pages/home/utils/IndexedDB/IndexedDB";
 import { setLanguageTag } from "@/paraglide/runtime.js";
 
+/**
+ * @typedef {"ES-ES" | "EN-EN" | "FR-FR"} LanguageKeys
+ */
+
+/**
+ * @typedef {"en" | "es" | "fr"} LanguageCodes
+ */
+
+/**
+ * @typedef {"west" | "east" | "europe"} Regions
+ */
+
 const defaultProperties = {
+	/** @type {LanguageCodes} */
 	language: "en",
+	/** @type {Regions} */
 	server: "europe",
 	debugMode: false,
 	bindQuantity: true,
@@ -29,11 +45,12 @@ export class GlobalStore {
 	}
 
 	/**
-	 * @return {"ES-ES" | "EN-EN" | "FR-FR"}
+	 * @return {LanguageKeys}
 	 */
 	getItemLangKey = () => {
 		const language = this.language ?? "";
 
+		/** @type {{ [key in LanguageCodes]: string }} */
 		const languageToItemKey = {
 			en: "EN-US",
 			es: "ES-ES",
@@ -43,7 +60,7 @@ export class GlobalStore {
 		return languageToItemKey[language];
 	};
 
-	/** @param {"en" | "es" | "fr"} lang */
+	/** @param {LanguageCodes} language */
 	setLanguage = (language) => {
 		if (!language) return;
 
@@ -52,7 +69,7 @@ export class GlobalStore {
 	};
 
 	/**
-	 * @param {"west" | "east" | "europe"} server
+	 * @param {Regions} server
 	 */
 	setServer = (server) => {
 		if (!server) return;

@@ -1,10 +1,10 @@
 // @ts-check
 
-import { GroupStore } from "@/mobx/stores/groupStore";
+import { GroupStore, ItemGroupElement } from "@/mobx/stores/groupStore";
 
 /**
  * @typedef ShoppingList
- * @type {{[key:string]:{id:string, quantity:number}}}
+ * @type {{[key:string]: ItemGroupElement} }
  */
 
 /**
@@ -14,6 +14,7 @@ import { GroupStore } from "@/mobx/stores/groupStore";
 
 /**
  * @param {GetShoppingListItemsProps} Props
+ * @returns {ShoppingList}
  */
 export function getShoppingListItems({ groups }) {
 	/** @type {ShoppingList} */
@@ -27,10 +28,7 @@ export function getShoppingListItems({ groups }) {
 				const foundItem = shoppingList[_item.id];
 
 				if (!foundItem) {
-					shoppingList[_item.id] = {
-						id: _item.id,
-						quantity: _item.quantity,
-					};
+					shoppingList[_item.id] = _item;
 				} else {
 					foundItem.quantity += _item.quantity;
 				}

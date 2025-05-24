@@ -7,7 +7,7 @@
 	"cost": "Cost",
 	"earnings": "Earnings",
 	"quantity": "Quantity",
-	"price": "Price",
+	"price": "Sell price",
 	"total": "Total",
 	"group": "Group",
 	"result": "Result",
@@ -29,5 +29,9 @@
 	"getComponents": "Get components",
 	"deleteThisComponent": "Delete this component",
 	"removeFromShoppingList": "Remove from shopping list",
-	"addToShoppingList": "Add to shopping list"
+	"addToShoppingList": "Add to shopping list",
+	"buyPrice": "Buy order",
+	"sellPrice": "Sell price",
+	"priceModeSwitchTooltip": "Switch between buy order or sell order price",
+	"itemData": "Item data"
 }

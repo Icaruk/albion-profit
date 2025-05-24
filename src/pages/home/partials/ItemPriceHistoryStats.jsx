@@ -1,5 +1,5 @@
 import { globalStore } from "@/mobx/rootStore";
-import { ItemGroup } from "@/mobx/stores/groupStore";
+import { GroupStore } from "@/mobx/stores/groupStore";
 import { formatHundeds } from "@/utils/number/formatHundeds";
 import { LineChart } from "@mantine/charts";
 import { Badge, Group, Stack, Table, Text } from "@mantine/core";
@@ -9,7 +9,7 @@ import { useMemo } from "react";
 
 /**
  * @typedef Props
- * @property {typeof ItemGroup} group
+ * @property {typeof GroupStore} group
  */
 
 /**

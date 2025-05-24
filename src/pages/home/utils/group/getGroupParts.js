@@ -1,7 +1,7 @@
-import { ItemGroup, ItemGroupElement } from "@/mobx/stores/groupStore";
+import { GroupStore, ItemGroupElement } from "@/mobx/stores/groupStore";
 
 /**
- * @param {ItemGroup} group
+ * @param {GroupStore} group
  * @returns {{product: ItemGroupElement, ingredients: ItemGroupElement[]}}
  */
 export function getGroupParts(group) {

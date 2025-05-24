@@ -13,7 +13,9 @@ export default function persist(_this, storageKey, options = {}) {
 		const value = toJS(_this);
 
 		if (options.excludeKey) {
-			options.excludeKey.forEach((_excludedKey) => delete value[_excludedKey]);
+			for (const _excludedKey of options.excludeKey) {
+				delete value[_excludedKey];
+			}
 		}
 
 		localStorage.setItem(storageKey, JSON.stringify(value));

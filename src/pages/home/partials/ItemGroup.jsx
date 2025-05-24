@@ -12,6 +12,7 @@ import {
 	Container,
 	Divider,
 	Group,
+	ScrollArea,
 	SimpleGrid,
 	Stack,
 	Text,
@@ -31,6 +32,7 @@ import {
 import { IconHammer } from "@tabler/icons-react";
 import { IconCopy } from "@tabler/icons-react";
 import dame from "dame";
+import { toJS } from "mobx";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { memo } from "react";
@@ -475,16 +477,9 @@ export const ItemGroup = observer(
 				<Group justify="center">
 					<Container fluid>
 						{isDebugMode && (
-							<Code block>
-								{JSON.stringify(
-									{
-										productId: product?.id,
-										ingredientIds: ingredients.map((i) => i.id),
-									},
-									null,
-									2,
-								)}
-							</Code>
+							<ScrollArea h={300}>
+								<Code block>{JSON.stringify(toJS(groupStore), null, 2)}</Code>
+							</ScrollArea>
 						)}
 
 						<RowSummary group={group} />
@@ -561,7 +556,7 @@ export const ItemGroup = observer(
 							/>
 							<ComponentActions />
 
-							<Divider my="xs" label="Item data" labelPosition="center" />
+							<Divider my="xs" label={m.itemData()} labelPosition="center" />
 
 							<ItemDataTable />
 						</Stack>

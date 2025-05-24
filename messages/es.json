@@ -7,7 +7,7 @@
 	"cost": "Coste",
 	"earnings": "Ganancias",
 	"quantity": "Cantidad",
-	"price": "Precio",
+	"price": "Precio de venta",
 	"total": "Total",
 	"group": "Grupo",
 	"result": "Resultado",
@@ -23,11 +23,5 @@
 	"bindQuantity": "Enlazar cantidad",
 	"sellOrderPriceChangeCountBeforeLoss": "Número de cambios de precio antes de pérdidas",
 	"priceIsLockedTooltip": "Este bloqueo hará que el precio no pueda ser editado automáticamente",
-	"shoppingList": "Lista de la compra",
-	"removeAll": "Eliminar todo",
-	"emptyShoppingListHint": "Para añadir elementos haz click en",
-	"getComponents": "Obtener componentes",
-	"deleteThisComponent": "Eliminar este componente",
-	"removeFromShoppingList": "Eliminar de la lista de la compra",
-	"addToShoppingList": "Añadir a la lista de la compra"
+	"sellPrice": "Precio de venta"
 }

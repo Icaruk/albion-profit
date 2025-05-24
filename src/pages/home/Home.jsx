@@ -9,12 +9,10 @@ import {
 	Button,
 	Center,
 	Checkbox,
-	Chip,
 	Drawer,
 	Grid,
 	Group,
 	Image,
-	Indicator,
 	Loader,
 	ScrollArea,
 	SimpleGrid,
@@ -25,8 +23,7 @@ import {
 } from "@mantine/core";
 import { useClipboard, useResizeObserver } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import { IconBrandGithub, IconBrandReddit, IconPlus } from "@tabler/icons-react";
-import { IconClipboard } from "@tabler/icons-react";
+import { IconBrandGithub, IconBrandReddit, IconClipboard, IconPlus } from "@tabler/icons-react";
 import { observer } from "mobx-react-lite";
 import { useEffect, useMemo, useState } from "react";
 import classes from "./Home.module.css";
@@ -34,140 +31,8 @@ import { ItemGroup } from "./partials/ItemGroup";
 import { LanguageSelector } from "./partials/LanguageSelector";
 import { ServerSelector } from "./partials/ServerSelector";
 import { ShoppingList, ShoppingListButton } from "./partials/ShoppingList";
+import { IndexedDB } from "./utils/IndexedDB/IndexedDB";
 import { getRandomWallpaper } from "./utils/getRandomWallpaper";
-import { generateUid } from "./utils/group/generateUid";
-import { getShoppingListItems } from "./utils/group/getGroupShoppingListItems";
-
-export class ItemGroupElement {
-	constructor({ type }) {
-		this.type = type;
-		this.uid = generateUid();
-		this.id = "";
-		this.label = "";
-		this.quantity = 1;
-		this.price = 0;
-		this.location = "";
-		this.priceData = [];
-		this.returnRate = 0;
-	}
-}
-
-export class ItemGroupEntity {
-	constructor({ name }) {
-		this.id = generateUid();
-		this.name = name ?? "";
-		this.items = [
-			new ItemGroupElement({ type: "product" }),
-			new ItemGroupElement({ type: "ingredient" }),
-		];
-		this.tax = 0;
-	}
-}
-
-export class IndexedDB {
-	db;
-
-	init = async () => {
-		return new Promise((resolve, reject) => {
-			let db;
-			const request = window.indexedDB.open("albion-profit", 2);
-
-			request.onerror = (event) => {
-				const errMsg = "Could not init IndexedDB";
-				console.error(errMsg);
-				reject(errMsg);
-			};
-
-			// This event is only triggered when the database is first created
-			// or when the version changes
-			request.onupgradeneeded = (event) => {
-				const db = event.target.result;
-
-				// Create the groups object store with id as the key path
-				if (!db.objectStoreNames.contains("groups")) {
-					db.createObjectStore("groups", { keyPath: "id" });
-					console.log("Created 'groups' object store");
-				}
-			};
-
-			request.onsuccess = (event) => {
-				db = event.target.result;
-
-				db.onerror = (event) => {
-					console.error(`Database error: ${event.target.error?.message}`);
-				};
-
-				console.log("IndexedDB initialized");
-
-				this.db = db;
-
-				resolve(db);
-			};
-		});
-	};
-
-	add = async (storeName, data) => {
-		return new Promise((resolve, reject) => {
-			const transaction = this.db.transaction(storeName, "readwrite");
-			const objectStore = transaction.objectStore(storeName);
-
-			const request = objectStore.put(data);
-
-			request.onsuccess = (event) => {
-				console.log(`[IDB] ADD ${storeName} ${data.id}`);
-				resolve(event.target.result);
-			};
-
-			request.onerror = (event) => {
-				console.error(`[IDB] ADD ERROR ${storeName}: ${event.target.error.message}`);
-				reject(event.target.error);
-			};
-		});
-	};
-
-	getAll = async (storeName) => {
-		return new Promise((resolve, reject) => {
-			const transaction = this.db.transaction(storeName, "readonly");
-			const objectStore = transaction.objectStore(storeName);
-			const request = objectStore.getAll();
-
-			request.onsuccess = (event) => {
-				console.log(`[IDB] GET ALL ${storeName}`);
-				resolve(event.target.result);
-			};
-
-			request.onerror = (event) => {
-				console.error(`[IDB] GET ALL ERROR ${storeName}: ${event.target.error.message}`);
-				reject(event.target.error);
-			};
-		});
-	};
-
-	deleteOne = async (storeName, id) => {
-		return new Promise((resolve, reject) => {
-			const transaction = this.db.transaction(storeName, "readwrite");
-			const objectStore = transaction.objectStore(storeName);
-			const request = objectStore.delete(id);
-
-			request.onsuccess = (event) => {
-				console.log(`[IDB] DELETE ${storeName} ${id} `);
-				resolve(event.target.result);
-			};
-
-			request.onerror = (event) => {
-				console.log(
-					`[IDB] ERROR DELETE ${storeName} ${id}: ${event.target.error.message} `,
-				);
-				reject(event.target.error);
-			};
-		});
-	};
-}
-
-const VIEW_MODES = {
-	profit: "profit",
-	shoppingList: "shoppingList",
-};
 
 function loadFromLocalStorage() {
 	const str = localStorage.getItem("state");
@@ -530,6 +395,7 @@ export default observer(function Home() {
 
 			<Drawer
 				opened={showShoppingList}
+				size={"xl"}
 				onClose={() => setShowShoppingList(false)}
 				title={
 					<Group>
@@ -540,6 +406,7 @@ export default observer(function Home() {
 						<Badge>BETA</Badge>
 					</Group>
 				}
+				keepMounted={true}
 			>
 				<ShoppingList
 					groups={groups}

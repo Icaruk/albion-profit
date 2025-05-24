@@ -1,10 +1,13 @@
 import { makeAutoObservable, observable } from "mobx";
 
 import { locations } from "@/data/locations";
+import { findItemById } from "@/data/utils/findItemById";
+import { TAXES } from "@/pages/home/partials/TaxSelector";
 import { generateUid } from "@/pages/home/utils/group/generateUid";
 import { getGroupParts } from "@/pages/home/utils/group/getGroupParts";
 import { setGroupItemsPriceWithCity } from "@/pages/home/utils/group/setGroupIngredientsWithCity";
 import { buildAndFindItemId } from "@/pages/home/utils/item/buildAndFindItemid";
+import { globalStore } from "../rootStore";
 
 /**
  * @typedef {Object} PriceHistoryData
@@ -14,45 +17,70 @@ import { buildAndFindItemId } from "@/pages/home/utils/item/buildAndFindItemid";
  * @property {number} quality
  */
 
+/**
+ * @typedef {Object} GroupPriceData
+ * @property {string} city
+ * @property {string} item_id
+ * @property {number} quality
+ * @property {number} sell_price_max
+ * @property {number} sell_price_min
+ * @property {number} buy_price_max
+ * @property {number} buy_price_min
+ */
+
+/** @typedef {Record<"EN-US" | "ES-ES" | "FR-FR", string>} NameByLanguage */
+
+/** @typedef {"sell" | "buyOrder"} PriceMode */
+
+/** @type {Record<PriceMode, PriceMode>} */
+export const PRICE_MODES = {
+	sell: "sell",
+	buyOrder: "buyOrder",
+};
+
 export class ItemGroupElement {
-	constructor({ type }) {
+	constructor({
+		type,
+		uid = generateUid(),
+		id = "",
+		names = {},
+		quantity = 1,
+		price = 0,
+		sellPrice = 0,
+		buyOrderPrice = 0,
+		priceMode = PRICE_MODES.sell,
+		location = locations[0],
+		priceData = [],
+		priceHistoryData = [],
+		returnRate = 0,
+		isLocked = false,
+		isInShoppingList = false,
+		owningQuantity = 0,
+	}) {
 		/** @type {"product" | "ingredient"} */
 		this.type = type;
-		this.uid = generateUid();
-		this.id = "";
-		this.label = "";
-		this.quantity = 1;
-		this.originalQuantity = 1;
-		this.price = 0;
-		this.location = locations[0];
-		this.priceData = [];
+		this.uid = uid;
+		this.id = id;
+		this.quantity = quantity;
+		this.originalQuantity = quantity;
+		this.price = price;
+		this.sellPrice = sellPrice;
+		this.buyOrderPrice = buyOrderPrice;
+		/** @type {PriceMode} */
+		this.priceMode = priceMode;
+		this.location = location;
+		/** @type {SetGroupPriceDataPayload[]} */
+		this.priceData = priceData;
 		/** @type {PriceHistoryData[]} */
-		this.priceHistoryData = [];
-		this.returnRate = 0;
-		this.isLocked = false;
-		this.isInShoppingList = false;
-	}
-}
-
-export class ItemGroup {
-	constructor(data, keepId = false) {
-		this.id = keepId ? data.id : generateUid();
-		this.name = data.name ?? "";
-		this.items = data.items ?? [
-			new ItemGroupElement({ type: "product" }),
-			new ItemGroupElement({ type: "ingredient" }),
-		];
-		this.tax = data.tax ?? 0;
-		this.location = data.location ?? locations[0];
-		this.order = data.order ?? 0;
-
-		makeAutoObservable(this);
+		this.priceHistoryData = priceHistoryData;
+		this.returnRate = returnRate;
+		this.isLocked = isLocked;
+		this.isInShoppingList = isInShoppingList;
+		this.owningQuantity = owningQuantity;
 	}
 }
 
 export class GroupStore {
-	// group = new ItemGroup({});
-
 	constructor(data, keepId = false) {
 		this.id = keepId ? data.id : generateUid();
 		this.name = data?.name ?? "";
@@ -61,17 +89,12 @@ export class GroupStore {
 			new ItemGroupElement({ type: "product" }),
 			new ItemGroupElement({ type: "ingredient" }),
 		];
-		this.tax = data?.tax ?? 0;
+		/** @type {import("@/pages/home/partials/TaxSelector").TaxesValue} */
+		this.tax = data?.tax ?? TAXES.sellOrderWithPremium;
 		this.location = data?.location ?? locations[0];
 		this.order = data?.order ?? 0;
 
-		// if (data?.group) {
-		// 	const groupClone = JSON.parse(JSON.stringify(data.group));
-		// 	this.group = new ItemGroup(groupClone, keepId);
-		// }
-
 		makeAutoObservable(this);
-		// persist(this, "groupStore");
 	}
 
 	/**
@@ -148,19 +171,39 @@ export class GroupStore {
 			// Add multiple items
 			if (isMultipleItems) {
 				for (const _item of items) {
-					this.items.push({
-						..._item,
-						uid: generateUid(),
-						type: "ingredient",
-					});
+					console.log(
+						new ItemGroupElement({
+							..._item,
+							uid: generateUid(),
+							type: "ingredient",
+						}),
+					);
+
+					this.items.push(
+						new ItemGroupElement({
+							..._item,
+							uid: generateUid(),
+							type: "ingredient",
+						}),
+					);
 				}
 				// Add one item
 			} else {
-				this.items.push({
-					...items,
-					uid: generateUid(),
-					type: "ingredient",
-				});
+				console.log(
+					new ItemGroupElement({
+						...items,
+						uid: generateUid(),
+						type: "ingredient",
+					}),
+				);
+
+				this.items.push(
+					new ItemGroupElement({
+						...items,
+						uid: generateUid(),
+						type: "ingredient",
+					}),
+				);
 			}
 		}
 	};
@@ -179,6 +222,9 @@ export class GroupStore {
 			...item,
 			...payload,
 		};
+
+		const itemData = findItemById(newItem.id);
+		newItem.names = itemData.LocalizedNames;
 
 		// Check if we need to increment other items quantity
 		if (isProduct && bindQuantity) {
@@ -217,20 +263,8 @@ export class GroupStore {
 	};
 
 	/**
-	 * @typedef {Array<{
-	 * city: string,
-	 * item_id: string,
-	 * quality: number,
-	 * sell_price_max: number,
-	 * sell_price_min: number,
-	 * buy_price_max: number,
-	 * buy_price_min: number,
-	 * }>} SetGroupPriceDataPayload
-	 */
-
-	/**
 	 * @param {{
-	 * 	currentPriceData: SetGroupPriceDataPayload
+	 * 	currentPriceData: GroupPriceData[]
 	 * 	priceHistoryData: {}
 	 * }} params
 	 */

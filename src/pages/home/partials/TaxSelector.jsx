@@ -10,6 +10,19 @@ export const TAXES = {
 	sellOrderWithoutPremium: 10.5,
 };
 
+/**
+ * @typedef {typeof TAXES} Taxes
+ */
+
+/**
+ * @typedef {typeof TAXES[keyof typeof TAXES]} TaxesValue
+ */
+
+/**
+ * @param {Object} props
+ * @param {TaxesValue} props.tax
+ * @param {(tax: TaxesValue) => void} [props.onChange=()=>{}]
+ */
 export function TaxSelector({ tax, onChange = () => {} }) {
 	return (
 		<Select
