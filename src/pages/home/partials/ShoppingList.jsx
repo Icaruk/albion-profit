@@ -96,7 +96,7 @@ export const ShoppingList = observer(({ groups = [], onCopy }) => {
 							<TextInput
 								label={<Text size="xs">Required</Text>}
 								w={60}
-								value={_shoppingListItem.quantity}
+								value={Math.round(_shoppingListItem.quantity)}
 								readOnly
 								variant="filled"
 							/>
