@@ -29,5 +29,9 @@
 	"getComponents": "Obtenir des composants",
 	"deleteThisComponent": "Supprimer ce composant",
 	"removeFromShoppingList": "Supprimer de la liste de courses",
-	"addToShoppingList": "Ajouter à la liste de courses"
+	"addToShoppingList": "Ajouter à la liste de courses",
+	"buyPrice": "Ordre d'achat",
+	"sellPrice": "Prix de vente",
+	"priceModeSwitchTooltip": "Basculer entre le prix de l'ordre d'achat ou de l'ordre de vente",
+	"itemData": "Données de l'article"
 }

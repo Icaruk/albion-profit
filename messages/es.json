@@ -23,5 +23,15 @@
 	"bindQuantity": "Enlazar cantidad",
 	"sellOrderPriceChangeCountBeforeLoss": "Número de cambios de precio antes de pérdidas",
 	"priceIsLockedTooltip": "Este bloqueo hará que el precio no pueda ser editado automáticamente",
-	"sellPrice": "Precio de venta"
+	"shoppingList": "Lista de la compra",
+	"removeAll": "Eliminar todo",
+	"emptyShoppingListHint": "Para agregar ítems haz click en",
+	"getComponents": "Obtener componentes",
+	"deleteThisComponent": "Eliminar este componente",
+	"removeFromShoppingList": "Eliminar de la lista de la compra",
+	"addToShoppingList": "Añadir a la lista de la compra",
+	"buyPrice": "Orden de compra",
+	"sellPrice": "Precio de venta",
+	"priceModeSwitchTooltip": "Cambia entre el precio de la orden de compra o la orden de venta",
+	"itemData": "Datos del ítem"
 }
