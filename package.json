@@ -14,11 +14,11 @@
 		"@formkit/auto-animate": "^0.8.2",
 		"@icaruk/debounce": "^1.1.0",
 		"@inlang/paraglide-vite": "^1.4.0",
-		"@mantine/charts": "^8.0.0",
-		"@mantine/core": "^7.17.7",
-		"@mantine/hooks": "^7.17.7",
-		"@mantine/notifications": "^7.17.7",
-		"@tabler/icons-react": "^3.31.0",
+		"@mantine/charts": "^8.0.1",
+		"@mantine/core": "^8.0.1",
+		"@mantine/hooks": "^8.0.1",
+		"@mantine/notifications": "^8.0.1",
+		"@tabler/icons-react": "^3.33.0",
 		"dame": "^1.2.7",
 		"dayjs": "^1.11.13",
 		"mobx": "^6.13.7",
@@ -27,17 +27,17 @@
 		"react-dom": "^18.3.1",
 		"react-helmet": "^6.1.0",
 		"react-router-dom": "^6.23.0",
-		"recharts": "2"
+		"recharts": "2.15.3"
 	},
 	"devDependencies": {
-		"@inlang/paraglide-js": "^2.0.12",
+		"@inlang/paraglide-js": "^2.0.13",
 		"@types/react": "^18.3.1",
 		"@types/react-dom": "^18.3.0",
-		"@vitejs/plugin-react": "^4.4.1",
+		"@vitejs/plugin-react": "^4.5.0",
 		"postcss": "^8.5.3",
 		"postcss-preset-mantine": "1.17.0",
 		"postcss-simple-vars": "^7.0.1",
-		"vite": "^6.3.4"
+		"vite": "^6.3.5"
 	},
 	"packageManager": "pnpm@9.12.1"
 }

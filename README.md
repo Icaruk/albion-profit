@@ -6,6 +6,8 @@
 
 ![3zmvCg6](https://github.com/user-attachments/assets/22761220-9fc7-438c-a001-84ec4b5ead13)
 
+Shopping list
+<img src="https://i.imgur.com/gTDmK2h.png" alt="shopping list screenshot" width="500"/>
 
 # Why
 
