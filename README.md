@@ -31,6 +31,10 @@ Shopping list
 - 🎯 Calculate the best selling quality.
 - 📦 Change order of groups for better organization.
 
+# Missing data?
+
+- Contribute to Albion Online Data Project using [this](https://www.albion-online-data.com/#player-information). Just run the executable and play Albion, it will automatically collect the market orders that you load in game.
+
 ---
 
 # TODO
