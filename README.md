@@ -7,41 +7,34 @@
 ![3zmvCg6](https://github.com/user-attachments/assets/22761220-9fc7-438c-a001-84ec4b5ead13)
 
 
+# Why
+
+- ⚡ Easiest way to calculate if an item craft is profitable.
+- 🚀 Better and faster than google sheets / excel.
+- ♾️ You can make endless groups with endless components.
+- 🪄 It fetches prices for all the items inside each group, but it works without it.
+- 💾 Save your calculations for later, all data is saved on your browser.
+
 # Features
 
-- ⚡ Better and faster than google sheets / excel.
-- 📚 All servers supported
-- ♾️ You can make endless groups with endless components.
-- 🔨 Crafting ingredients can be added automatically.
-- 🪄 It fetches prices for all the items inside each group, but It works without it!.
-- 🌐 Multilanguage: ![](https://flagsapi.com/GB/flat/16.png) ![](https://flagsapi.com/ES/flat/16.png) ![](https://flagsapi.com/FR/flat/16.png)
-- 💾 Save your calculations for later, all data is saved on your browser.
-- 👉 Click on the item's icon to copy the item's name to your clipboard, so you can easily search on the marketplace for real-time price.
+- 📚 All servers supported.
+- 🌐 Multilanguage: ![](https://flagsapi.com/GB/flat/16.png) ![](https://flagsapi.com/ES/flat/16.png) ![](https://flagsapi.com/FR/flat/16.png).
+- 🔨 Automatically add crafting ingredients based on the selected recipe.
+- 🔄 Automatically get prices.
+- 🛒 Shopping list for buying all ingredients at once.
+- 📋 Click on any item icon to copy its name to your clipboard.
+- 💰 Switch between sell price or buy price.
+- ➕ Automatically increment the quantity of each ingredient to match the quantity of the main item.
+- 📈 Visualize market prices and sold item count for each quality.
+- 🎯 Calculate the best selling quality.
+- 📦 Change order of groups for better organization.
 
 ---
 
 # TODO
 
-- [ ] Add crystal weapons and items
-- [ ] Import/export groups
 - [ ] Detect tier writing "T4.0" on the search [using this](https://mantine.dev/core/select/#options-filtering)
-- [ ] Add "Custom" in cities
 
-
-# Done
-
-- [x] Multilanguage https://inlang.com
-- [x] Wallpapers from [here](https://albiononline.com/wallpapers).
-- [x] Use [this](https://render.albiononline.com/v1/item/T6_2H_AXE_AVALON@3?quality=5) to get item icons
-- [x] Save in localStorage
-- [x] Duplicate groups
-- [x] Increment tier
-- [x] Increment enchant
-- [x] Market tax selector
-- [x] Server selector
-- [x] Move groups
-
----
 
 # Made with
 
