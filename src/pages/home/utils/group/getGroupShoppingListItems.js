@@ -1,6 +1,7 @@
 // @ts-check
 
 import { GroupStore, ItemGroupElement } from "@/mobx/stores/groupStore";
+import { useEffect } from "react";
 
 /**
  * @typedef ShoppingList
@@ -28,7 +29,7 @@ export function getShoppingListItems({ groups }) {
 				const foundItem = shoppingList[_item.id];
 
 				if (!foundItem) {
-					shoppingList[_item.id] = _item;
+					shoppingList[_item.id] = { ..._item };
 				} else {
 					foundItem.quantity += _item.quantity;
 				}

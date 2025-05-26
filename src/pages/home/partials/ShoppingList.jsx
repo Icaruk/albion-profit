@@ -16,7 +16,6 @@ import {
 	alpha,
 } from "@mantine/core";
 import { IconShoppingCartPlus, IconTrash } from "@tabler/icons-react";
-import { observer } from "mobx-react-lite";
 import {
 	getShoppingListItems,
 	removeAllFromShoppingList,
@@ -33,7 +32,7 @@ import { ItemImage } from "./ItemWithComponents";
  * @param {Props} Props.
  */
 
-export const ShoppingList = observer(({ groups = [], onCopy }) => {
+export const ShoppingList = ({ groups = [], onCopy }) => {
 	const shoppingList = getShoppingListItems({ groups });
 	const shoppingListItems = Object.values(shoppingList);
 
@@ -136,7 +135,7 @@ export const ShoppingList = observer(({ groups = [], onCopy }) => {
 			</Stack>
 		</Card>
 	);
-});
+};
 
 export const ShoppingListButton = ({ value = false, onClick }) => {
 	return (

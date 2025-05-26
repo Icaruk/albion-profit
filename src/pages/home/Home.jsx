@@ -406,6 +406,7 @@ export default observer(function Home() {
 						<Badge>BETA</Badge>
 					</Group>
 				}
+				keepMounted={false}
 			>
 				<ShoppingList
 					groups={groups}
