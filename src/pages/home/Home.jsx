@@ -1,5 +1,6 @@
 import { globalStore } from "@/mobx/rootStore";
 import { GroupStore } from "@/mobx/stores/groupStore";
+import { ShoppingListStore } from "@/mobx/stores/shoppingListStore";
 import * as m from "@/paraglide/messages.js";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import {
@@ -267,6 +268,8 @@ export default observer(function Home() {
 
 	const sortedGroups = (groups ?? []).sort((a, b) => a.order - b.order);
 
+	const shoppingList = new ShoppingListStore().buildFromGroups(groups);
+
 	if (!isInitialized) {
 		return <Loader />;
 	}
@@ -409,7 +412,7 @@ export default observer(function Home() {
 				keepMounted={false}
 			>
 				<ShoppingList
-					groups={groups}
+					shoppingList={shoppingList}
 					onCopy={(text) => {
 						clipboard.copy(text);
 

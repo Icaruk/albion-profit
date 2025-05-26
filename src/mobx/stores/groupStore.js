@@ -171,14 +171,6 @@ export class GroupStore {
 			// Add multiple items
 			if (isMultipleItems) {
 				for (const _item of items) {
-					console.log(
-						new ItemGroupElement({
-							..._item,
-							uid: generateUid(),
-							type: "ingredient",
-						}),
-					);
-
 					this.items.push(
 						new ItemGroupElement({
 							..._item,

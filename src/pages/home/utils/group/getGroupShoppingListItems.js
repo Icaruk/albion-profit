@@ -5,7 +5,7 @@ import { useEffect } from "react";
 
 /**
  * @typedef ShoppingList
- * @type {{[key:string]: ItemGroupElement} }
+ * @type {Record<string, ItemGroupElement>}
  */
 
 /**
@@ -29,9 +29,14 @@ export function getShoppingListItems({ groups }) {
 				const foundItem = shoppingList[_item.id];
 
 				if (!foundItem) {
+					// Crear una copia completa del objeto para evitar modificar el original
 					shoppingList[_item.id] = { ..._item };
 				} else {
-					foundItem.quantity += _item.quantity;
+					// Crear un nuevo objeto con la cantidad actualizada en lugar de modificar directamente
+					shoppingList[_item.id] = {
+						...foundItem,
+						quantity: foundItem.quantity + _item.quantity,
+					};
 				}
 			}
 		}
@@ -52,21 +57,4 @@ export function removeAllFromShoppingList({ groups }) {
 	for (const _groupStore of groups) {
 		_groupStore.removeAllFromShoppingList();
 	}
-}
-
-/**
- * @param {ShoppingList[]} shoppingLists
- * @returns {ShoppingList}
- */
-export function mergeShoppingLists(shoppingLists = []) {
-	return shoppingLists.reduce((acc, curr) => {
-		for (const key in curr) {
-			if (!acc[key]) {
-				acc[key] = curr[key];
-			} else {
-				acc[key].quantity += curr[key].quantity;
-			}
-		}
-		return acc;
-	}, {});
 }

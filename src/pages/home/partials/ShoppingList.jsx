@@ -1,6 +1,5 @@
 import { findItemById } from "@/data/utils/findItemById";
 import { globalStore } from "@/mobx/rootStore";
-import { GroupStore } from "@/mobx/stores/groupStore";
 import * as m from "@/paraglide/messages.js";
 import {
 	Alert,
@@ -16,15 +15,12 @@ import {
 	alpha,
 } from "@mantine/core";
 import { IconShoppingCartPlus, IconTrash } from "@tabler/icons-react";
-import {
-	getShoppingListItems,
-	removeAllFromShoppingList,
-} from "../utils/group/getGroupShoppingListItems";
+import { observer } from "mobx-react-lite";
 import { ItemImage } from "./ItemWithComponents";
 
 /**
  * @typedef Props
- * @property {GroupStore[]} groups
+ * @property {import("@/mobx/stores/shoppingListStore").ShoppingListStore} shoppingList
  * @property {(itemId: string)=>void} onCopy
  */
 
@@ -32,11 +28,13 @@ import { ItemImage } from "./ItemWithComponents";
  * @param {Props} Props.
  */
 
-export const ShoppingList = ({ groups = [], onCopy }) => {
-	const shoppingList = getShoppingListItems({ groups });
-	const shoppingListItems = Object.values(shoppingList);
+export const ShoppingList = observer(({ shoppingList, onCopy }) => {
+	const items = shoppingList.getItems();
+	const isEmptyList = shoppingList.isEmpty();
 
-	const isEmptyList = shoppingListItems.length === 0;
+	function handleEditOwningQuantity(itemId, quantity) {
+		shoppingList.editItem(itemId, { owningQuantity: quantity });
+	}
 
 	return (
 		<Card>
@@ -54,23 +52,30 @@ export const ShoppingList = ({ groups = [], onCopy }) => {
 					<Button
 						variant="subtle"
 						leftSection={<IconTrash />}
-						onClick={() => removeAllFromShoppingList({ groups })}
+						onClick={() => shoppingList.clearItems()}
 					>
 						{m.removeAll()}
 					</Button>
 				)}
 
-				{shoppingListItems.map((_shoppingListItem) => {
-					const itemData = findItemById(_shoppingListItem.id);
+				{items.map((_shoppingListItem) => {
+					const itemFromGroup = _shoppingListItem.observable;
+					const itemData = findItemById(itemFromGroup.id);
 
 					const translatedName =
 						itemData?.LocalizedNames[globalStore.getItemLangKey()] ??
 						_shoppingListItem.id;
-					const isReady = _shoppingListItem.owningQuantity >= _shoppingListItem.quantity;
+
+					const requiredQuantity = Math.round(_shoppingListItem.requiredQuantity);
+					const owningQuantity = Math.round(_shoppingListItem.owningQuantity);
+					const pendingQuantity = Math.round(
+						_shoppingListItem.requiredQuantity - _shoppingListItem.owningQuantity,
+					);
+					const isReady = owningQuantity >= requiredQuantity;
 
 					return (
 						<Group
-							key={_shoppingListItem.id}
+							key={itemFromGroup.id}
 							p="xs"
 							style={{
 								backgroundColor: isReady
@@ -79,7 +84,7 @@ export const ShoppingList = ({ groups = [], onCopy }) => {
 							}}
 						>
 							<ItemImage
-								itemId={_shoppingListItem?.id}
+								itemId={itemFromGroup?.id}
 								onCopy={() => onCopy(translatedName)}
 							/>
 
@@ -88,7 +93,7 @@ export const ShoppingList = ({ groups = [], onCopy }) => {
 							<TextInput
 								label={<Text size="xs">Required</Text>}
 								w={60}
-								value={Math.round(_shoppingListItem.quantity)}
+								value={requiredQuantity}
 								readOnly
 								variant="filled"
 							/>
@@ -96,18 +101,17 @@ export const ShoppingList = ({ groups = [], onCopy }) => {
 							<TextInput
 								label={<Text size="xs">Owned</Text>}
 								w={60}
-								value={_shoppingListItem.owningQuantity}
+								value={owningQuantity}
 								onChange={(ev) => {
-									_shoppingListItem.owningQuantity = Number(ev.target.value) || 0;
+									const val = Number(ev.target.value);
+									handleEditOwningQuantity(itemFromGroup.id, val);
 								}}
 							/>
 
 							<TextInput
 								label={<Text size="xs">Pending</Text>}
 								w={60}
-								value={Math.round(
-									_shoppingListItem.quantity - _shoppingListItem.owningQuantity,
-								)}
+								value={pendingQuantity}
 								readOnly
 								variant="filled"
 							/>
@@ -119,12 +123,10 @@ export const ShoppingList = ({ groups = [], onCopy }) => {
 										label="Ready"
 										radius="xl"
 										onChange={(ev) => {
-											if (ev.target.checked) {
-												_shoppingListItem.owningQuantity =
-													_shoppingListItem.quantity;
-											} else {
-												_shoppingListItem.owningQuantity = 0;
-											}
+											const val = ev.currentTarget.checked
+												? requiredQuantity
+												: 0;
+											handleEditOwningQuantity(itemFromGroup.id, val);
 										}}
 									/>
 								</Group>
@@ -135,7 +137,7 @@ export const ShoppingList = ({ groups = [], onCopy }) => {
 			</Stack>
 		</Card>
 	);
-};
+});
 
 export const ShoppingListButton = ({ value = false, onClick }) => {
 	return (
