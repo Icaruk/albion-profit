@@ -25,18 +25,16 @@ import {
 	IconArrowUp,
 	IconCheck,
 	IconCloudDownload,
+	IconCopy,
+	IconHammer,
 	IconPlus,
 	IconTrash,
 	IconX,
 } from "@tabler/icons-react";
-import { IconHammer } from "@tabler/icons-react";
-import { IconCopy } from "@tabler/icons-react";
 import dame from "dame";
 import { toJS } from "mobx";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
-import { memo } from "react";
-import { Tooltip } from "recharts";
 import { getGroupItemIdsForFetch } from "../utils/group/getGroupItemIdsForFetch";
 import { getGroupParts } from "../utils/group/getGroupParts";
 import { buildAndFindItemId } from "../utils/item/buildAndFindItemid";
@@ -173,9 +171,14 @@ export const ItemGroup = observer(
 
 			const { tier, enchant } = getItemIdComponents(productId);
 
-			const { _itemData: itemData } = await findItemById(productId);
-
+			const foundItem = await findItemById(productId);
 			setIsLoading(false);
+
+			if (!foundItem) {
+				return;
+			}
+
+			const { _itemData: itemData } = foundItem;
 
 			const newItemsToAdd = [];
 
