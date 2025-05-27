@@ -6,4 +6,5 @@ export const locations = [
 	"Thetford",
 	"Caerleon",
 	"Brecilien",
+	"Black Market",
 ];
