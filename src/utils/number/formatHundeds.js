@@ -3,5 +3,5 @@ export function formatHundeds(value) {
 		value = 0;
 	}
 
-	return new Intl.NumberFormat("es-ES", {}).format(value);
+	return new Intl.NumberFormat(navigator.language, {}).format(value);
 }

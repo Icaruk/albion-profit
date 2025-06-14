@@ -226,8 +226,8 @@ export const ItemWithComponents = observer(
 									label={<Text size="xs">{m.sellPrice()}</Text>}
 									allowNegative={false}
 									allowDecimal={false}
-									thousandSeparator="."
-									decimalSeparator=","
+									thousandSeparator={globalStore.thousandSeparator}
+									decimalSeparator={globalStore.decimalSeparator}
 									hideControls
 									w={100}
 									value={item?.sellPrice}
@@ -271,8 +271,8 @@ export const ItemWithComponents = observer(
 									label={<Text size="xs">{m.buyPrice()}</Text>}
 									allowNegative={false}
 									allowDecimal={false}
-									thousandSeparator="."
-									decimalSeparator=","
+									thousandSeparator={globalStore.thousandSeparator}
+									decimalSeparator={globalStore.decimalSeparator}
 									hideControls
 									w={100}
 									value={item?.buyOrderPrice}
@@ -319,8 +319,8 @@ export const ItemWithComponents = observer(
 									}
 									allowNegative={true}
 									allowDecimal={false}
-									thousandSeparator="."
-									decimalSeparator=","
+									thousandSeparator={globalStore.thousandSeparator}
+									decimalSeparator={globalStore.decimalSeparator}
 									hideControls
 									w={100}
 									value={item?.returnRate}
@@ -336,8 +336,8 @@ export const ItemWithComponents = observer(
 								label={m.quantity()}
 								allowNegative={false}
 								allowDecimal={false}
-								thousandSeparator="."
-								decimalSeparator=","
+								thousandSeparator={globalStore.thousandSeparator}
+								decimalSeparator={globalStore.decimalSeparator}
 								min={0}
 								max={999_999}
 								w={80}
@@ -349,8 +349,8 @@ export const ItemWithComponents = observer(
 							<NumberInput
 								variant="filled"
 								label={m.total()}
-								thousandSeparator="."
-								decimalSeparator=","
+								thousandSeparator={globalStore.thousandSeparator}
+								decimalSeparator={globalStore.decimalSeparator}
 								hideControls
 								w={100}
 								value={calculatedTotal}

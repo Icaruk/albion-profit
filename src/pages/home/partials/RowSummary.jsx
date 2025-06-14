@@ -85,8 +85,8 @@ const ItemSummary = observer(({ group = {}, isPerUnit = false }) => {
 						<Table.Td>
 							<Text ta="left" ff="monospace" size="sm">
 								<NumberFormatter
-									thousandSeparator="."
-									decimalSeparator=","
+									thousandSeparator={globalStore.thousandSeparator}
+									decimalSeparator={globalStore.decimalSeparator}
 									value={totalEarnings}
 								/>
 							</Text>
@@ -102,8 +102,8 @@ const ItemSummary = observer(({ group = {}, isPerUnit = false }) => {
 						<Table.Td>
 							<Text ta="left" ff="monospace" size="sm">
 								<NumberFormatter
-									thousandSeparator="."
-									decimalSeparator=","
+									thousandSeparator={globalStore.thousandSeparator}
+									decimalSeparator={globalStore.decimalSeparator}
 									value={totalCost}
 								/>
 							</Text>
@@ -119,8 +119,8 @@ const ItemSummary = observer(({ group = {}, isPerUnit = false }) => {
 						<Table.Td>
 							<Text ta="left" ff="monospace" size="sm">
 								<NumberFormatter
-									thousandSeparator="."
-									decimalSeparator=","
+									thousandSeparator={globalStore.thousandSeparator}
+									decimalSeparator={globalStore.decimalSeparator}
 									value={totalProfit}
 								/>
 							</Text>
@@ -142,8 +142,8 @@ const ItemSummary = observer(({ group = {}, isPerUnit = false }) => {
 								c={isGoodProfit ? "green.6" : "red.5"}
 							>
 								<NumberFormatter
-									thousandSeparator="."
-									decimalSeparator=","
+									thousandSeparator={globalStore.thousandSeparator}
+									decimalSeparator={globalStore.decimalSeparator}
 									value={totalProfitAfterTax}
 								/>
 							</Text>
@@ -164,8 +164,8 @@ const ItemSummary = observer(({ group = {}, isPerUnit = false }) => {
 								c={isGoodProfit ? "green.6" : "red.5"}
 							>
 								<NumberFormatter
-									thousandSeparator="."
-									decimalSeparator=","
+									thousandSeparator={globalStore.thousandSeparator}
+									decimalSeparator={globalStore.decimalSeparator}
 									value={totalProfitPercentage.toFixed(1)}
 									suffix="%"
 								/>
@@ -185,8 +185,8 @@ const ItemSummary = observer(({ group = {}, isPerUnit = false }) => {
 							<Table.Td>
 								<Text ta="left" ff="monospace" size="sm">
 									<NumberFormatter
-										thousandSeparator="."
-										decimalSeparator=","
+										thousandSeparator={globalStore.thousandSeparator}
+										decimalSeparator={globalStore.decimalSeparator}
 										value={priceChangeBeforeLossCount}
 									/>
 								</Text>

@@ -34,6 +34,8 @@ export class GlobalStore {
 	debugMode = defaultProperties.debugMode;
 	bindQuantity = defaultProperties.bindQuantity;
 	indexedDb = defaultProperties.indexedDb;
+	thousandSeparator = navigator.language === "es-ES" ? "." : ",";
+	decimalSeparator = navigator.language === "es-ES" ? "," : ".";
 
 	constructor() {
 		makeAutoObservable(this);
