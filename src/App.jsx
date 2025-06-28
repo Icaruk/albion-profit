@@ -55,8 +55,8 @@ export default function App() {
 				{/* biome-ignore lint/style/useSelfClosingElements: cloudflare analytics */}
 				<script
 					defer
-					src="https://static.cloudflareinsights.com/beacon.min.js"
-					data-cf-beacon='{"token": "5f816857667d4d10b2b94c12d4b2af43"}'
+					src='https://static.cloudflareinsights.com/beacon.min.js'
+					data-cf-beacon='{"token": "1d315b1d70084cadab4c46e4a912bab6"}'
 				></script>
 
 				<script>
