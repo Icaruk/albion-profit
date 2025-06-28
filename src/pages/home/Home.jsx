@@ -314,10 +314,10 @@ export default observer(function Home() {
 					</Grid.Col>
 
 					<Grid.Col span={4}>
-						<ShoppingListButton
+						{/* <ShoppingListButton
 							value={showShoppingList}
 							onClick={(val) => setShowShoppingList(!val)}
-						/>
+						/> */}
 					</Grid.Col>
 
 					<Grid.Col span={4}>
