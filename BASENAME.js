@@ -1,1 +1,1 @@
-export const BASENAME = "/albion-profit/";
+export const BASENAME = "/";
