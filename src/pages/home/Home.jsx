@@ -411,7 +411,9 @@ export default observer(function Home() {
 				}
 				keepMounted={false}
 			>
-				<ShoppingList
+				Temporally disabled
+				
+				{/* <ShoppingList
 					shoppingList={shoppingList}
 					onCopy={(text) => {
 						clipboard.copy(text);
@@ -422,7 +424,7 @@ export default observer(function Home() {
 							title: "Item has been copied to clipboard",
 						});
 					}}
-				/>
+				/> */}
 			</Drawer>
 		</div>
 	);
