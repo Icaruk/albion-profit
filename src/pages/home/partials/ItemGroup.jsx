@@ -1,8 +1,3 @@
-import { locations } from "@/data/locations";
-import { findItemById } from "@/data/scripts/items/utils/findItemById";
-import { globalStore } from "@/mobx/rootStore";
-import { GroupStore } from "@/mobx/stores/groupStore";
-import * as m from "@/paraglide/messages.js";
 import {
 	ActionIcon,
 	Box,
@@ -35,6 +30,11 @@ import dame from "dame";
 import { toJS } from "mobx";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
+import { locations } from "@/data/locations";
+import { findItemById } from "@/data/scripts/items/utils/findItemById";
+import { globalStore } from "@/mobx/rootStore";
+import { GroupStore } from "@/mobx/stores/groupStore";
+import * as m from "@/paraglide/messages.js";
 import { getGroupItemIdsForFetch } from "../utils/group/getGroupItemIdsForFetch";
 import { getGroupParts } from "../utils/group/getGroupParts";
 import { buildAndFindItemId } from "../utils/item/buildAndFindItemid";
@@ -69,15 +69,16 @@ function ComponentList({ ingredients, groupStore, handleOnChange, bindQuantity =
 							});
 							handleOnChange();
 						}}
-						onShoppingListClick={(currValue) => {
-							groupStore.editGroupItem({
-								itemUid: currValue.uid,
-								payload: {
-									isInShoppingList: !currValue.isInShoppingList,
-								},
-							});
-							handleOnChange();
-						}}
+						onShoppingListClick={false}
+						// onShoppingListClick={(currValue) => {
+						// 	groupStore.editGroupItem({
+						// 		itemUid: currValue.uid,
+						// 		payload: {
+						// 			isInShoppingList: !currValue.isInShoppingList,
+						// 		},
+						// 	});
+						// 	handleOnChange();
+						// }}
 						onChange={(_payload) => {
 							groupStore.editGroupItem({
 								itemUid: _payload.uid,
