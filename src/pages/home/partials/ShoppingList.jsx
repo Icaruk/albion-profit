@@ -1,8 +1,6 @@
-import { findItemById } from "@/data/utils/findItemById";
-import { globalStore } from "@/mobx/rootStore";
-import * as m from "@/paraglide/messages.js";
 import {
 	Alert,
+	alpha,
 	Button,
 	Card,
 	Checkbox,
@@ -12,10 +10,12 @@ import {
 	Stack,
 	Text,
 	TextInput,
-	alpha,
 } from "@mantine/core";
 import { IconShoppingCartPlus, IconTrash } from "@tabler/icons-react";
 import { observer } from "mobx-react-lite";
+import { findItemById } from "@/data/utils/findItemById";
+import { globalStore } from "@/mobx/rootStore";
+import * as m from "@/paraglide/messages.js";
 import { ItemImage } from "./ItemWithComponents";
 
 /**

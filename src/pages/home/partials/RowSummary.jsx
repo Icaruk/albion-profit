@@ -1,9 +1,9 @@
 import { Group, NumberFormatter, Space, Stack, Table, Text, useMatches } from "@mantine/core";
-import { getGroupParts } from "../utils/group/getGroupParts";
-
+import { observer } from "mobx-react-lite";
 import { globalStore } from "@/mobx/rootStore";
 import * as m from "@/paraglide/messages.js";
-import { observer } from "mobx-react-lite";
+import { getGroupParts } from "../utils/group/getGroupParts";
+import { isArtifactItem } from "../utils/item/isArtifactItem";
 import { TAXES } from "./TaxSelector";
 
 const ItemSummary = observer(({ group = {}, isPerUnit = false }) => {
@@ -33,7 +33,7 @@ const ItemSummary = observer(({ group = {}, isPerUnit = false }) => {
 			}
 		}
 
-		const isArtifact = new RegExp(/arti|efact/gi).test(_ingredient.id);
+		const isArtifact = isArtifactItem(_ingredient.id);
 		const multiplier = isArtifact ? 1 : percentageToMultiplier;
 
 		totalCost += Math.round(_ingredient.price * quantity * multiplier);
