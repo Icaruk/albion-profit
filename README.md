@@ -37,6 +37,11 @@ Shopping list
 
 ---
 
+# Known issues
+
+- https://github.com/Icaruk/albion-profit/issues/4
+- https://github.com/Icaruk/albion-profit/issues/8
+
 # TODO
 
 - [ ] Detect tier writing "T4.0" on the search [using this](https://mantine.dev/core/select/#options-filtering)
