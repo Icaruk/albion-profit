@@ -21,22 +21,21 @@ const ItemSummary = observer(({ group = {}, isPerUnit = false }) => {
 	const taxMultiplier = 1 - tax / 100;
 
 	const productMultiply = product?.multiply ?? 1;
-	const productQuantity = isPerUnit ? 1 : product?.quantity * productMultiply;
+	const productQuantity = isPerUnit ? productMultiply : product?.quantity * productMultiply;
 
 	const totalEarnings = Math.round(product?.price * productQuantity);
-
+	
 	for (const _ingredient of ingredients) {
-		let quantity = _ingredient.quantity * (_ingredient.multiply ?? 1);
+	let quantity = _ingredient.quantity * (_ingredient.multiply ?? 1);
 
-		if (isPerUnit) {
-			// para o cálculo por unidade, divide pelo multiply do produto
-			quantity = quantity / productMultiply;
-		}
+	if (isPerUnit) {
+		quantity = (_ingredient.originalQuantity ?? _ingredient.quantity) * (_ingredient.multiply ?? 1);
+	}
 
-		const isArtifact = isArtifactItem(_ingredient.id);
-		const multiplier = isArtifact ? 1 : percentageToMultiplier;
+	const isArtifact = isArtifactItem(_ingredient.id);
+	const multiplier = isArtifact ? 1 : percentageToMultiplier;
 
-		totalCost += Math.round(_ingredient.price * quantity * multiplier);
+	totalCost += Math.round(_ingredient.price * quantity * multiplier);
 	}
 
 	totalCost = Math.round(totalCost);
