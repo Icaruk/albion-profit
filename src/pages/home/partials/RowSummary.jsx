@@ -26,14 +26,11 @@ const ItemSummary = observer(({ group = {}, isPerUnit = false }) => {
 	const totalEarnings = Math.round(product?.price * productQuantity);
 
 	for (const _ingredient of ingredients) {
-		let quantity;
+		let quantity = _ingredient.quantity * (_ingredient.multiply ?? 1);
 
 		if (isPerUnit) {
-			quantity = (_ingredient.originalQuantity ?? _ingredient.quantity) 
-				* (_ingredient.multiply ?? 1) 
-				/ productMultiply;
-		} else {
-			quantity = _ingredient.quantity * (_ingredient.multiply ?? 1);
+			// para o cálculo por unidade, divide pelo multiply do produto
+			quantity = quantity / productMultiply;
 		}
 
 		const isArtifact = isArtifactItem(_ingredient.id);
