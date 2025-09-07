@@ -7,7 +7,7 @@
 	"cost": "Coût",
 	"earnings": "Gains",
 	"quantity": "Quantité",
-	"price": "",
+	"price": "Prix de vente",
 	"total": "Total",
 	"group": "Groupe",
 	"result": "Résultat",
@@ -33,5 +33,8 @@
 	"buyPrice": "Ordre d'achat",
 	"sellPrice": "Prix de vente",
 	"priceModeSwitchTooltip": "Basculer entre le prix de l'ordre d'achat ou de l'ordre de vente",
-	"itemData": "Données de l'article"
+	"itemData": "Données de l'article",
+	"perCraft": "Par craft",
+	"units": "Unités",
+	"totalSilver": "Total argent"
 }
