@@ -29,7 +29,9 @@ const ItemSummary = observer(({ group = {}, isPerUnit = false }) => {
 	let quantity = _ingredient.quantity * (_ingredient.multiply ?? 1);
 
 	if (isPerUnit) {
-		quantity = (_ingredient.originalQuantity ?? _ingredient.quantity) * (_ingredient.multiply ?? 1);
+		if (_ingredient.quantity) {
+			quantity = _ingredient.originalQuantity;
+		}
 	}
 
 	const isArtifact = isArtifactItem(_ingredient.id);
