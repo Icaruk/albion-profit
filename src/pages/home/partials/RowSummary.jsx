@@ -20,17 +20,20 @@ const ItemSummary = observer(({ group = {}, isPerUnit = false }) => {
 	const tax = group?.tax ?? 0;
 	const taxMultiplier = 1 - tax / 100;
 
-	const productQuantity = isPerUnit ? 1 : product?.quantity;
+	const productMultiply = product?.multiply ?? 1;
+	const productQuantity = isPerUnit ? 1 : product?.quantity * productMultiply;
 
 	const totalEarnings = Math.round(product?.price * productQuantity);
 
 	for (const _ingredient of ingredients) {
-		let quantity = _ingredient.quantity;
+		let quantity;
 
 		if (isPerUnit) {
-			if (_ingredient.quantity) {
-				quantity = _ingredient.originalQuantity;
-			}
+			quantity = (_ingredient.originalQuantity ?? _ingredient.quantity) 
+				* (_ingredient.multiply ?? 1) 
+				/ productMultiply;
+		} else {
+			quantity = _ingredient.quantity * (_ingredient.multiply ?? 1);
 		}
 
 		const isArtifact = isArtifactItem(_ingredient.id);
