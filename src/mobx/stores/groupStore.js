@@ -45,6 +45,7 @@ export class ItemGroupElement {
 		id = "",
 		names = {},
 		quantity = 1,
+		multiply = 1,
 		price = 0,
 		sellPrice = 0,
 		buyOrderPrice = 0,
@@ -62,6 +63,7 @@ export class ItemGroupElement {
 		this.uid = uid;
 		this.id = id;
 		this.quantity = quantity;
+		this.multiply = multiply;
 		this.originalQuantity = quantity;
 		this.price = price;
 		this.sellPrice = sellPrice;

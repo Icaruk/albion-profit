@@ -195,7 +195,7 @@ export const ItemWithComponents = observer(
 			style.backgroundColor = "rgba(255,255,255,0.06)";
 		}
 
-		const calculatedTotal = Math.round(item?.quantity * item?.price);
+		const calculatedTotal = Math.round(item?.quantity * item?.price * (item?.multiply ?? 1))
 
 		const isProduct = item?.type === "product";
 		const isInShoppingList = item.isInShoppingList;
@@ -347,12 +347,26 @@ export const ItemWithComponents = observer(
 							/>
 
 							<NumberInput
+								label="Multiply"
+								allowNegative={false}
+								allowDecimal={false}
+								thousandSeparator={globalStore.thousandSeparator}
+								decimalSeparator={globalStore.decimalSeparator}
+								min={1}
+								max={999_999}
+								w={80}
+								value={item?.multiply ?? 1}
+								onChange={(val) => handleChange({ multiply: val })}
+								prefix="× "
+							/>
+
+							<NumberInput
 								variant="filled"
 								label={m.total()}
 								thousandSeparator={globalStore.thousandSeparator}
 								decimalSeparator={globalStore.decimalSeparator}
 								hideControls
-								w={100}
+								w={120}
 								value={calculatedTotal}
 								readOnly
 							/>
