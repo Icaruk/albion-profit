@@ -1,4 +1,4 @@
-import { findItemById } from "../../../../data/utils/findItemById";
+import { findSimpleItemDataById } from "../../../../data/utils/findSimpleItemDataById";
 import { buildItemId } from "./buildItemId";
 import { getItemIdComponents } from "./getItemIdComponents";
 
@@ -22,7 +22,7 @@ export function buildAndFindItemId({ itemId, tierChange, enchantChange }) {
 		enchant: enchant + enchantChange,
 	});
 
-	const foundItem = findItemById(newItemId);
+	const foundItem = findSimpleItemDataById(newItemId);
 
 	return {
 		item: foundItem,

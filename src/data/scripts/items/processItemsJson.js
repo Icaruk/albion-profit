@@ -2,11 +2,10 @@
 
 import fs from "node:fs";
 import path from "node:path";
-import itemData from "../itemData/itemData.json" with { type: "json" };
 import { getOrFetchItemData } from "../itemData/utils.js";
 import items from "./items.json" with { type: "json" };
 
-const filename = "items_p2.json";
+const filename = "itemsWithAllData.json";
 const filepath = path.join("./src/data/scripts/items", filename);
 
 const simpleFilename = "items2.js";

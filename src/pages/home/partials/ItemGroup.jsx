@@ -3,9 +3,11 @@ import {
 	Box,
 	Button,
 	Card,
+	Center,
 	Code,
 	Container,
 	Divider,
+	Grid,
 	Group,
 	ScrollArea,
 	SimpleGrid,
@@ -41,8 +43,8 @@ import { buildAndFindItemId } from "../utils/item/buildAndFindItemid";
 import { buildItemId } from "../utils/item/buildItemId";
 import { getItemIdComponents } from "../utils/item/getItemIdComponents";
 import { ItemPriceHistoryStats } from "./ItemPriceHistoryStats";
-import { ItemWithComponents } from "./ItemWithComponents";
 import LocationsSelector from "./LocationsSelector";
+import { ProductRow } from "./ProductRow";
 import { RowSummary } from "./RowSummary";
 import { TaxSelector } from "./TaxSelector";
 import TierSelector from "./TierSelector";
@@ -59,7 +61,7 @@ function ComponentList({ ingredients, groupStore, handleOnChange, bindQuantity =
 		<Stack gap="2">
 			{ingredients.map((_ingredient, _idx) => {
 				return (
-					<ItemWithComponents
+					<ProductRow
 						key={_ingredient.uid}
 						label={`Component ${_idx + 1}`}
 						item={_ingredient}
@@ -467,18 +469,6 @@ export const ItemGroup = observer(
 					>
 						{m.addComponent()}
 					</Button>
-
-					<Button
-						rightSection={<IconCloudDownload />}
-						variant="light"
-						onClick={() => {
-							getPrices({ groupId: group.id });
-							handleOnChange();
-						}}
-						loading={isLoading}
-					>
-						{m.fetchPrices()}
-					</Button>
 				</Group>
 			);
 		}
@@ -486,7 +476,7 @@ export const ItemGroup = observer(
 		function ItemDataTable() {
 			return (
 				<Group justify="center">
-					<Container fluid>
+					<Box>
 						{isDebugMode && (
 							<ScrollArea h={300}>
 								<Code block>{JSON.stringify(toJS(groupStore), null, 2)}</Code>
@@ -494,39 +484,32 @@ export const ItemGroup = observer(
 						)}
 
 						<RowSummary group={group} />
-					</Container>
+					</Box>
 				</Group>
 			);
 		}
 
 		const hasIngredients = group?.items?.length > 1;
-		const atLeastOneItemIsInShoppingList = group.atLeastOneItemIsInShoppingList();
+		// const atLeastOneItemIsInShoppingList = group.atLeastOneItemIsInShoppingList();
 
 		return (
-			<Card
-				key={_groupStore.id}
-				style={{
-					outline: atLeastOneItemIsInShoppingList
-						? "3px solid var(--mantine-color-blue-5)"
-						: undefined,
-				}}
-			>
-				<SimpleGrid cols={1} spacing="lg" maw={850}>
-					<Stack gap="md">
-						<Group justify="space-between">
-							<Text size="xs" c="dimmed">
-								{m.group()} {index + 1}
-							</Text>
+			<Card h="100%">
+				<Group justify="space-between">
+					<Text size="xs" c="dimmed">
+						{m.group()} {index + 1}
+					</Text>
 
-							{globalStore.debugMode && (
-								<Text size="md">
-									{group.id}_{group.order}
-								</Text>
-							)}
+					{globalStore.debugMode && (
+						<Text size="md">
+							{group.id}_{group.order}
+						</Text>
+					)}
 
-							<GroupActions />
-						</Group>
+					<GroupActions />
+				</Group>
 
+				<Group wrap="nowrap">
+					<Stack h="100%" justify="flex-start" gap="md">
 						<LocationsSelector
 							location={group.location}
 							onChange={({ location }) => {
@@ -539,8 +522,8 @@ export const ItemGroup = observer(
 							}}
 						/>
 
-						<Stack>
-							<ItemWithComponents
+						<Stack miw="700px">
+							<ProductRow
 								label={m.result()}
 								item={product}
 								onChange={(_payload) => {
@@ -566,17 +549,33 @@ export const ItemGroup = observer(
 								bindQuantity={bindQuantity}
 							/>
 							<ComponentActions />
-
-							<Divider my="xs" label={m.itemData()} labelPosition="center" />
-
-							<ItemDataTable />
 						</Stack>
 					</Stack>
 
-					<Stack>
+					<Stack justify="flex-start">
+						<Text size="lg" fw="bold" ta="center">
+							{m.itemData()}
+						</Text>
+
+						<Center>
+							<Button
+								rightSection={<IconCloudDownload />}
+								variant="light"
+								onClick={() => {
+									getPrices({ groupId: group.id });
+									handleOnChange();
+								}}
+								loading={isLoading}
+							>
+								{m.fetchPrices()}
+							</Button>
+						</Center>
+
+						<ItemDataTable />
+
 						<ItemPriceHistoryStats group={group} />
 					</Stack>
-				</SimpleGrid>
+				</Group>
 			</Card>
 		);
 	},

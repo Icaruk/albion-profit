@@ -1,11 +1,11 @@
-import { globalStore } from "@/mobx/rootStore";
-import { GroupStore } from "@/mobx/stores/groupStore";
-import { formatHundeds } from "@/utils/number/formatHundeds";
 import { LineChart } from "@mantine/charts";
 import { Badge, Group, Stack, Table, Text } from "@mantine/core";
 import dayjs from "dayjs";
-import { toJS } from "mobx";
 import { useMemo } from "react";
+import { globalStore } from "@/mobx/rootStore";
+// biome-ignore lint/correctness/noUnusedImports: used only in jsdoc
+import { GroupStore } from "@/mobx/stores/groupStore";
+import { formatHundeds } from "@/utils/number/formatHundeds";
 
 /**
  * @typedef Props
@@ -21,13 +21,9 @@ export const ItemPriceHistoryStats = ({ group }) => {
 	globalStore.language;
 
 	/** @type {(import("@/mobx/stores/groupStore").PriceHistoryData)[]} */
-	const priceHistoryData = group.priceHistoryData;
+	const priceHistoryData = group?.priceHistoryData ?? [];
 
-	if (!priceHistoryData) {
-		return null;
-	}
-
-	const tempLocation = group.location;
+	const tempLocation = group?.location;
 	const locationData = priceHistoryData.filter((_item) => _item.location === tempLocation);
 
 	const timeSeries = [];
@@ -81,13 +77,16 @@ export const ItemPriceHistoryStats = ({ group }) => {
 		};
 	}, [timeSeries]);
 
+	if (!priceHistoryData) {
+		return null;
+	}
+
 	return (
 		<Stack gap="lg" justify="center">
 			<Group justify="center">
 				<Text size="lg" fw="bold">
 					Item data for the last {daysSinceFirstSale} days
 				</Text>
-				<Badge>BETA</Badge>
 			</Group>
 
 			<Table variant="vertical" layout="fixed" withTableBorder withColumnBorders>

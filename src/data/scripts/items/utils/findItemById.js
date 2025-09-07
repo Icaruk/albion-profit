@@ -1,9 +1,9 @@
+import dame from "dame";
 import { buildItemId } from "@/pages/home/utils/item/buildItemId";
 import { getItemIdComponents } from "@/pages/home/utils/item/getItemIdComponents";
-import dame from "dame";
 
 export async function findItemById(id) {
-	const { default: itemDataJson } = await import("../items_p2.json");
+	const { default: itemDataJson } = await import("../itemsWithAllData.json");
 
 	const itemIdsToFetch = new Set([id]);
 	let foundItemData = null;

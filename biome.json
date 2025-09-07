@@ -6,9 +6,12 @@
 			"!**/node_modules/**",
 			"!**/dist/**",
 			"!**/src/paraglide",
-			"!**/src/data/scripts/itemData/itemData.json",
+			"!**/src/data/items.js",
+			"!**/src/data/v2/itemsWithRawData.js",
 			"!**/src/data/scripts/items/items.json",
-			"!**/src/data/items.js"
+			"!**/src/data/scripts/items/itemsWithAllData.json",
+			"!**/src/data/scripts/itemData/itemData.json",
+			"!**/src/data/scripts/raw/rawItems.json"
 		]
 	},
 	"assist": { "actions": { "source": { "organizeImports": "on" } } },

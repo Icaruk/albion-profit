@@ -13,7 +13,7 @@ import {
 } from "@mantine/core";
 import { IconShoppingCartPlus, IconTrash } from "@tabler/icons-react";
 import { observer } from "mobx-react-lite";
-import { findItemById } from "@/data/utils/findItemById";
+import { findSimpleItemDataById } from "@/data/utils/findSimpleItemDataById";
 import { globalStore } from "@/mobx/rootStore";
 import * as m from "@/paraglide/messages.js";
 import { ItemImage } from "./ItemWithComponents";
@@ -60,7 +60,7 @@ export const ShoppingList = observer(({ shoppingList, onCopy }) => {
 
 				{items.map((_shoppingListItem) => {
 					const itemFromGroup = _shoppingListItem.observable;
-					const itemData = findItemById(itemFromGroup.id);
+					const itemData = findSimpleItemDataById(itemFromGroup.id);
 
 					const translatedName =
 						itemData?.LocalizedNames[globalStore.getItemLangKey()] ??

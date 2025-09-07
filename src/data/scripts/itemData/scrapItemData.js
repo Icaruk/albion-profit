@@ -1,9 +1,10 @@
 // node src\data\scripts\itemData\scrapItemData.js
+// https://github.com/ao-data/ao-bin-dumps/tree/master/formatted
 
 import fs from "node:fs";
 import path from "node:path";
 import dame from "dame";
-import { albionData } from "../../items.js";
+import { albionData } from "../items/items.json";
 
 const filename = "itemData2.json";
 const filepath = path.join("./src/data/scripts/itemData", filename);
@@ -44,3 +45,5 @@ for await (const _item of albionData) {
 }
 
 console.log("All requests took", (performance.now() - t0) / 1000);
+console.log("Total:", totalCount);
+console.log("Errors:", errorCount);

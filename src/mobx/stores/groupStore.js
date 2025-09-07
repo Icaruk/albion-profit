@@ -1,13 +1,12 @@
 import { makeAutoObservable, observable } from "mobx";
 
 import { locations } from "@/data/locations";
-import { findItemById } from "@/data/utils/findItemById";
+import { findSimpleItemDataById } from "@/data/utils/findSimpleItemDataById";
 import { TAXES } from "@/pages/home/partials/TaxSelector";
 import { generateUid } from "@/pages/home/utils/group/generateUid";
 import { getGroupParts } from "@/pages/home/utils/group/getGroupParts";
 import { setGroupItemsPriceWithCity } from "@/pages/home/utils/group/setGroupIngredientsWithCity";
 import { buildAndFindItemId } from "@/pages/home/utils/item/buildAndFindItemid";
-import { globalStore } from "../rootStore";
 
 /**
  * @typedef {Object} PriceHistoryData
@@ -45,7 +44,7 @@ export class ItemGroupElement {
 		id = "",
 		names = {},
 		quantity = 1,
-		multiply = 1,
+		quantityPerCraft = 1,
 		price = 0,
 		sellPrice = 0,
 		buyOrderPrice = 0,
@@ -63,7 +62,7 @@ export class ItemGroupElement {
 		this.uid = uid;
 		this.id = id;
 		this.quantity = quantity;
-		this.multiply = multiply;
+		this.quantityPerCraft = quantityPerCraft;
 		this.originalQuantity = quantity;
 		this.price = price;
 		this.sellPrice = sellPrice;
@@ -217,7 +216,7 @@ export class GroupStore {
 			...payload,
 		};
 
-		const itemData = findItemById(newItem.id);
+		const itemData = findSimpleItemDataById(newItem.id);
 		newItem.names = itemData.LocalizedNames;
 
 		// Check if we need to increment other items quantity

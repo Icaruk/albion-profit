@@ -1,18 +1,32 @@
 {
   "compilerOptions": {
     "composite": true,
+    "target": "ES2020",
+    "lib": [
+      "ES2020",
+      "DOM"
+    ],
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
     "baseUrl": ".",
     "paths": {
       "@/*": [
         "./src/*"
       ]
-    },
+    }
   },
+  "include": [
+    "**/src/**/*"
+  ],
   "exclude": [
     "node_modules",
     "dist",
     ".git",
-    "src/data/items.js",
-    "src/data/v2/items.js"
+    "**/src/data/items.js",
+    "**/src/data/v2/itemsWithRawData.js",
+    "**/src/data/scripts/items/items.json",
+    "**/src/data/scripts/items/itemsWithAllData.json",
+    "**/src/data/scripts/itemData/itemData.json",
+    "**/src/data/scripts/raw/rawItems.json"
   ]
 }

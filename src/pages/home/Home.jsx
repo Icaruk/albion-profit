@@ -1,16 +1,16 @@
-import { globalStore } from "@/mobx/rootStore";
-import { GroupStore } from "@/mobx/stores/groupStore";
-import { ShoppingListStore } from "@/mobx/stores/shoppingListStore";
-import * as m from "@/paraglide/messages.js";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import {
 	Anchor,
 	Avatar,
 	Badge,
+	Box,
 	Button,
+	Card,
 	Center,
 	Checkbox,
+	Container,
 	Drawer,
+	Flex,
 	Grid,
 	Group,
 	Image,
@@ -22,20 +22,24 @@ import {
 	Tooltip,
 	useMatches,
 } from "@mantine/core";
-import { useClipboard, useResizeObserver } from "@mantine/hooks";
-import { notifications } from "@mantine/notifications";
-import { IconBrandGithub, IconBrandReddit, IconClipboard, IconPlus } from "@tabler/icons-react";
+import { useResizeObserver } from "@mantine/hooks";
+import { IconBrandGithub, IconBrandReddit, IconPlus } from "@tabler/icons-react";
 import { observer } from "mobx-react-lite";
 import { useEffect, useMemo, useState } from "react";
+import { globalStore } from "@/mobx/rootStore";
+import { GroupStore } from "@/mobx/stores/groupStore";
+import * as m from "@/paraglide/messages.js";
 import classes from "./Home.module.css";
 import { ItemGroup } from "./partials/ItemGroup";
+import { ItemPriceHistoryStats } from "./partials/ItemPriceHistoryStats.jsx";
 import { LanguageSelector } from "./partials/LanguageSelector";
+import { ItemImage } from "./partials/ProductRow.jsx";
 import { ServerSelector } from "./partials/ServerSelector";
-import { ShoppingList, ShoppingListButton } from "./partials/ShoppingList";
-import { IndexedDB } from "./utils/IndexedDB/IndexedDB";
 import { getRandomWallpaper } from "./utils/getRandomWallpaper";
+import { getGroupParts } from "./utils/group/getGroupParts.js";
+import { IndexedDB } from "./utils/IndexedDB/IndexedDB";
 
-function loadFromLocalStorage() {
+/* function loadFromLocalStorage() {
 	const str = localStorage.getItem("state");
 	if (!str) return null;
 
@@ -59,7 +63,7 @@ function loadFromLocalStorage() {
 	} catch (err) {
 		return null;
 	}
-}
+} */
 
 export default observer(function Home() {
 	const [isInitialized, setIsInitialized] = useState(false);
@@ -67,7 +71,10 @@ export default observer(function Home() {
 	/** @type {[GroupStore[], React.Dispatch<React.SetStateAction<GroupStore[]>>]} */
 	const [groups, setGroups] = useState([new GroupStore()]);
 
+	const sortedGroups = (groups ?? []).sort((a, b) => a.order - b.order);
+
 	const [showShoppingList, setShowShoppingList] = useState(false);
+	const [selectedGroupId, setSelectedGroupId] = useState(null);
 
 	const [wallpaper] = useState(() => getRandomWallpaper());
 
@@ -77,22 +84,11 @@ export default observer(function Home() {
 	});
 
 	const [resizeObserverRef, rect] = useResizeObserver();
-	const clipboard = useClipboard();
 
 	const [parentAutoAnimate] = useAutoAnimate();
 
 	const isDebugMode = globalStore.debugMode;
 	const bindQuantity = globalStore.bindQuantity;
-
-	function handleLoad() {
-		const state = loadFromLocalStorage();
-
-		if (!state) {
-			return;
-		}
-
-		setGroups(state);
-	}
 
 	async function loadFromIndexedDB() {
 		try {
@@ -266,13 +262,11 @@ export default observer(function Home() {
 		};
 	}, [rect]);
 
-	const sortedGroups = (groups ?? []).sort((a, b) => a.order - b.order);
-
-	const shoppingList = new ShoppingListStore().buildFromGroups(groups);
-
 	if (!isInitialized) {
 		return <Loader />;
 	}
+
+	const selectedGroup = sortedGroups.find((group) => group.id === selectedGroupId);
 
 	return (
 		<div className={classes.mainContainer} ref={parentAutoAnimate}>
@@ -354,33 +348,45 @@ export default observer(function Home() {
 
 				<Space h={headerHeight} />
 
-				<Center>
-					<SimpleGrid p="md" cols={{ base: 1, xl: 2 }}>
+				<Flex direction="row" p="md" w="100%">
+					<Card className={classes.leftContainer} p="md">
 						{sortedGroups?.map((_groupStore, _idx) => {
 							const group = _groupStore;
+							const { product } = getGroupParts(group);
+							const isSelected = selectedGroupId === group.id;
 
 							if (!group) {
 								return null;
 							}
 
+							const style = {
+								cursor: "pointer",
+								border: isSelected
+									? "1px solid var(--mantine-color-blue-5)"
+									: undefined,
+							};
+
 							return (
-								<ItemGroup
+								<Grid
 									key={group.id}
-									groupStore={_groupStore}
-									index={_idx}
-									onDelete={({ id }) => {
-										handleDeleteGroup(id);
+									p="xxs"
+									className={classes.leftContainerItem}
+									bg={"dark.5"}
+									gutter={"xxs"}
+									mb={2}
+									style={style}
+									onClick={() => {
+										setSelectedGroupId(group.id);
 									}}
-									onDuplicate={({ id }) => {
-										handleDuplicateGroup(id);
-									}}
-									onMove={({ id, direction }) => {
-										handleMoveGroup(id, direction);
-									}}
-									isSingleColumn={isSingleColumn}
-									bindQuantity={bindQuantity}
-									isDebugMode={isDebugMode}
-								/>
+								>
+									<Grid.Col span="content">
+										<ItemImage itemId={product?.id} />
+									</Grid.Col>
+
+									<Grid.Col span="content">
+										<Text>{product?.names?.["ES-ES"]}</Text>
+									</Grid.Col>
+								</Grid>
 							);
 						})}
 
@@ -389,11 +395,34 @@ export default observer(function Home() {
 							onClick={() => {
 								handleAddGroup();
 							}}
+							mt="xxs"
 						>
 							{m.addGroup()}
 						</Button>
-					</SimpleGrid>
-				</Center>
+					</Card>
+
+					<Box className={classes.dataContainer} w="100%">
+						{selectedGroup && (
+							<ItemGroup
+								key={selectedGroup?.id}
+								groupStore={selectedGroup}
+								index={0}
+								onDelete={({ id }) => {
+									handleDeleteGroup(id);
+								}}
+								onDuplicate={({ id }) => {
+									handleDuplicateGroup(id);
+								}}
+								onMove={({ id, direction }) => {
+									handleMoveGroup(id, direction);
+								}}
+								isSingleColumn={isSingleColumn}
+								bindQuantity={bindQuantity}
+								isDebugMode={isDebugMode}
+							/>
+						)}
+					</Box>
+				</Flex>
 			</ScrollArea>
 
 			<Drawer
@@ -412,7 +441,6 @@ export default observer(function Home() {
 				keepMounted={false}
 			>
 				Temporally disabled
-				
 				{/* <ShoppingList
 					shoppingList={shoppingList}
 					onCopy={(text) => {
