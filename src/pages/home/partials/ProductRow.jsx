@@ -359,7 +359,7 @@ export const ProductRow = observer(
 								decimalSeparator={globalStore.decimalSeparator}
 								min={1}
 								max={999_999}
-								w={80}
+								w={90}
 								value={item?.quantity}
 								onChange={(val) => handleChange({ quantity: val })}
 								prefix="x "
