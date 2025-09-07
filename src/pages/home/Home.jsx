@@ -18,6 +18,7 @@ import {
 	ScrollArea,
 	SimpleGrid,
 	Space,
+	Stack,
 	Text,
 	Tooltip,
 	useMatches,
@@ -384,7 +385,15 @@ export default observer(function Home() {
 									</Grid.Col>
 
 									<Grid.Col span="content">
-										<Text>{product?.names?.["ES-ES"]}</Text>
+										<Stack h="100%" justify="center" gap="0">
+											<Text>
+												{product?.names?.[globalStore.getItemLangKey()]}
+											</Text>
+
+											<Text c="dimmed" size="xs">
+												x {product?.quantity}
+											</Text>
+										</Stack>
 									</Grid.Col>
 								</Grid>
 							);
