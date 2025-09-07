@@ -346,19 +346,22 @@ export const ItemWithComponents = observer(
 								prefix="x "
 							/>
 
-							<NumberInput
-								label="Multiply"
-								allowNegative={false}
-								allowDecimal={false}
-								thousandSeparator={globalStore.thousandSeparator}
-								decimalSeparator={globalStore.decimalSeparator}
-								min={1}
-								max={999_999}
-								w={80}
-								value={item?.multiply ?? 1}
-								onChange={(val) => handleChange({ multiply: val })}
-								prefix="× "
-							/>
+							{isProduct && (
+								<NumberInput
+									label="Multiply"
+									allowNegative={false}
+									allowDecimal={false}
+									thousandSeparator={globalStore.thousandSeparator}
+									decimalSeparator={globalStore.decimalSeparator}
+									min={1}
+									max={999_999}
+									w={80}
+									value={item?.multiply ?? 1}
+									onChange={(val) => handleChange({ multiply: val })}
+									prefix="× "
+								/>
+
+							)}
 
 							<NumberInput
 								variant="filled"
