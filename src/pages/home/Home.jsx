@@ -390,15 +390,18 @@ export default observer(function Home() {
 							);
 						})}
 
-						<Button
-							leftSection={<IconPlus />}
-							onClick={() => {
-								handleAddGroup();
-							}}
-							mt="xxs"
-						>
-							{m.addGroup()}
-						</Button>
+						<Box>
+							<Button
+								fullWidth
+								leftSection={<IconPlus />}
+								onClick={() => {
+									handleAddGroup();
+								}}
+								mt="xxs"
+							>
+								{m.addGroup()}
+							</Button>
+						</Box>
 					</Card>
 
 					<Box className={classes.dataContainer} w="100%">

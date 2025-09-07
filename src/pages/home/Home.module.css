@@ -18,8 +18,10 @@
 .leftContainer {
 	position: fixed;
 
-	height: 100vh;
+	height: 92vh;
 	width: 450px;
+
+	overflow-y: auto;
 }
 
 .leftContainerItem {
