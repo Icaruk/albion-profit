@@ -552,7 +552,7 @@ export const ItemGroup = observer(
 						</Stack>
 					</Stack>
 
-					<Stack justify="flex-start">
+					<Stack h="100%" justify="flex-start">
 						<Text size="lg" fw="bold" ta="center">
 							{m.itemData()}
 						</Text>
