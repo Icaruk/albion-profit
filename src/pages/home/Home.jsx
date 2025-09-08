@@ -391,7 +391,7 @@ export default observer(function Home() {
 											</Text>
 
 											<Text c="dimmed" size="xs">
-												x {product?.quantity}
+												x {product?.quantity * product?.quantityPerCraft}
 											</Text>
 										</Stack>
 									</Grid.Col>
