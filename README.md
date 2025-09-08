@@ -37,10 +37,9 @@ Shopping list
 
 ---
 
-# Known issues
+# Roadmap
 
-- https://github.com/Icaruk/albion-profit/issues/4
-- https://github.com/Icaruk/albion-profit/issues/8
+https://github.com/users/Icaruk/projects/3
 
 # TODO
 
