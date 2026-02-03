@@ -561,8 +561,8 @@ export const ItemGroup = observer(
 							<Button
 								rightSection={<IconCloudDownload />}
 								variant="light"
-								onClick={() => {
-									getPrices({ groupId: group.id });
+								onClick={async () => {
+									await getPrices({ groupId: group.id });
 									handleOnChange();
 								}}
 								loading={isLoading}
