@@ -41,8 +41,5 @@ export function setGroupItemsPriceWithCity({
 		return _item;
 	});
 
-	return {
-		...group,
-		items: newGroupItems,
-	};
+	return newGroupItems;
 }

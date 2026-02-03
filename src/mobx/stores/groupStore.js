@@ -262,7 +262,6 @@ export class GroupStore {
 	 * }} params
 	 */
 	setGroupPriceData = ({ currentPriceData, priceHistoryData }) => {
-		// Set price data
 		this.priceData = observable(currentPriceData);
 		this.priceHistoryData = observable(priceHistoryData);
 
@@ -270,14 +269,13 @@ export class GroupStore {
 			this.location = locations[0];
 		}
 
-		// Set group ingredients price
-		const newGroupWithData = setGroupItemsPriceWithCity({
+		const updatedItems = setGroupItemsPriceWithCity({
 			group: this,
-			location: this?.location,
+			location: this.location,
 			skipLocked: true,
 		});
 
-		Object.assign(this, observable(newGroupWithData));
+		this.items = observable(updatedItems);
 	};
 
 	removeAllFromShoppingList = () => {
