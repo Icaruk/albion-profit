@@ -33,14 +33,12 @@ export async function findItemById(id) {
 		return foundItemData;
 	}
 
-	const url = `https://gameinfo.albiononline.com/api/gameinfo/items/${id}/data`;
+	// const url = `https://gameinfo.albiononline.com/api/gameinfo/items/${id}/data`;
+	const url = `https://albion.icaruk.workers.dev/items/${id}/data`;
 
-	const { response: fetchedItemExtraData, isError } = await dame.get(
-		`https://corsproxy.io/?url=${url}`,
-		{
-			timeout: 6000,
-		},
-	);
+	const { response: fetchedItemExtraData, isError } = await dame.get(url, {
+		timeout: 6000,
+	});
 
 	if (isError) {
 		return null;
