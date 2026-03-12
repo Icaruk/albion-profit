@@ -217,7 +217,7 @@ export class GroupStore {
 		};
 
 		const itemData = findSimpleItemDataById(newItem.id);
-		newItem.names = itemData.LocalizedNames;
+		newItem.names = itemData?.LocalizedNames ?? "";
 
 		// Check if we need to increment other items quantity
 		if (isProduct && bindQuantity) {
