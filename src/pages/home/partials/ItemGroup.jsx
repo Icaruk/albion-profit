@@ -5,12 +5,9 @@ import {
 	Card,
 	Center,
 	Code,
-	Container,
 	Divider,
-	Grid,
 	Group,
 	ScrollArea,
-	SimpleGrid,
 	Stack,
 	Text,
 } from "@mantine/core";
@@ -493,65 +490,69 @@ export const ItemGroup = observer(
 		// const atLeastOneItemIsInShoppingList = group.atLeastOneItemIsInShoppingList();
 
 		return (
-			<Card h="100%">
-				<Group justify="space-between">
-					<Text size="xs" c="dimmed">
-						{m.group()} {order + 1}
-					</Text>
-
-					{globalStore.debugMode && (
-						<Text size="md">
-							{group.id}_{group.order}
+			<Group wrap="nowrap" h="100%">
+				<Card h="100%" id="item-group-card" miw="fit-content">
+					<Group justify="space-between" pb="xs">
+						<Text size="xs" c="dimmed">
+							{m.group()} {order + 1}
 						</Text>
-					)}
 
-					<GroupActions />
-				</Group>
+						{globalStore.debugMode && (
+							<Text size="md">
+								{group.id}_{group.order}
+							</Text>
+						)}
 
-				<Group wrap="nowrap">
-					<Stack h="100%" justify="flex-start" gap="md">
-						<LocationsSelector
-							location={group.location}
-							onChange={({ location }) => {
-								_groupStore.editGroup({
-									payload: {
-										location,
-									},
-								});
-								handleOnChange();
-							}}
-						/>
+						<GroupActions />
+					</Group>
 
-						<Stack miw="700px">
-							<ProductRow
-								label={m.result()}
-								item={product}
-								onChange={(_payload) => {
-									_groupStore.editGroupItem({
-										itemUid: _payload.uid,
-										payload: _payload,
-										isProduct: true,
-										bindQuantity,
+					<Group wrap="nowrap">
+						<Stack h="100%" justify="flex-start" gap="md">
+							<LocationsSelector
+								location={group.location}
+								onChange={({ location }) => {
+									_groupStore.editGroup({
+										payload: {
+											location,
+										},
 									});
 									handleOnChange();
 								}}
-								isHighlighted
 							/>
 
-							<ProductOptions />
+							<Stack miw="700px">
+								<ProductRow
+									label={m.result()}
+									item={product}
+									onChange={(_payload) => {
+										_groupStore.editGroupItem({
+											itemUid: _payload.uid,
+											payload: _payload,
+											isProduct: true,
+											bindQuantity,
+										});
+										handleOnChange();
+									}}
+									isHighlighted
+								/>
 
-							<Divider my="xs" label={m.components()} labelPosition="center" />
+								<ProductOptions />
 
-							<ComponentList
-								ingredients={ingredients}
-								groupStore={_groupStore}
-								handleOnChange={handleOnChange}
-								bindQuantity={bindQuantity}
-							/>
-							<ComponentActions />
+								<Divider my="xs" label={m.components()} labelPosition="center" />
+
+								<ComponentList
+									ingredients={ingredients}
+									groupStore={_groupStore}
+									handleOnChange={handleOnChange}
+									bindQuantity={bindQuantity}
+								/>
+								<ComponentActions />
+							</Stack>
 						</Stack>
-					</Stack>
+					</Group>
+				</Card>
 
+				<Card h="100%">
 					<Stack h="100%" justify="flex-start">
 						<Text size="lg" fw="bold" ta="center">
 							{m.itemData()}
@@ -575,8 +576,8 @@ export const ItemGroup = observer(
 
 						<ItemPriceHistoryStats group={group} />
 					</Stack>
-				</Group>
-			</Card>
+				</Card>
+			</Group>
 		);
 	},
 );

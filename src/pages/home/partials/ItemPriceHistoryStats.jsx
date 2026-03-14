@@ -82,7 +82,7 @@ export const ItemPriceHistoryStats = ({ group }) => {
 	}
 
 	return (
-		<Stack gap="lg" justify="center">
+		<Stack gap="lg" h="100%">
 			<Group justify="center">
 				<Text size="lg" fw="bold">
 					Item data for the last {daysSinceFirstSale} days
