@@ -1,5 +1,5 @@
 import { LineChart } from "@mantine/charts";
-import { Badge, Group, Stack, Table, Text } from "@mantine/core";
+import { Group, Stack, Table, Text } from "@mantine/core";
 import dayjs from "dayjs";
 import { useMemo } from "react";
 import { globalStore } from "@/mobx/rootStore";
