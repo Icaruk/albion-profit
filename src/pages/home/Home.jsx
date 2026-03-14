@@ -6,9 +6,7 @@ import {
 	Box,
 	Button,
 	Card,
-	Center,
 	Checkbox,
-	Container,
 	Drawer,
 	Flex,
 	Grid,
@@ -16,7 +14,6 @@ import {
 	Image,
 	Loader,
 	ScrollArea,
-	SimpleGrid,
 	Space,
 	Stack,
 	Text,
@@ -32,11 +29,11 @@ import { GroupStore } from "@/mobx/stores/groupStore";
 import * as m from "@/paraglide/messages.js";
 import classes from "./Home.module.css";
 import { ItemGroup } from "./partials/ItemGroup";
-import { ItemPriceHistoryStats } from "./partials/ItemPriceHistoryStats.jsx";
 import { LanguageSelector } from "./partials/LanguageSelector";
 import { ItemImage } from "./partials/ProductRow.jsx";
 import { ServerSelector } from "./partials/ServerSelector";
 import { getRandomWallpaper } from "./utils/getRandomWallpaper";
+import { generateUid } from "./utils/group/generateUid";
 import { getGroupParts } from "./utils/group/getGroupParts.js";
 import { IndexedDB } from "./utils/IndexedDB/IndexedDB";
 
@@ -111,6 +108,95 @@ export default observer(function Home() {
 		}
 	}
 
+	async function checkAndFixDuplicateIds(groups) {
+		if (!groups || groups.length === 0) {
+			return groups;
+		}
+
+		const idMap = new Map();
+		const duplicateGroups = [];
+		const groupsWithFixedItems = [];
+		let totalFixedItemIds = 0;
+
+		const indexedDb = globalStore.getIndexedDb();
+
+		for (const group of groups) {
+			const id = group.id;
+			let groupHasFixedItems = false;
+
+			if (idMap.has(id)) {
+				duplicateGroups.push(group);
+			} else {
+				idMap.set(id, true);
+			}
+
+			if (group.items && Array.isArray(group.items)) {
+				const itemUidMap = new Map();
+				const duplicateItems = [];
+
+				for (const item of group.items) {
+					const uid = item.uid;
+					if (itemUidMap.has(uid)) {
+						duplicateItems.push(item);
+					} else {
+						itemUidMap.set(uid, true);
+					}
+				}
+
+				if (duplicateItems.length > 0) {
+					console.log(
+						`Found ${duplicateItems.length} items with duplicate UIDs in group ${group.id}, fixing...`,
+					);
+					for (const duplicateItem of duplicateItems) {
+						duplicateItem.uid = generateUid();
+					}
+					totalFixedItemIds += duplicateItems.length;
+					groupHasFixedItems = true;
+				}
+			}
+
+			if (groupHasFixedItems) {
+				groupsWithFixedItems.push(group);
+			}
+		}
+
+		if (totalFixedItemIds > 0) {
+			console.log(`Fixed ${totalFixedItemIds} duplicate item IDs`);
+		}
+
+		if (indexedDb?.db && groupsWithFixedItems.length > 0) {
+			for (const group of groupsWithFixedItems) {
+				const groupStore = new GroupStore(group, true);
+				await indexedDb.add("groups", groupStore.toPrimitives());
+				console.log(`Saved group with fixed item UIDs: ${group.id}`);
+			}
+		}
+
+		if (duplicateGroups.length === 0) {
+			return groups;
+		}
+
+		console.log(`Found ${duplicateGroups.length} groups with duplicate IDs, fixing...`);
+
+		if (!indexedDb?.db) {
+			console.warn("Cannot fix duplicate IDs: IndexedDB was not available");
+			return groups;
+		}
+
+		for (const duplicateGroup of duplicateGroups) {
+			const newId = generateUid();
+			console.log(`Changing duplicate ID from ${duplicateGroup.id} to ${newId}`);
+
+			duplicateGroup.id = newId;
+
+			const groupStore = new GroupStore(duplicateGroup, true);
+			await indexedDb.add("groups", groupStore.toPrimitives());
+		}
+
+		console.log("All duplicate IDs have been fixed");
+		return groups;
+	}
+
 	useEffect(() => {
 		(async () => {
 			const indexedDB = new IndexedDB();
@@ -118,11 +204,12 @@ export default observer(function Home() {
 			globalStore.indexedDb = indexedDB;
 
 			const indexedDBGroups = await loadFromIndexedDB();
+			const fixedGroups = await checkAndFixDuplicateIds(indexedDBGroups);
 
-			if (indexedDBGroups && indexedDBGroups.length > 0) {
+			if (fixedGroups && fixedGroups.length > 0) {
 				const builtGroups = [];
 
-				for (const _group of indexedDBGroups) {
+				for (const _group of fixedGroups) {
 					builtGroups.push(new GroupStore(_group, true));
 				}
 
@@ -391,7 +478,9 @@ export default observer(function Home() {
 											</Text>
 
 											<Text c="dimmed" size="xs">
-												x {product?.quantity * (product?.quantityPerCraft ?? 1)}
+												x{" "}
+												{product?.quantity *
+													(product?.quantityPerCraft ?? 1)}
 											</Text>
 										</Stack>
 									</Grid.Col>
