@@ -76,11 +76,6 @@ export default observer(function Home() {
 
 	const [wallpaper] = useState(() => getRandomWallpaper());
 
-	const isSingleColumn = useMatches({
-		base: true,
-		xl: false,
-	});
-
 	const [resizeObserverRef, rect] = useResizeObserver();
 
 	const [parentAutoAnimate] = useAutoAnimate();
@@ -197,6 +192,32 @@ export default observer(function Home() {
 		return groups;
 	}
 
+	async function recalculateGroupOrders(groups) {
+		if (!groups || groups.length === 0) {
+			return groups;
+		}
+
+		const indexedDb = globalStore.getIndexedDb();
+		let ordersChanged = false;
+
+		for (let i = 0; i < groups.length; i++) {
+			if (groups[i].order !== i) {
+				groups[i].order = i;
+				ordersChanged = true;
+			}
+		}
+
+		if (ordersChanged && indexedDb?.db) {
+			for (const group of groups) {
+				const groupStore = new GroupStore(group, true);
+				await indexedDb.add("groups", groupStore.toPrimitives());
+			}
+			console.log("Recalculated and saved group orders");
+		}
+
+		return groups;
+	}
+
 	useEffect(() => {
 		(async () => {
 			const indexedDB = new IndexedDB();
@@ -205,11 +226,12 @@ export default observer(function Home() {
 
 			const indexedDBGroups = await loadFromIndexedDB();
 			const fixedGroups = await checkAndFixDuplicateIds(indexedDBGroups);
+			const recalculatedGroups = await recalculateGroupOrders(fixedGroups);
 
-			if (fixedGroups && fixedGroups.length > 0) {
+			if (recalculatedGroups && recalculatedGroups.length > 0) {
 				const builtGroups = [];
 
-				for (const _group of fixedGroups) {
+				for (const _group of recalculatedGroups) {
 					builtGroups.push(new GroupStore(_group, true));
 				}
 
@@ -275,10 +297,17 @@ export default observer(function Home() {
 				// Insert the same group after the index
 				groupsClone.splice(idx + 1, 0, clonedGroup);
 
-				// Save the cloned group to IndexedDB
+				// Recalculate orders for all groups
+				for (let i = 0; i < groupsClone.length; i++) {
+					groupsClone[i].order = i;
+				}
+
+				// Save all groups to IndexedDB
 				const indexedDb = globalStore.getIndexedDb();
 				if (indexedDb?.db) {
-					indexedDb.add("groups", clonedGroup.toPrimitives());
+					for (const group of groupsClone) {
+						indexedDb.add("groups", group.toPrimitives());
+					}
 				}
 			}
 
@@ -507,7 +536,7 @@ export default observer(function Home() {
 							<ItemGroup
 								key={selectedGroup?.id}
 								groupStore={selectedGroup}
-								index={0}
+								index={selectedGroup.order}
 								onDelete={({ id }) => {
 									handleDeleteGroup(id);
 								}}
@@ -517,7 +546,7 @@ export default observer(function Home() {
 								onMove={({ id, direction }) => {
 									handleMoveGroup(id, direction);
 								}}
-								isSingleColumn={isSingleColumn}
+								isSingleColumn={true}
 								bindQuantity={bindQuantity}
 								isDebugMode={isDebugMode}
 							/>

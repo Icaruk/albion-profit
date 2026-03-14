@@ -99,7 +99,6 @@ function ComponentList({ ingredients, groupStore, handleOnChange, bindQuantity =
 /**
  * @typedef ItemGroupParams
  * @prop {GroupStore} groupStore
- * @prop {number} index
  * @prop {(params: any) => void} onChange
  * @prop {(params: any) => void} onDelete
  * @prop {(params: any) => void} onDuplicate
@@ -115,7 +114,6 @@ export const ItemGroup = observer(
 	 */
 	({
 		groupStore = {},
-		index,
 		onDelete = () => {},
 		onDuplicate = () => {},
 		onMove = () => {},
@@ -128,6 +126,8 @@ export const ItemGroup = observer(
 
 		const { product, ingredients } = getGroupParts(group);
 		const [isLoading, setIsLoading] = useState(false);
+
+		const order = group.order;
 
 		async function getPrices() {
 			setIsLoading(true);
@@ -373,7 +373,7 @@ export const ItemGroup = observer(
 
 						<ActionIcon
 							variant="subtle"
-							disabled={index === 0}
+							disabled={order === 0}
 							onClick={() => {
 								onMove({
 									id: group.id,
@@ -496,7 +496,7 @@ export const ItemGroup = observer(
 			<Card h="100%">
 				<Group justify="space-between">
 					<Text size="xs" c="dimmed">
-						{m.group()} {index + 1}
+						{m.group()} {order + 1}
 					</Text>
 
 					{globalStore.debugMode && (
