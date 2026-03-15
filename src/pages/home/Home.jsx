@@ -286,6 +286,20 @@ export default observer(function Home() {
 		});
 	}
 
+	function handleUpdateGroup(updatedGroup) {
+		setGroups((_prev) => {
+			const groupsClone = [..._prev];
+			const idx = groupsClone.findIndex((_groupStore) => _groupStore.id === updatedGroup.id);
+
+			if (idx !== -1) {
+				const newGroupStore = new GroupStore(updatedGroup, true);
+				groupsClone[idx] = newGroupStore;
+			}
+
+			return groupsClone;
+		});
+	}
+
 	function handleDuplicateGroup(id) {
 		setGroups((_prev) => {
 			const groupsClone = [..._prev];
@@ -546,6 +560,7 @@ export default observer(function Home() {
 								onMove={({ id, direction }) => {
 									handleMoveGroup(id, direction);
 								}}
+								onUpdate={handleUpdateGroup}
 								isSingleColumn={true}
 								bindQuantity={bindQuantity}
 								isDebugMode={isDebugMode}

@@ -28,7 +28,7 @@ import {
 import dame from "dame";
 import { toJS } from "mobx";
 import { observer } from "mobx-react-lite";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { locations } from "@/data/locations";
 import { findItemById } from "@/data/scripts/items/utils/findItemById";
 import { globalStore } from "@/mobx/rootStore";
@@ -100,6 +100,7 @@ function ComponentList({ ingredients, groupStore, handleOnChange, bindQuantity =
  * @prop {(params: any) => void} onDelete
  * @prop {(params: any) => void} onDuplicate
  * @prop {(params: any) => void} onMove
+ * @prop {(params: any) => void} onUpdate
  * @prop {boolean} isSingleColumn
  * @prop {boolean} bindQuantity
  * @prop {boolean} isDebugMode
@@ -114,15 +115,25 @@ export const ItemGroup = observer(
 		onDelete = () => {},
 		onDuplicate = () => {},
 		onMove = () => {},
+		onUpdate = () => {},
 		isSingleColumn = false,
 		bindQuantity = false,
 		isDebugMode = false,
 	}) => {
 		const [_groupStore] = useState(new GroupStore(groupStore, true));
 		const group = _groupStore;
+		const saveTimeoutRef = useRef(null);
 
 		const { product, ingredients } = getGroupParts(group);
 		const [isLoading, setIsLoading] = useState(false);
+
+		useEffect(() => {
+			return () => {
+				if (saveTimeoutRef.current) {
+					clearTimeout(saveTimeoutRef.current);
+				}
+			};
+		}, []);
 
 		const order = group.order;
 
@@ -345,7 +356,14 @@ export const ItemGroup = observer(
 		}
 
 		function handleOnChange() {
-			globalStore.getIndexedDb().add("groups", _groupStore.toPrimitives());
+			if (saveTimeoutRef.current) {
+				clearTimeout(saveTimeoutRef.current);
+			}
+
+			saveTimeoutRef.current = setTimeout(() => {
+				globalStore.getIndexedDb().add("groups", _groupStore.toPrimitives());
+				onUpdate(_groupStore.toPrimitives());
+			}, 1000);
 		}
 
 		if (!group) {
