@@ -16,24 +16,31 @@ import { observer } from "mobx-react-lite";
 import { findSimpleItemDataById } from "@/data/utils/findSimpleItemDataById";
 import { globalStore } from "@/mobx/rootStore";
 import * as m from "@/paraglide/messages.js";
-import { ItemImage } from "./ItemWithComponents";
+import { ItemImage } from "./ProductRow.jsx";
 
 /**
  * @typedef Props
  * @property {import("@/mobx/stores/shoppingListStore").ShoppingListStore} shoppingList
  * @property {(itemId: string)=>void} onCopy
+ * @property {()=>void} onClear
+ * @property {()=>void} onEdit
  */
 
 /**
  * @param {Props} Props.
  */
 
-export const ShoppingList = observer(({ shoppingList, onCopy }) => {
+export const ShoppingList = observer(({ shoppingList, onCopy, onClear, onEdit }) => {
 	const items = shoppingList.getItems();
 	const isEmptyList = shoppingList.isEmpty();
 
-	function handleEditOwningQuantity(itemId, quantity) {
-		shoppingList.editItem(itemId, { owningQuantity: quantity });
+	function handleEditOwningQuantity(parentItemId, quantity) {
+		shoppingList.editItem(parentItemId, { owningQuantity: quantity });
+		onEdit?.();
+	}
+
+	function handleClear() {
+		onClear?.();
 	}
 
 	return (
@@ -52,19 +59,18 @@ export const ShoppingList = observer(({ shoppingList, onCopy }) => {
 					<Button
 						variant="subtle"
 						leftSection={<IconTrash />}
-						onClick={() => shoppingList.clearItems()}
+						onClick={handleClear}
 					>
 						{m.removeAll()}
 					</Button>
 				)}
 
 				{items.map((_shoppingListItem) => {
-					const itemFromGroup = _shoppingListItem.observable;
-					const itemData = findSimpleItemDataById(itemFromGroup.id);
+					const itemData = findSimpleItemDataById(_shoppingListItem.parentItemId);
 
 					const translatedName =
 						itemData?.LocalizedNames[globalStore.getItemLangKey()] ??
-						_shoppingListItem.id;
+						_shoppingListItem.parentItemId;
 
 					const requiredQuantity = Math.round(_shoppingListItem.requiredQuantity);
 					const owningQuantity = Math.round(_shoppingListItem.owningQuantity);
@@ -75,7 +81,7 @@ export const ShoppingList = observer(({ shoppingList, onCopy }) => {
 
 					return (
 						<Group
-							key={itemFromGroup.id}
+							key={_shoppingListItem.parentItemId}
 							p="xs"
 							style={{
 								backgroundColor: isReady
@@ -84,7 +90,7 @@ export const ShoppingList = observer(({ shoppingList, onCopy }) => {
 							}}
 						>
 							<ItemImage
-								itemId={itemFromGroup?.id}
+								itemId={_shoppingListItem.parentItemId}
 								onCopy={() => onCopy(translatedName)}
 							/>
 
@@ -104,7 +110,7 @@ export const ShoppingList = observer(({ shoppingList, onCopy }) => {
 								value={owningQuantity}
 								onChange={(ev) => {
 									const val = Number(ev.target.value);
-									handleEditOwningQuantity(itemFromGroup.id, val);
+									handleEditOwningQuantity(_shoppingListItem.parentItemId, val);
 								}}
 							/>
 
@@ -126,7 +132,10 @@ export const ShoppingList = observer(({ shoppingList, onCopy }) => {
 											const val = ev.currentTarget.checked
 												? requiredQuantity
 												: 0;
-											handleEditOwningQuantity(itemFromGroup.id, val);
+											handleEditOwningQuantity(
+												_shoppingListItem.parentItemId,
+												val,
+											);
 										}}
 									/>
 								</Group>
@@ -139,11 +148,11 @@ export const ShoppingList = observer(({ shoppingList, onCopy }) => {
 	);
 });
 
-export const ShoppingListButton = ({ value = false, onClick }) => {
+export const ShoppingListButton = ({ value = false, onClick, count = 0 }) => {
 	return (
 		<Group justify="center" align="center" h="100%">
 			<Chip checked={value} onClick={() => onClick(value)}>
-				{m.shoppingList()}
+				{m.shoppingList()} ({count})
 			</Chip>
 		</Group>
 	);

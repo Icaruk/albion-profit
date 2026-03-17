@@ -68,16 +68,15 @@ function ComponentList({ ingredients, groupStore, handleOnChange, bindQuantity =
 							});
 							handleOnChange();
 						}}
-						onShoppingListClick={false}
-						// onShoppingListClick={(currValue) => {
-						// 	groupStore.editGroupItem({
-						// 		itemUid: currValue.uid,
-						// 		payload: {
-						// 			isInShoppingList: !currValue.isInShoppingList,
-						// 		},
-						// 	});
-						// 	handleOnChange();
-						// }}
+						onShoppingListClick={(currValue) => {
+							groupStore.editGroupItem({
+								itemUid: currValue.uid,
+								payload: {
+									isInShoppingList: !currValue.isInShoppingList,
+								},
+							});
+							handleOnChange();
+						}}
 						onChange={(_payload) => {
 							groupStore.editGroupItem({
 								itemUid: _payload.uid,
@@ -512,7 +511,7 @@ export const ItemGroup = observer(
 				<Card h="100%" id="item-group-card" miw="fit-content">
 					<Group justify="space-between" pb="xs">
 						<Text size="xs" c="dimmed">
-							{m.group()} {order + 1}
+							{m.group()} {order + 1} (order: {order})
 						</Text>
 
 						{globalStore.debugMode && (

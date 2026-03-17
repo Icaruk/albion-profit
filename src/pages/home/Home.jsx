@@ -20,18 +20,23 @@ import {
 	Tooltip,
 	useMatches,
 } from "@mantine/core";
-import { useResizeObserver } from "@mantine/hooks";
-import { IconBrandGithub, IconBrandReddit, IconPlus } from "@tabler/icons-react";
+import { useResizeObserver, useClipboard } from "@mantine/hooks";
+import { notifications } from "@mantine/notifications";
+import { IconBrandGithub, IconBrandReddit, IconPlus, IconClipboard } from "@tabler/icons-react";
+import { runInAction } from "mobx";
 import { observer } from "mobx-react-lite";
 import { useEffect, useMemo, useState } from "react";
 import { globalStore } from "@/mobx/rootStore";
 import { GroupStore } from "@/mobx/stores/groupStore";
+import { ShoppingListStore } from "@/mobx/stores/shoppingListStore.js";
 import * as m from "@/paraglide/messages.js";
 import classes from "./Home.module.css";
 import { ItemGroup } from "./partials/ItemGroup";
 import { LanguageSelector } from "./partials/LanguageSelector";
 import { ItemImage } from "./partials/ProductRow.jsx";
 import { ServerSelector } from "./partials/ServerSelector";
+import { ShoppingList } from "./partials/ShoppingList.jsx";
+import { ShoppingListButton } from "./partials/ShoppingList.jsx";
 import { getRandomWallpaper } from "./utils/getRandomWallpaper";
 import { generateUid } from "./utils/group/generateUid";
 import { getGroupParts } from "./utils/group/getGroupParts.js";
@@ -69,10 +74,18 @@ export default observer(function Home() {
 	/** @type {[GroupStore[], React.Dispatch<React.SetStateAction<GroupStore[]>>]} */
 	const [groups, setGroups] = useState([new GroupStore()]);
 
-	const sortedGroups = (groups ?? []).sort((a, b) => a.order - b.order);
+	const sortedGroups = [...(groups ?? [])].sort((a, b) => a.order - b.order);
 
 	const [showShoppingList, setShowShoppingList] = useState(false);
 	const [selectedGroupId, setSelectedGroupId] = useState(null);
+	const [shoppingList] = useState(() => new ShoppingListStore());
+
+	const clipboard = useClipboard();
+
+	useEffect(() => {
+		shoppingList.clearItems();
+		shoppingList.buildFromGroups(sortedGroups);
+	}, [groups]);
 
 	const [wallpaper] = useState(() => getRandomWallpaper());
 
@@ -94,7 +107,7 @@ export default observer(function Home() {
 			const groups = await indexedDb.getAll("groups");
 			if (groups && groups.length > 0) {
 				console.log("Loaded groups from IndexedDB:", groups.length);
-				return groups;
+				return groups.sort((a, b) => a.order - b.order);
 			}
 			return null;
 		} catch (error) {
@@ -335,51 +348,67 @@ export default observer(function Home() {
 			const idx = groupsClone.findIndex((_groupStore) => _groupStore.id === id);
 
 			if (idx === -1) {
-				return groupsClone;
+				return _prev;
 			}
 
-			// Check if the group can be moved
 			if (direction === 1 && idx === groupsClone.length - 1) {
-				return groupsClone;
+				return _prev;
 			}
 			if (direction === -1 && idx === 0) {
-				return groupsClone;
+				return _prev;
 			}
 
-			const prevGroup = groupsClone[Math.max(0, idx - 1)];
-			const currentGroup = groupsClone[idx];
-			const nextGroup = groupsClone[idx + 1];
+			const [movedGroup] = groupsClone.splice(idx, 1);
+			groupsClone.splice(idx + direction, 0, movedGroup);
 
-			if (currentGroup.order === nextGroup.order) {
-				nextGroup.order++;
-			}
+			runInAction(() => {
+				groupsClone.forEach((group, index) => {
+					group.order = index;
+				});
+			});
 
-			const currentOrder = currentGroup.order;
-
-			if (direction === 1) {
-				currentGroup.order = nextGroup.order;
-				nextGroup.order = currentOrder;
-
-				// Update both groups in IndexedDB
+			(async () => {
 				const indexedDb = globalStore.getIndexedDb();
 				if (indexedDb?.db) {
-					indexedDb.add("groups", currentGroup.toPrimitives());
-					indexedDb.add("groups", nextGroup.toPrimitives());
+					for (const group of groupsClone) {
+						await indexedDb.add("groups", group.toPrimitives());
+					}
 				}
-			} else {
-				currentGroup.order = prevGroup.order;
-				prevGroup.order = currentOrder;
-
-				// Update both groups in IndexedDB
-				const indexedDb = globalStore.getIndexedDb();
-				if (indexedDb?.db) {
-					indexedDb.add("groups", currentGroup.toPrimitives());
-					indexedDb.add("groups", prevGroup.toPrimitives());
-				}
-			}
+			})();
 
 			return groupsClone;
 		});
+	}
+
+	async function handleSaveShoppingListChanges() {
+		const updatedGroups = shoppingList.getUpdatedGroups(groups);
+		const indexedDb = globalStore.getIndexedDb();
+		if (indexedDb?.db) {
+			for (const group of updatedGroups) {
+				await indexedDb.add("groups", group.toPrimitives());
+			}
+		}
+	}
+
+	async function handleClearShoppingList() {
+		const updatedGroups = shoppingList.clearItemsInGroups(groups);
+		const indexedDb = globalStore.getIndexedDb();
+		if (indexedDb?.db) {
+			for (const group of updatedGroups) {
+				await indexedDb.add("groups", group.toPrimitives());
+			}
+			setGroups(updatedGroups);
+		}
+		shoppingList.clearItems();
+	}
+
+	async function handleSaveAllGroups() {
+		const indexedDb = globalStore.getIndexedDb();
+		if (indexedDb?.db) {
+			for (const group of groups) {
+				await indexedDb.add("groups", group.toPrimitives());
+			}
+		}
 	}
 
 	const { headerHeight } = useMemo(() => {
@@ -439,10 +468,13 @@ export default observer(function Home() {
 					</Grid.Col>
 
 					<Grid.Col span={4}>
-						{/* <ShoppingListButton
-							value={showShoppingList}
-							onClick={(val) => setShowShoppingList(!val)}
-						/> */}
+						<Group justify="center" h="100%">
+							<ShoppingListButton
+								value={showShoppingList}
+								onClick={(val) => setShowShoppingList(!val)}
+								count={shoppingList.items.size}
+							/>
+						</Group>
 					</Grid.Col>
 
 					<Grid.Col span={4}>
@@ -585,8 +617,7 @@ export default observer(function Home() {
 				}
 				keepMounted={false}
 			>
-				Temporally disabled
-				{/* <ShoppingList
+				<ShoppingList
 					shoppingList={shoppingList}
 					onCopy={(text) => {
 						clipboard.copy(text);
@@ -597,7 +628,9 @@ export default observer(function Home() {
 							title: "Item has been copied to clipboard",
 						});
 					}}
-				/> */}
+					onClear={handleClearShoppingList}
+					onEdit={handleSaveShoppingListChanges}
+				/>
 			</Drawer>
 		</div>
 	);
