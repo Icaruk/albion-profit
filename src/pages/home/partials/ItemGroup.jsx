@@ -546,7 +546,7 @@ export const ItemGroup = observer(
 				<Card h="100%" id="item-group-card" miw="fit-content">
 					<Group justify="space-between" pb="xs">
 						<Text size="xs" c="dimmed">
-							{m.group()} {order + 1} (order: {order})
+							{m.group()} {order + 1}
 						</Text>
 
 						{globalStore.debugMode && (

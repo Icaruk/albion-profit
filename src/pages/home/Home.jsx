@@ -6,6 +6,7 @@ import {
 	Box,
 	Button,
 	Card,
+	Center,
 	Checkbox,
 	Drawer,
 	Flex,
@@ -18,11 +19,16 @@ import {
 	Stack,
 	Text,
 	Tooltip,
-	useMatches,
 } from "@mantine/core";
-import { useResizeObserver, useClipboard } from "@mantine/hooks";
+import { useClipboard, useResizeObserver } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import { IconBrandGithub, IconBrandReddit, IconPlus, IconClipboard } from "@tabler/icons-react";
+import {
+	IconBrandGithub,
+	IconBrandReddit,
+	IconClipboard,
+	IconPlus,
+	IconShoppingCart,
+} from "@tabler/icons-react";
 import { runInAction } from "mobx";
 import { observer } from "mobx-react-lite";
 import { useEffect, useMemo, useState } from "react";
@@ -35,38 +41,11 @@ import { ItemGroup } from "./partials/ItemGroup";
 import { LanguageSelector } from "./partials/LanguageSelector";
 import { ItemImage } from "./partials/ProductRow.jsx";
 import { ServerSelector } from "./partials/ServerSelector";
-import { ShoppingList } from "./partials/ShoppingList.jsx";
-import { ShoppingListButton } from "./partials/ShoppingList.jsx";
+import { ShoppingList, ShoppingListButton } from "./partials/ShoppingList.jsx";
 import { getRandomWallpaper } from "./utils/getRandomWallpaper";
 import { generateUid } from "./utils/group/generateUid";
 import { getGroupParts } from "./utils/group/getGroupParts.js";
 import { IndexedDB } from "./utils/IndexedDB/IndexedDB";
-
-/* function loadFromLocalStorage() {
-	const str = localStorage.getItem("state");
-	if (!str) return null;
-
-	try {
-		const parsedGroup = JSON.parse(str);
-
-		if (!Array.isArray(parsedGroup)) {
-			return [];
-		}
-
-		for (let _i = 0; _i < parsedGroup.length; ++_i) {
-			const primitiveGroup = parsedGroup[_i];
-			const groupEntity = new GroupStore(primitiveGroup);
-
-			parsedGroup[_i] = groupEntity;
-		}
-
-		console.log("state loaded");
-
-		return parsedGroup;
-	} catch (err) {
-		return null;
-	}
-} */
 
 export default observer(function Home() {
 	const [isInitialized, setIsInitialized] = useState(false);
@@ -402,15 +381,6 @@ export default observer(function Home() {
 		shoppingList.clearItems();
 	}
 
-	async function handleSaveAllGroups() {
-		const indexedDb = globalStore.getIndexedDb();
-		if (indexedDb?.db) {
-			for (const group of groups) {
-				await indexedDb.add("groups", group.toPrimitives());
-			}
-		}
-	}
-
 	const { headerHeight } = useMemo(() => {
 		// temporal fix for margin-inline and margin-block... automatically applied by Mantine?
 		if (resizeObserverRef?.current?.style?.margin) {
@@ -529,6 +499,8 @@ export default observer(function Home() {
 									: undefined,
 							};
 
+							const hasItemsInShoppingList = group.atLeastOneItemIsInShoppingList();
+
 							return (
 								<Grid
 									key={group.id}
@@ -546,7 +518,7 @@ export default observer(function Home() {
 										<ItemImage itemId={product?.id} />
 									</Grid.Col>
 
-									<Grid.Col span="content">
+									<Grid.Col span="auto">
 										<Stack h="100%" justify="center" gap="0">
 											<Text>
 												{product?.names?.[globalStore.getItemLangKey()]}
@@ -559,6 +531,14 @@ export default observer(function Home() {
 											</Text>
 										</Stack>
 									</Grid.Col>
+
+									{hasItemsInShoppingList && (
+										<Grid.Col span="content">
+											<Center h="100%">
+												<IconShoppingCart size={18} />
+											</Center>
+										</Grid.Col>
+									)}
 								</Grid>
 							);
 						})}

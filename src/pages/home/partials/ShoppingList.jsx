@@ -1,12 +1,13 @@
 import {
 	Alert,
 	alpha,
+	Box,
 	Button,
-	Card,
 	Checkbox,
 	Chip,
 	Group,
 	Input,
+	Progress,
 	Stack,
 	Text,
 	TextInput,
@@ -43,10 +44,19 @@ export const ShoppingList = observer(({ shoppingList, onCopy, onClear, onEdit })
 		onClear?.();
 	}
 
+	const readyItems = items.filter((_item) => {
+		const requiredQuantity = Math.round(_item.requiredQuantity);
+		const owningQuantity = Math.round(_item.owningQuantity);
+		return owningQuantity >= requiredQuantity;
+	}).length;
+
+	const totalItems = items.length;
+	const progressPercent = totalItems > 0 ? (readyItems / totalItems) * 100 : 0;
+
 	return (
-		<Card>
+		<>
 			{isEmptyList && (
-				<Alert variant="light" color="blue" title="Empty list">
+				<Alert variant="light" color="blue" title="Empty list" mb="md">
 					<Group gap="xs">
 						{m.emptyShoppingListHint()}
 						<IconShoppingCartPlus size={24} />
@@ -54,17 +64,13 @@ export const ShoppingList = observer(({ shoppingList, onCopy, onClear, onEdit })
 				</Alert>
 			)}
 
-			<Stack>
-				{!isEmptyList && (
-					<Button
-						variant="subtle"
-						leftSection={<IconTrash />}
-						onClick={handleClear}
-					>
-						{m.removeAll()}
-					</Button>
-				)}
+			{!isEmptyList && (
+				<Button variant="subtle" leftSection={<IconTrash />} onClick={handleClear} mb="md">
+					{m.removeAll()}
+				</Button>
+			)}
 
+			<Stack gap="xs" mb={isEmptyList ? 0 : 80}>
 				{items.map((_shoppingListItem) => {
 					const itemData = findSimpleItemDataById(_shoppingListItem.parentItemId);
 
@@ -144,7 +150,35 @@ export const ShoppingList = observer(({ shoppingList, onCopy, onClear, onEdit })
 					);
 				})}
 			</Stack>
-		</Card>
+
+			{!isEmptyList && (
+				<Box
+					pos="sticky"
+					bottom={0}
+					left={0}
+					right={0}
+					p="sm"
+					style={{
+						backgroundColor: "var(--mantine-color-body)",
+						borderTop: "1px solid var(--mantine-color-default-border)",
+					}}
+				>
+					<Group justify="space-between" mb="xs">
+						<Text size="sm" fw={500}>
+							Progress
+						</Text>
+						<Text size="sm" c="dimmed">
+							{readyItems}/{totalItems}
+						</Text>
+					</Group>
+					<Progress
+						value={progressPercent}
+						size="sm"
+						color={progressPercent === 100 ? "green" : undefined}
+					/>
+				</Box>
+			)}
+		</>
 	);
 });
 
