@@ -1,10 +1,9 @@
 // @ts-check
 
 import { makeAutoObservable } from "mobx";
-import persist from "../utils/persist";
-
 import { IndexedDB } from "@/pages/home/utils/IndexedDB/IndexedDB";
 import { setLanguageTag } from "@/paraglide/runtime.js";
+import persist from "../utils/persist";
 
 /**
  * @typedef {"ES-ES" | "EN-EN" | "FR-FR"} LanguageKeys

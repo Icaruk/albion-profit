@@ -3,12 +3,7 @@ import { makeAutoObservable, runInAction } from "mobx";
 import { GroupStore } from "./groupStore.js";
 
 export class ShoppingListItem {
-	constructor({
-		parentGroupId,
-		parentItemId,
-		requiredQuantity,
-		owningQuantity = 0,
-	}) {
+	constructor({ parentGroupId, parentItemId, requiredQuantity, owningQuantity = 0 }) {
 		this.parentGroupId = parentGroupId;
 		this.parentItemId = parentItemId;
 		this.requiredQuantity = requiredQuantity;

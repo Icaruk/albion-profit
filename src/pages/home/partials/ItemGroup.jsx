@@ -8,6 +8,7 @@ import {
 	Divider,
 	Group,
 	ScrollArea,
+	Skeleton,
 	Stack,
 	Text,
 } from "@mantine/core";
@@ -22,7 +23,6 @@ import {
 	IconCopy,
 	IconHammer,
 	IconPlus,
-	IconShoppingCartMinus,
 	IconShoppingCartPlus,
 	IconTrash,
 	IconX,
@@ -30,7 +30,7 @@ import {
 import dame from "dame";
 import { toJS } from "mobx";
 import { observer } from "mobx-react-lite";
-import { useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { locations } from "@/data/locations";
 import { findItemById } from "@/data/scripts/items/utils/findItemById";
 import { globalStore } from "@/mobx/rootStore";
@@ -41,12 +41,15 @@ import { getGroupParts } from "../utils/group/getGroupParts";
 import { buildAndFindItemId } from "../utils/item/buildAndFindItemid";
 import { buildItemId } from "../utils/item/buildItemId";
 import { getItemIdComponents } from "../utils/item/getItemIdComponents";
-import { ItemPriceHistoryStats } from "./ItemPriceHistoryStats";
 import LocationsSelector from "./LocationsSelector";
 import { ProductRow } from "./ProductRow";
 import { RowSummary } from "./RowSummary";
 import { TaxSelector } from "./TaxSelector";
 import TierSelector from "./TierSelector";
+
+const ItemPriceHistoryStats = lazy(() =>
+	import("./ItemPriceHistoryStats").then((mod) => ({ default: mod.ItemPriceHistoryStats })),
+);
 
 /**
  * @param {Object} params
@@ -628,7 +631,9 @@ export const ItemGroup = observer(
 
 						<ItemDataTable />
 
-						<ItemPriceHistoryStats group={group} />
+						<Suspense fallback={<Skeleton height={300} />}>
+							<ItemPriceHistoryStats group={group} />
+						</Suspense>
 					</Stack>
 				</Card>
 			</Group>

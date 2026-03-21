@@ -3,6 +3,7 @@ import {
 	alpha,
 	Box,
 	Button,
+	Center,
 	Checkbox,
 	Chip,
 	Group,
@@ -65,9 +66,16 @@ export const ShoppingList = observer(({ shoppingList, onCopy, onClear, onEdit })
 			)}
 
 			{!isEmptyList && (
-				<Button variant="subtle" leftSection={<IconTrash />} onClick={handleClear} mb="md">
-					{m.removeAll()}
-				</Button>
+				<Center>
+					<Button
+						variant="subtle"
+						leftSection={<IconTrash />}
+						onClick={handleClear}
+						mb="md"
+					>
+						{m.removeAll()}
+					</Button>
+				</Center>
 			)}
 
 			<Stack gap="xs" mb={isEmptyList ? 0 : 80}>

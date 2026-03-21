@@ -1,10 +1,7 @@
 import { Button, Group } from "@mantine/core";
 import { locations } from "../../../data/locations";
 
-export default function LocationsSelector({
-	location = "",
-	onChange = () => {},
-}) {
+export default function LocationsSelector({ location = "", onChange = () => {} }) {
 	return (
 		<Group>
 			{locations.map((_location) => {

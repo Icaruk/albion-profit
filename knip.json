@@ -1,0 +1,12 @@
+{
+	"$schema": "https://unpkg.com/knip@5/schema.json",
+	"tags": ["-lintignore"],
+	"ignoreExportsUsedInFile": true,
+	"entry": ["src/data/scripts/**/*.js"],
+	"project": ["src/**/*.{js,jsx}"],
+	"ignoreFiles": ["src/paraglide/**/*.js", "src/data/**"],
+	"ignoreIssues": {
+		"src/paraglide/**": ["exports"]
+	},
+	"ignoreBinaries": ["mongod"]
+}

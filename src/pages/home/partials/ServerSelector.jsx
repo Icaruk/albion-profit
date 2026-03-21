@@ -1,7 +1,7 @@
-import { globalStore } from "@/mobx/rootStore";
 import { Select } from "@mantine/core";
 import { IconMapPin } from "@tabler/icons-react";
 import { observer } from "mobx-react-lite";
+import { globalStore } from "@/mobx/rootStore";
 
 export const ServerSelector = observer(() => {
 	return (

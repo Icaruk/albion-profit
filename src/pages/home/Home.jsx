@@ -350,7 +350,7 @@ export default observer(function Home() {
 				const indexedDb = globalStore.getIndexedDb();
 				if (indexedDb?.db) {
 					for (const group of groupsClone) {
-						await indexedDb.add("groups", group.toPrimitives());
+						indexedDb.add("groups", group.toPrimitives());
 					}
 				}
 			})();

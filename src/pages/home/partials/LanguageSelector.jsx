@@ -1,6 +1,6 @@
-import { globalStore } from "@/mobx/rootStore";
-import { Avatar, Center, Group, Select, Text } from "@mantine/core";
+import { Avatar, Group, Select, Text } from "@mantine/core";
 import { observer } from "mobx-react-lite";
+import { globalStore } from "@/mobx/rootStore";
 
 function FlagLabel({ imageSrc, text }) {
 	return (

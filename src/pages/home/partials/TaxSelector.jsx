@@ -1,6 +1,6 @@
-import * as m from "@/paraglide/messages.js";
 import { Select } from "@mantine/core";
 import { IconReceiptTax } from "@tabler/icons-react";
+import * as m from "@/paraglide/messages.js";
 
 export const TAXES = {
 	noTax: 0,

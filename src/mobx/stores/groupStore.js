@@ -42,7 +42,6 @@ export class ItemGroupElement {
 		type,
 		uid = generateUid(),
 		id = "",
-		names = {},
 		quantity = 1,
 		quantityPerCraft = 1,
 		price = 0,

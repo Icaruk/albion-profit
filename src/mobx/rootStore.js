@@ -1,4 +1,4 @@
-import { autorun, configure, toJS } from "mobx";
+import { configure } from "mobx";
 import { GlobalStore } from "./stores/globalStore";
 import { GroupStore } from "./stores/groupStore";
 

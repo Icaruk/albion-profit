@@ -6,7 +6,7 @@ export class IndexedDB {
 			let db;
 			const request = window.indexedDB.open("albion-profit", 2);
 
-			request.onerror = (event) => {
+			request.onerror = () => {
 				const errMsg = "Could not init IndexedDB";
 				console.error(errMsg);
 				reject(errMsg);

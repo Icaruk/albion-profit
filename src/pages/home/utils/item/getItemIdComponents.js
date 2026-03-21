@@ -23,14 +23,14 @@ export function getItemIdComponents(itemId) {
 	let tier = tierMatch?.[1] ?? null;
 
 	if (tier) {
-		tier = Number.parseInt(tier);
+		tier = Number.parseInt(tier, 10);
 	}
 
 	const enchantMatch = itemId.match(/(_LEVEL|@)([0-9]{1})/i);
 	let enchant = enchantMatch?.[2] ?? 0;
 
 	if (enchant) {
-		enchant = Number.parseInt(enchant);
+		enchant = Number.parseInt(enchant, 10);
 	}
 
 	return { id, tier, enchant };
