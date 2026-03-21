@@ -22,6 +22,8 @@ import {
 	IconCopy,
 	IconHammer,
 	IconPlus,
+	IconShoppingCartMinus,
+	IconShoppingCartPlus,
 	IconTrash,
 	IconX,
 } from "@tabler/icons-react";
@@ -487,6 +489,37 @@ export const ItemGroup = observer(
 			);
 		}
 
+		function ShoppingListToggle() {
+			if (ingredients.length === 0) return null;
+
+			const allInShoppingList = ingredients.every((i) => i.isInShoppingList);
+
+			return (
+				<Center>
+					<Button
+						size="xs"
+						leftSection={
+							allInShoppingList ? <IconShoppingCartMinus /> : <IconShoppingCartPlus />
+						}
+						variant="subtle"
+						onClick={() => {
+							for (const _ingredient of ingredients) {
+								_groupStore.editGroupItem({
+									itemUid: _ingredient.uid,
+									payload: {
+										isInShoppingList: !allInShoppingList,
+									},
+								});
+							}
+							handleOnChange();
+						}}
+					>
+						{allInShoppingList ? m.removeFromShoppingList() : m.addToShoppingList()}
+					</Button>
+				</Center>
+			);
+		}
+
 		function ItemDataTable() {
 			return (
 				<Group justify="center">
@@ -556,6 +589,8 @@ export const ItemGroup = observer(
 								<ProductOptions />
 
 								<Divider my="xs" label={m.components()} labelPosition="center" />
+
+								<ShoppingListToggle />
 
 								<ComponentList
 									ingredients={ingredients}
