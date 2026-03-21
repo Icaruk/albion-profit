@@ -492,29 +492,31 @@ export const ItemGroup = observer(
 		function ShoppingListToggle() {
 			if (ingredients.length === 0) return null;
 
-			const allInShoppingList = ingredients.every((i) => i.isInShoppingList);
-
 			return (
 				<Center>
 					<Button
 						size="xs"
-						leftSection={
-							allInShoppingList ? <IconShoppingCartMinus /> : <IconShoppingCartPlus />
-						}
+						leftSection={<IconShoppingCartPlus />}
 						variant="subtle"
 						onClick={() => {
 							for (const _ingredient of ingredients) {
 								_groupStore.editGroupItem({
 									itemUid: _ingredient.uid,
 									payload: {
-										isInShoppingList: !allInShoppingList,
+										isInShoppingList: true,
 									},
 								});
 							}
 							handleOnChange();
+
+							notifications.show({
+								color: "green",
+								icon: <IconCheck />,
+								title: `${ingredients.length} components have been added to shopping list`,
+							});
 						}}
 					>
-						{allInShoppingList ? m.removeFromShoppingList() : m.addToShoppingList()}
+						{m.addToShoppingList()}
 					</Button>
 				</Center>
 			);
