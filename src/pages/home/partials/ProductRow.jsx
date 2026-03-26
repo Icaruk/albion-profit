@@ -79,6 +79,7 @@ export const ProductRow = observer(
 	 * @param {() => void} props.onDelete
 	 * @param {(item: import("@/mobx/stores/groupStore").ItemGroupElement) => void} props.onShoppingListClick
 	 * @param {boolean} props.isHighlighted
+	 * @param {boolean} props.hasFetchedPrices
 	 */
 	({
 		label,
@@ -87,6 +88,7 @@ export const ProductRow = observer(
 		onDelete,
 		onShoppingListClick,
 		isHighlighted = false,
+		hasFetchedPrices = false,
 	}) => {
 		const clipboard = useClipboard();
 
@@ -388,20 +390,19 @@ export const ProductRow = observer(
 								value={calculatedTotal}
 								readOnly
 							/>
+
+							{hasFetchedPrices && !item?.price && item?.id && (
+								<Text size="xs" c="red.5">
+									{m.priceNotFound()}
+								</Text>
+							)}
 						</Group>
 					</Stack>
 				</Grid.Col>
 
-				<Grid.Col span="content">
+				<Grid.Col span="auto">
 					<Input.Wrapper label=" ">
-						<Group gap="xs" pr="xs">
-							{onDelete && (
-								<Tooltip label={m.deleteThisComponent()}>
-									<ActionIcon color="red" variant="subtle" onClick={onDelete}>
-										<IconX />
-									</ActionIcon>
-								</Tooltip>
-							)}
+						<Group gap="xs" pr="xs" justify="flex-end">
 							{onShoppingListClick && (
 								<Tooltip
 									label={
@@ -422,6 +423,14 @@ export const ProductRow = observer(
 										) : (
 											<IconShoppingCartPlus />
 										)}
+									</ActionIcon>
+								</Tooltip>
+							)}
+
+							{onDelete && (
+								<Tooltip label={m.deleteThisComponent()}>
+									<ActionIcon color="red" variant="subtle" onClick={onDelete}>
+										<IconX />
 									</ActionIcon>
 								</Tooltip>
 							)}

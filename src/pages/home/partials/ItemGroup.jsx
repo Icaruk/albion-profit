@@ -51,6 +51,55 @@ const ItemPriceHistoryStats = lazy(() =>
 	import("./ItemPriceHistoryStats").then((mod) => ({ default: mod.ItemPriceHistoryStats })),
 );
 
+const FISH_SAUCE_ITEM_IDS = new Set([
+	"T1_FISHSAUCE_LEVEL1",
+	"T1_FISHSAUCE_LEVEL2",
+	"T1_FISHSAUCE_LEVEL3",
+	"T1_FISH_FRESHWATER_ALL_COMMON",
+	"T2_FISH_FRESHWATER_ALL_COMMON",
+	"T3_FISH_FRESHWATER_ALL_COMMON",
+	"T4_FISH_FRESHWATER_ALL_COMMON",
+	"T5_FISH_FRESHWATER_ALL_COMMON",
+	"T6_FISH_FRESHWATER_ALL_COMMON",
+	"T7_FISH_FRESHWATER_ALL_COMMON",
+	"T8_FISH_FRESHWATER_ALL_COMMON",
+	"T1_FISH_SALTWATER_ALL_COMMON",
+	"T2_FISH_SALTWATER_ALL_COMMON",
+	"T3_FISH_SALTWATER_ALL_COMMON",
+	"T4_FISH_SALTWATER_ALL_COMMON",
+	"T5_FISH_SALTWATER_ALL_COMMON",
+	"T6_FISH_SALTWATER_ALL_COMMON",
+	"T7_FISH_SALTWATER_ALL_COMMON",
+	"T8_FISH_SALTWATER_ALL_COMMON",
+	"T3_FISH_FRESHWATER_FOREST_RARE",
+	"T5_FISH_FRESHWATER_FOREST_RARE",
+	"T7_FISH_FRESHWATER_FOREST_RARE",
+	"T3_FISH_FRESHWATER_MOUNTAIN_RARE",
+	"T5_FISH_FRESHWATER_MOUNTAIN_RARE",
+	"T7_FISH_FRESHWATER_MOUNTAIN_RARE",
+	"T3_FISH_FRESHWATER_HIGHLANDS_RARE",
+	"T5_FISH_FRESHWATER_HIGHLANDS_RARE",
+	"T7_FISH_FRESHWATER_HIGHLANDS_RARE",
+	"T3_FISH_FRESHWATER_STEPPE_RARE",
+	"T5_FISH_FRESHWATER_STEPPE_RARE",
+	"T7_FISH_FRESHWATER_STEPPE_RARE",
+	"T3_FISH_FRESHWATER_SWAMP_RARE",
+	"T5_FISH_FRESHWATER_SWAMP_RARE",
+	"T7_FISH_FRESHWATER_SWAMP_RARE",
+	"T3_FISH_SALTWATER_ALL_RARE",
+	"T5_FISH_SALTWATER_ALL_RARE",
+	"T7_FISH_SALTWATER_ALL_RARE",
+	"T3_FISH_FRESHWATER_AVALON_RARE",
+	"T5_FISH_FRESHWATER_AVALON_RARE",
+	"T7_FISH_FRESHWATER_AVALON_RARE",
+]);
+
+const ARCANE_EXTRACT_ITEM_IDS = new Set([
+	"T1_ALCHEMY_EXTRACT_LEVEL1",
+	"T1_ALCHEMY_EXTRACT_LEVEL2",
+	"T1_ALCHEMY_EXTRACT_LEVEL3",
+]);
+
 /**
  * @param {Object} params
  * @param {[]} params.ingredients
@@ -58,7 +107,13 @@ const ItemPriceHistoryStats = lazy(() =>
  * @param {(params: any) => void} params.handleOnChange
  * @param {boolean} params.bindQuantity
  */
-function ComponentList({ ingredients, groupStore, handleOnChange, bindQuantity = false }) {
+function ComponentList({
+	ingredients,
+	groupStore,
+	handleOnChange,
+	bindQuantity = false,
+	hasFetchedPrices = false,
+}) {
 	return (
 		<Stack gap="2">
 			{ingredients.map((_ingredient, _idx) => {
@@ -90,6 +145,7 @@ function ComponentList({ ingredients, groupStore, handleOnChange, bindQuantity =
 							});
 							handleOnChange();
 						}}
+						hasFetchedPrices={hasFetchedPrices}
 					/>
 				);
 			})}
@@ -130,6 +186,7 @@ export const ItemGroup = observer(
 
 		const { product, ingredients } = getGroupParts(group);
 		const [isLoading, setIsLoading] = useState(false);
+		const [isLoadingComponents, setIsLoadingComponents] = useState(false);
 
 		useEffect(() => {
 			return () => {
@@ -177,8 +234,24 @@ export const ItemGroup = observer(
 			});
 		}
 
+		function shouldAddIngredientForEnchantZero(uniqueName, enchant) {
+			if (enchant > 0) {
+				return true;
+			}
+
+			if (ARCANE_EXTRACT_ITEM_IDS.has(uniqueName)) {
+				return false;
+			}
+
+			if (FISH_SAUCE_ITEM_IDS.has(uniqueName)) {
+				return false;
+			}
+
+			return true;
+		}
+
 		async function getIngredients() {
-			setIsLoading(true);
+			setIsLoadingComponents(true);
 
 			const { product } = getGroupParts(_groupStore);
 
@@ -187,9 +260,9 @@ export const ItemGroup = observer(
 			const { tier, enchant } = getItemIdComponents(productId);
 
 			const foundItem = await findItemById(productId);
-			setIsLoading(false);
 
 			if (!foundItem) {
+				setIsLoadingComponents(false);
 				return;
 			}
 
@@ -337,12 +410,17 @@ export const ItemGroup = observer(
 			for (const _resource of craftResourceList) {
 				const uniqueName = _resource.uniqueName;
 
-				const { tier, enchant } = getItemIdComponents(uniqueName);
+				if (!shouldAddIngredientForEnchantZero(uniqueName, enchant)) {
+					continue;
+				}
+
+				const { tier: resourceTier, enchant: resourceEnchant } =
+					getItemIdComponents(uniqueName);
 
 				const itemId = buildItemId({
 					id: uniqueName,
-					tier,
-					enchant,
+					tier: resourceTier,
+					enchant: resourceEnchant,
 					appendEnchantSymbol: true,
 				});
 
@@ -357,6 +435,10 @@ export const ItemGroup = observer(
 				items: newItemsToAdd,
 				cleanIngredients: true,
 			});
+
+			setIsLoadingComponents(false);
+			await getPrices();
+			handleOnChange();
 		}
 
 		function handleOnChange() {
@@ -463,9 +545,9 @@ export const ItemGroup = observer(
 								variant={hasIngredients ? "transparent" : "light"}
 								onClick={() => {
 									getIngredients();
-									handleOnChange();
 								}}
 								leftSection={<IconHammer />}
+								loading={isLoadingComponents}
 							>
 								{m.getComponents()}
 							</Button>
@@ -542,6 +624,7 @@ export const ItemGroup = observer(
 		}
 
 		const hasIngredients = group?.items?.length > 1;
+		const hasFetchedPrices = (group?.priceData?.length ?? 0) > 0;
 		// const atLeastOneItemIsInShoppingList = group.atLeastOneItemIsInShoppingList();
 
 		return (
@@ -589,6 +672,7 @@ export const ItemGroup = observer(
 										handleOnChange();
 									}}
 									isHighlighted
+									hasFetchedPrices={hasFetchedPrices}
 								/>
 
 								<ProductOptions />
@@ -602,6 +686,7 @@ export const ItemGroup = observer(
 									groupStore={_groupStore}
 									handleOnChange={handleOnChange}
 									bindQuantity={bindQuantity}
+									hasFetchedPrices={hasFetchedPrices}
 								/>
 								<ComponentActions />
 							</Stack>

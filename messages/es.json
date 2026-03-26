@@ -36,5 +36,6 @@
 	"itemData": "Datos del ítem",
 	"perCraft": "Por craft",
 	"units": "Unidades",
-	"totalSilver": "Total plata"
+	"totalSilver": "Total plata",
+	"priceNotFound": "Precio no encontrado"
 }

@@ -36,5 +36,6 @@
 	"itemData": "Item data",
 	"perCraft": "Per craft",
 	"units": "Units",
-	"totalSilver": "Total silver"
+	"totalSilver": "Total silver",
+	"priceNotFound": "Price not found"
 }

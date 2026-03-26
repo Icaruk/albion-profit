@@ -36,5 +36,6 @@
 	"itemData": "Données de l'article",
 	"perCraft": "Par craft",
 	"units": "Unités",
-	"totalSilver": "Total argent"
+	"totalSilver": "Total argent",
+	"priceNotFound": "Prix introuvable"
 }
