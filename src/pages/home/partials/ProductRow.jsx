@@ -328,7 +328,7 @@ export const ProductRow = observer(
 									hideControls
 									w={100}
 									value={item?.returnRate}
-									min={0}
+									min={1}
 									max={100}
 									onChange={(val) => handleChange({ returnRate: val })}
 								/>
