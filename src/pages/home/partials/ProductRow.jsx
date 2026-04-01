@@ -1,5 +1,6 @@
 import {
 	ActionIcon,
+	Checkbox,
 	Grid,
 	Group,
 	Image,
@@ -21,7 +22,7 @@ import {
 	IconLock,
 	IconShoppingCartMinus,
 	IconShoppingCartPlus,
-	IconX,
+	IconTrash,
 } from "@tabler/icons-react";
 import { observer } from "mobx-react-lite";
 import { memo, useMemo } from "react";
@@ -80,6 +81,7 @@ export const ProductRow = observer(
 	 * @param {(item: import("@/mobx/stores/groupStore").ItemGroupElement) => void} props.onShoppingListClick
 	 * @param {boolean} props.isHighlighted
 	 * @param {boolean} props.hasFetchedPrices
+	 * @param {boolean} props.withOmit
 	 */
 	({
 		label,
@@ -88,6 +90,7 @@ export const ProductRow = observer(
 		onDelete,
 		onShoppingListClick,
 		isHighlighted = false,
+		withOmit = false,
 		hasFetchedPrices = false,
 	}) => {
 		const clipboard = useClipboard();
@@ -189,7 +192,7 @@ export const ProductRow = observer(
 
 		const style = {
 			backgroundColor: "var(--mantine-color-dark-5)",
-			opacity: item.quantity === 0 ? 0.4 : undefined,
+			opacity: item.isActive === false ? 0.6 : undefined,
 		};
 
 		if (isHighlighted) {
@@ -396,6 +399,17 @@ export const ProductRow = observer(
 									{m.priceNotFound()}
 								</Text>
 							)}
+
+							{withOmit && !isProduct && (
+								<Checkbox
+									label={m.active()}
+									size="sm"
+									checked={item?.isActive !== false}
+									onChange={(e) =>
+										handleChange({ isActive: e.currentTarget.checked })
+									}
+								/>
+							)}
 						</Group>
 					</Stack>
 				</Grid.Col>
@@ -430,7 +444,7 @@ export const ProductRow = observer(
 							{onDelete && (
 								<Tooltip label={m.deleteThisComponent()}>
 									<ActionIcon color="red" variant="subtle" onClick={onDelete}>
-										<IconX />
+										<IconTrash />
 									</ActionIcon>
 								</Tooltip>
 							)}

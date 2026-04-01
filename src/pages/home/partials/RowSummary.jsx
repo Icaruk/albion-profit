@@ -28,6 +28,8 @@ const ItemSummary = observer(({ group = {}, isPerUnit = false }) => {
 	const totalEarnings = Math.round(product?.price * productQuantity);
 
 	for (const _ingredient of ingredients) {
+		if (_ingredient.isActive === false) continue;
+
 		let quantity = _ingredient.quantity;
 
 		if (isPerUnit) {

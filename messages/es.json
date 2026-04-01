@@ -37,5 +37,6 @@
 	"perCraft": "Por craft",
 	"units": "Unidades",
 	"totalSilver": "Total plata",
-	"priceNotFound": "Precio no encontrado"
+	"priceNotFound": "Precio no encontrado",
+	"active": "Activo"
 }

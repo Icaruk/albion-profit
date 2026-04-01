@@ -37,5 +37,6 @@
 	"perCraft": "Per craft",
 	"units": "Units",
 	"totalSilver": "Total silver",
-	"priceNotFound": "Price not found"
+	"priceNotFound": "Price not found",
+	"active": "Active"
 }

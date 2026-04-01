@@ -146,6 +146,7 @@ function ComponentList({
 							handleOnChange();
 						}}
 						hasFetchedPrices={hasFetchedPrices}
+						withOmit
 					/>
 				);
 			})}

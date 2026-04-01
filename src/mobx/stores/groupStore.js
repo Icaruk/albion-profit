@@ -54,7 +54,9 @@ export class ItemGroupElement {
 		returnRate = 0,
 		isLocked = false,
 		isInShoppingList = false,
+		isActive = true,
 		owningQuantity = 0,
+		names = "",
 	}) {
 		/** @type {"product" | "ingredient"} */
 		this.type = type;
@@ -76,7 +78,9 @@ export class ItemGroupElement {
 		this.returnRate = returnRate;
 		this.isLocked = isLocked;
 		this.isInShoppingList = isInShoppingList;
+		this.isActive = isActive;
 		this.owningQuantity = owningQuantity;
+		this.names = names;
 	}
 }
 
@@ -85,10 +89,12 @@ export class GroupStore {
 		this.id = keepId ? data.id : generateUid();
 		this.name = data?.name ?? "";
 		/** @type {ItemGroupElement[]} */
-		this.items = data?.items ?? [
-			new ItemGroupElement({ type: "product" }),
-			new ItemGroupElement({ type: "ingredient" }),
-		];
+		this.items = data?.items
+			? data.items.map((_item) => new ItemGroupElement(_item))
+			: [
+					new ItemGroupElement({ type: "product" }),
+					new ItemGroupElement({ type: "ingredient" }),
+				];
 		/** @type {import("@/pages/home/partials/TaxSelector").TaxesValue} */
 		this.tax = data?.tax ?? TAXES.sellOrderWithPremium;
 		this.location = data?.location ?? locations[0];

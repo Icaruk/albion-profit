@@ -37,5 +37,6 @@
 	"perCraft": "Par craft",
 	"units": "Unités",
 	"totalSilver": "Total argent",
-	"priceNotFound": "Prix introuvable"
+	"priceNotFound": "Prix introuvable",
+	"active": "Actif"
 }
