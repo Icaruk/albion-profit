@@ -8,6 +8,7 @@ import {
 	Chip,
 	Group,
 	Input,
+	NumberInput,
 	Progress,
 	Stack,
 	Text,
@@ -91,16 +92,24 @@ export const ShoppingList = observer(({ shoppingList, onCopy, onClear, onEdit })
 					const pendingQuantity = Math.round(
 						_shoppingListItem.requiredQuantity - _shoppingListItem.owningQuantity,
 					);
+
 					const isReady = owningQuantity >= requiredQuantity;
+					const isPending = owningQuantity > 0 && !isReady;
+
+					let bgColor;
+
+					if (isReady) {
+						bgColor = alpha("var(--mantine-color-green-4)", 0.07);
+					} else if (isPending) {
+						bgColor = alpha("var(--mantine-color-yellow-4)", 0.05);
+					}
 
 					return (
 						<Group
 							key={_shoppingListItem.parentItemId}
 							p="xs"
 							style={{
-								backgroundColor: isReady
-									? alpha("var(--mantine-color-green-2)", 0.05)
-									: undefined,
+								backgroundColor: bgColor,
 							}}
 						>
 							<ItemImage
@@ -115,25 +124,27 @@ export const ShoppingList = observer(({ shoppingList, onCopy, onClear, onEdit })
 								w={60}
 								value={requiredQuantity}
 								readOnly
-								variant="filled"
+								variant="unstyled"
 							/>
 
-							<TextInput
+							<NumberInput
 								label={<Text size="xs">Owned</Text>}
 								w={60}
 								value={owningQuantity}
-								onChange={(ev) => {
-									const val = Number(ev.target.value);
+								onChange={(val) => {
 									handleEditOwningQuantity(_shoppingListItem.parentItemId, val);
 								}}
+								min={0}
+								hideControls
 							/>
 
 							<TextInput
 								label={<Text size="xs">Pending</Text>}
 								w={60}
+								color={isPending ? "yellow" : undefined}
 								value={pendingQuantity}
 								readOnly
-								variant="filled"
+								variant="unstyled"
 							/>
 
 							<Input.Wrapper label=" ">
