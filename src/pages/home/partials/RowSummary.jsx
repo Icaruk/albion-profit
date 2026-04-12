@@ -15,10 +15,10 @@ const ItemSummary = observer(({ group = {}, isPerUnit = false }) => {
 
 	const { product, ingredients } = getGroupParts(group);
 
-	const percentageToMultiplier = 1 - product?.returnRate / 100;
+	const totalCostReductionByReturnRateMultiplier = 1 - (product?.returnRate ?? 0) / 100;
 
 	const tax = group?.tax ?? 0;
-	const taxMultiplier = 1 - tax / 100;
+	const totalProfitReductionByTaxMultiplier = 1 - tax / 100;
 
 	const productQuantityPerCraft = product?.quantityPerCraft ?? 1;
 	const productQuantity = isPerUnit
@@ -37,7 +37,7 @@ const ItemSummary = observer(({ group = {}, isPerUnit = false }) => {
 		}
 
 		const isArtifact = isArtifactItem(_ingredient.id);
-		const multiplier = isArtifact ? 1 : percentageToMultiplier;
+		const multiplier = isArtifact ? 1 : totalCostReductionByReturnRateMultiplier;
 
 		totalCost += Math.round(_ingredient.price * quantity * multiplier);
 	}
@@ -45,7 +45,7 @@ const ItemSummary = observer(({ group = {}, isPerUnit = false }) => {
 	totalCost = Math.round(totalCost);
 
 	totalProfit = totalEarnings - totalCost;
-	const totalProfitAfterTax = Math.round(totalProfit * taxMultiplier);
+	const totalProfitAfterTax = Math.round(totalProfit * totalProfitReductionByTaxMultiplier);
 
 	const totalProfitPercentage = (totalProfitAfterTax / totalEarnings) * 100;
 

@@ -7,7 +7,15 @@ export function isArtifactItem(itemId) {
 		return true;
 	}
 
-	if (new RegExp(/arti|efact/gi).test(itemId)) {
+	if (/arti|efact/gi.test(itemId)) {
+		return true;
+	}
+
+	if (itemId.includes("_SHARD_AVALONIAN")) {
+		return true;
+	}
+
+	if (itemId.includes("_ROYAL_SIGIL")) {
 		return true;
 	}
 
