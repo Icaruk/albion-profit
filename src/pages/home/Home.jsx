@@ -78,7 +78,7 @@ export default observer(function Home() {
 	async function loadFromIndexedDB() {
 		try {
 			const indexedDb = globalStore.getIndexedDb();
-			if (!indexedDb || !indexedDb.db) {
+			if (!indexedDb?.db) {
 				console.log("IndexedDB not initialized yet");
 				return null;
 			}
