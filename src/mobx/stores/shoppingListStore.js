@@ -27,6 +27,7 @@ export class ShoppingListStore {
 	}
 
 	buildFromGroups(groups) {
+		const previousItems = new Map(this.items);
 		this.items.clear();
 
 		for (const _group of groups) {
@@ -37,13 +38,14 @@ export class ShoppingListStore {
 					const foundItem = this.items.get(_item.id);
 
 					if (!foundItem) {
+						const previousItem = previousItems.get(_item.id);
 						this.items.set(
 							_item.id,
 							new ShoppingListItem({
 								parentGroupId: _group.id,
 								parentItemId: _item.id,
 								requiredQuantity: _item.quantity,
-								owningQuantity: _item.owningQuantity ?? 0,
+								owningQuantity: previousItem?.owningQuantity ?? _item.owningQuantity ?? 0,
 							}),
 						);
 					} else {

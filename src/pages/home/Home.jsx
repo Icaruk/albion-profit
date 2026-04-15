@@ -62,7 +62,6 @@ export default observer(function Home() {
 	const clipboard = useClipboard();
 
 	useEffect(() => {
-		shoppingList.clearItems();
 		shoppingList.buildFromGroups(sortedGroups);
 	}, [groups]);
 

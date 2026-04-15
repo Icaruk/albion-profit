@@ -37,7 +37,11 @@ export const ShoppingList = observer(({ shoppingList, onCopy, onClear, onEdit })
 	const items = shoppingList.getItems();
 	const isEmptyList = shoppingList.isEmpty();
 
-	function handleEditOwningQuantity(parentItemId, quantity) {
+	function handleEditOwningQuantity(parentItemId, quantity = 0) {
+		if (Number.isNaN(quantity)) {
+			quantity = 0;
+		}
+
 		shoppingList.editItem(parentItemId, { owningQuantity: quantity });
 		onEdit?.();
 	}
@@ -94,13 +98,12 @@ export const ShoppingList = observer(({ shoppingList, onCopy, onClear, onEdit })
 					);
 
 					const isReady = owningQuantity >= requiredQuantity;
-					const isPending = owningQuantity > 0 && !isReady;
 
 					let bgColor;
 
 					if (isReady) {
 						bgColor = alpha("var(--mantine-color-green-4)", 0.07);
-					} else if (isPending) {
+					} else {
 						bgColor = alpha("var(--mantine-color-yellow-4)", 0.05);
 					}
 
@@ -125,6 +128,11 @@ export const ShoppingList = observer(({ shoppingList, onCopy, onClear, onEdit })
 								value={requiredQuantity}
 								readOnly
 								variant="unstyled"
+								styles={{
+									input: {
+										textAlign: "center",
+									},
+								}}
 							/>
 
 							<NumberInput
@@ -136,15 +144,33 @@ export const ShoppingList = observer(({ shoppingList, onCopy, onClear, onEdit })
 								}}
 								min={0}
 								hideControls
+								styles={{
+									input: {
+										textAlign: "center",
+									},
+								}}
 							/>
 
 							<TextInput
-								label={<Text size="xs">Pending</Text>}
+								label={
+									<Text
+										size="xs"
+										c={isReady ? undefined : "var(--mantine-color-blue-5)"}
+									>
+										Pending
+									</Text>
+								}
 								w={60}
-								color={isPending ? "yellow" : undefined}
 								value={pendingQuantity}
 								readOnly
 								variant="unstyled"
+								styles={{
+									input: {
+										textAlign: "center",
+										color: isReady ? undefined : "var(--mantine-color-blue-5)",
+										fontWeight: isReady ? undefined : "bolder",
+									},
+								}}
 							/>
 
 							<Input.Wrapper label=" ">
