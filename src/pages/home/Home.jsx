@@ -546,6 +546,8 @@ export default observer(function Home() {
 							<Button
 								fullWidth
 								leftSection={<IconPlus />}
+								color="teal"
+								variant="outline"
 								onClick={() => {
 									handleAddGroup();
 								}}

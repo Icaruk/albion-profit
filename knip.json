@@ -4,9 +4,18 @@
 	"ignoreExportsUsedInFile": true,
 	"entry": ["src/data/scripts/**/*.js"],
 	"project": ["src/**/*.{js,jsx}"],
-	"ignoreFiles": ["src/paraglide/**/*.js", "src/data/**"],
+	"paths": {
+		"@/*": ["./src/*"],
+		"@": ["./src"]
+	},
+	"ignoreFiles": [
+		"src/paraglide/**/*.js",
+		"src/data/**",
+		"src/pages/home/partials/ItemSelector.jsx"
+	],
 	"ignoreIssues": {
-		"src/paraglide/**": ["exports"]
+		"src/paraglide/**": ["exports"],
+		"src/mobx/rootStore.js": ["exports"]
 	},
 	"ignoreBinaries": ["mongod"]
 }

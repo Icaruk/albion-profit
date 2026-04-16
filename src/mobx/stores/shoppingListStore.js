@@ -45,7 +45,8 @@ export class ShoppingListStore {
 								parentGroupId: _group.id,
 								parentItemId: _item.id,
 								requiredQuantity: _item.quantity,
-								owningQuantity: previousItem?.owningQuantity ?? _item.owningQuantity ?? 0,
+								owningQuantity:
+									previousItem?.owningQuantity ?? _item.owningQuantity ?? 0,
 							}),
 						);
 					} else {

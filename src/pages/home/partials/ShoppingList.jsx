@@ -23,7 +23,7 @@ import { ItemImage } from "./ProductRow.jsx";
 
 /**
  * @typedef Props
- * @property {import("@/mobx/stores/shoppingListStore").ShoppingListStore} shoppingList
+ * @property {unknown} shoppingList
  * @property {(itemId: string)=>void} onCopy
  * @property {()=>void} onClear
  * @property {()=>void} onEdit
@@ -31,8 +31,8 @@ import { ItemImage } from "./ProductRow.jsx";
 
 /**
  * @param {Props} Props.
+ * @returns {import('react').JSX.Element}
  */
-
 export const ShoppingList = observer(({ shoppingList, onCopy, onClear, onEdit }) => {
 	const items = shoppingList.getItems();
 	const isEmptyList = shoppingList.isEmpty();

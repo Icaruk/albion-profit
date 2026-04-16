@@ -563,7 +563,7 @@ export const ItemGroup = observer(
 				<Group grow>
 					<Button
 						leftSection={<IconPlus />}
-						variant="light"
+						variant="outline"
 						onClick={() => {
 							_groupStore.addGroupItem({});
 							handleOnChange();
@@ -704,7 +704,7 @@ export const ItemGroup = observer(
 						<Center>
 							<Button
 								rightSection={<IconCloudDownload />}
-								variant="light"
+								color="teal"
 								onClick={async () => {
 									await getPrices({ groupId: group.id });
 									handleOnChange();

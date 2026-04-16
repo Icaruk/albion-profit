@@ -1,0 +1,3 @@
+- Handle item qualities
+  - Add quality multiple selector in product row
+  - Fetch all qualities, fallback to the lowest

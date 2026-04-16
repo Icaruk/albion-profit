@@ -8,7 +8,6 @@
     ],
     "module": "nodenext",
     "moduleResolution": "nodenext",
-    "baseUrl": ".",
     "paths": {
       "@/*": [
         "./src/*"
