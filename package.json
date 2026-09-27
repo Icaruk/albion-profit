@@ -8,6 +8,7 @@
 		"build": "paraglide-js compile --project ./project.inlang --outdir ./src\\paraglide && vite build",
 		"biome": "biome check src --write",
 		"knip": "knip",
+		"data:update": "node src/data/scripts/updateData.js",
 		"preview": "vite preview",
 		"mongodb:start": "mongod --dbpath ./src/data/mongodb/data/db --port 27018",
 		"postinstall": "paraglide-js compile --project ./project.inlang --outdir ./src\\paraglide"

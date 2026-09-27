@@ -133,3 +133,9 @@ dist
 
 # OpenChamber browser tooling artifacts
 .openchamber/
+
+# Item data pipeline caches (regenerate with `pnpm run data:update`)
+src/data/scripts/cache/
+
+# tgrep search index
+.tgrep/
