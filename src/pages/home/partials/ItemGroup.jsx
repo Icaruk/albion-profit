@@ -32,7 +32,7 @@ import { toJS } from "mobx";
 import { observer } from "mobx-react-lite";
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { locations } from "@/data/locations";
-import { findItemById } from "@/data/scripts/items/utils/findItemById";
+import { findItemById } from "@/data/utils/findItemById";
 import { globalStore } from "@/mobx/rootStore";
 import { GroupStore } from "@/mobx/stores/groupStore";
 import * as m from "@/paraglide/messages.js";
