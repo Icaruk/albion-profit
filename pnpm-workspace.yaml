@@ -1,0 +1,4 @@
+allowBuilds:
+  esbuild: true
+overrides:
+  '@types/react': 19.2.14
