@@ -38,9 +38,11 @@ import { GroupStore } from "@/mobx/stores/groupStore";
 import * as m from "@/paraglide/messages.js";
 import { getGroupItemIdsForFetch } from "../utils/group/getGroupItemIdsForFetch";
 import { getGroupParts } from "../utils/group/getGroupParts";
+import { loadPricesCache, savePricesCache } from "../utils/group/pricesCache";
 import { buildAndFindItemId } from "../utils/item/buildAndFindItemid";
 import { buildItemId } from "../utils/item/buildItemId";
 import { getItemIdComponents } from "../utils/item/getItemIdComponents";
+import classes from "./GuideHighlight.module.css";
 import LocationsSelector from "./LocationsSelector";
 import { ProductRow } from "./ProductRow";
 import { RowSummary } from "./RowSummary";
@@ -197,6 +199,30 @@ export const ItemGroup = observer(
 			};
 		}, []);
 
+		// Hydrate prices from localStorage cache so switching between items
+		// does not require clicking "Get prices" again
+		useEffect(() => {
+			const alreadyHasPrices = (_groupStore.priceData?.length ?? 0) > 0;
+			if (alreadyHasPrices) return;
+
+			const { product: currentProduct } = getGroupParts(_groupStore);
+			if (!currentProduct?.id) return;
+
+			const cachedEntry = loadPricesCache({
+				server: globalStore.server,
+				itemIds: getGroupItemIdsForFetch({ group: _groupStore }),
+				locations: locations.join(","),
+			});
+			if (!cachedEntry) return;
+
+			_groupStore.setGroupPriceData({
+				currentPriceData: cachedEntry.prices,
+				// History belongs to the product it was fetched for
+				priceHistoryData:
+					cachedEntry.productId === currentProduct.id ? cachedEntry.history : [],
+			});
+		}, []);
+
 		const order = group.order;
 
 		async function getPrices() {
@@ -233,6 +259,15 @@ export const ItemGroup = observer(
 				currentPriceData,
 				priceHistoryData,
 			});
+
+			savePricesCache({
+				server: globalStore.server,
+				itemIds: itemIdListStr,
+				locations: locationWithCommas,
+				productId: product.id,
+				prices: currentPriceData,
+				history: priceHistoryData,
+			});
 		}
 
 		function shouldAddIngredientForEnchantZero(uniqueName, enchant) {
@@ -257,6 +292,23 @@ export const ItemGroup = observer(
 			const { product } = getGroupParts(_groupStore);
 
 			const productId = product?.id;
+
+			// "Per craft" is required before fetching components
+			if (product && !product.quantityPerCraft) {
+				setIsLoadingComponents(false);
+
+				notifications.show({
+					color: "red",
+					icon: <IconX />,
+					title: m.perCraft(),
+					message: m.fillPerCraftFirst(),
+				});
+
+				return;
+			}
+
+			// Ingredient counts from the API are per craft, scale them by the product quantity
+			const productQuantity = Number(product?.quantity) || 1;
 
 			const { tier, enchant } = getItemIdComponents(productId);
 
@@ -427,7 +479,7 @@ export const ItemGroup = observer(
 
 				newItemsToAdd.push({
 					id: itemId,
-					quantity: _resource.count,
+					quantity: _resource.count * productQuantity,
 					originalQuantity: _resource.count,
 				});
 			}
@@ -540,10 +592,13 @@ export const ItemGroup = observer(
 					/>
 
 					<Group justify="flex-start">
-						<Box>
+						<Box
+							w="fit-content"
+							className={guideStep === "get-components" ? classes.guide : undefined}
+						>
 							<Button
 								size="xs"
-								variant={hasIngredients ? "transparent" : "light"}
+								variant="subtle"
 								onClick={() => {
 									getIngredients();
 								}}
@@ -624,8 +679,18 @@ export const ItemGroup = observer(
 			);
 		}
 
-		const hasIngredients = group?.items?.length > 1;
 		const hasFetchedPrices = (group?.priceData?.length ?? 0) > 0;
+
+		const hasComponents = ingredients?.some((_ingredient) => Boolean(_ingredient.id));
+
+		/** @type {"select-item" | "per-craft" | "get-components" | null} */
+		const guideStep = !product?.id
+			? "select-item"
+			: !product?.quantityPerCraft
+				? "per-craft"
+				: !hasComponents
+					? "get-components"
+					: null;
 		// const atLeastOneItemIsInShoppingList = group.atLeastOneItemIsInShoppingList();
 
 		return (
@@ -674,6 +739,7 @@ export const ItemGroup = observer(
 									}}
 									isHighlighted
 									hasFetchedPrices={hasFetchedPrices}
+									guideStep={guideStep}
 								/>
 
 								<ProductOptions />

@@ -35,6 +35,7 @@
 	"priceModeSwitchTooltip": "Switch between buy order or sell order price",
 	"itemData": "Item data",
 	"perCraft": "Per craft",
+	"fillPerCraftFirst": "Fill in 'Per craft' to see the calculations",
 	"units": "Units",
 	"totalSilver": "Total silver",
 	"priceNotFound": "Price not found",

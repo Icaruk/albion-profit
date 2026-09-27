@@ -15,6 +15,17 @@ const ItemSummary = observer(({ group = {}, isPerUnit = false }) => {
 
 	const { product, ingredients } = getGroupParts(group);
 
+	// Do not calculate anything until "Per craft" is filled
+	if (!product?.quantityPerCraft) {
+		return (
+			<Stack w={300} gap="xs" justify="center" h={100}>
+				<Text ta="center" size="sm" c="dimmed">
+					{m.fillPerCraftFirst()}
+				</Text>
+			</Stack>
+		);
+	}
+
 	const totalCostReductionByReturnRateMultiplier = 1 - (product?.returnRate ?? 0) / 100;
 
 	const tax = group?.tax ?? 0;

@@ -1,0 +1,29 @@
+/* Pulsing highlight used to guide the user through the item setup steps */
+
+.guide {
+	position: relative;
+}
+
+/* Draw the pulse 4px away from the control so it never hugs its edge */
+.guide::after {
+	content: "";
+	position: absolute;
+	inset: -4px;
+	border-radius: calc(var(--mantine-radius-sm) + 4px);
+	pointer-events: none;
+	animation: guidePulse 1.6s ease-in-out infinite;
+}
+
+@keyframes guidePulse {
+	0%,
+	100% {
+		box-shadow:
+			0 0 0 2px var(--mantine-color-blue-4),
+			0 0 6px var(--mantine-color-blue-6);
+	}
+	50% {
+		box-shadow:
+			0 0 0 3px var(--mantine-color-blue-3),
+			0 0 16px var(--mantine-color-blue-5);
+	}
+}

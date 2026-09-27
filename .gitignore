@@ -130,3 +130,6 @@ dist
 .pnp.*
 
 .DS_Store
+
+# OpenChamber browser tooling artifacts
+.openchamber/

@@ -30,6 +30,7 @@ import { globalStore } from "@/mobx/rootStore";
 import { PRICE_MODES } from "@/mobx/stores/groupStore";
 import * as m from "@/paraglide/messages.js";
 import { albionData } from "../../../data/items";
+import classes from "./GuideHighlight.module.css";
 
 export const LockedPriceButton = ({ item, onChange = {} }) => {
 	return (
@@ -82,6 +83,7 @@ export const ProductRow = observer(
 	 * @param {boolean} props.isHighlighted
 	 * @param {boolean} props.hasFetchedPrices
 	 * @param {boolean} props.withOmit
+	 * @param {"select-item" | "per-craft" | null} props.guideStep - Setup step to highlight
 	 */
 	({
 		label,
@@ -92,6 +94,7 @@ export const ProductRow = observer(
 		isHighlighted = false,
 		withOmit = false,
 		hasFetchedPrices = false,
+		guideStep = null,
 	}) => {
 		const clipboard = useClipboard();
 
@@ -156,9 +159,10 @@ export const ProductRow = observer(
 						handleChange({ id: value });
 					}}
 					searchable
+					className={guideStep === "select-item" ? classes.guide : undefined}
 				/>
 			);
-		}, [itemList]);
+		}, [itemList, guideStep]);
 
 		function handleChange(newItem = {}) {
 			onChange({
@@ -200,9 +204,10 @@ export const ProductRow = observer(
 			style.backgroundColor = "var(--mantine-color-dark-5)";
 		}
 
-		const calculatedTotal = Math.round(
-			item?.quantity * item?.price * (item?.quantityPerCraft ?? 1),
-		);
+		// Do not calculate anything until "Per craft" is filled
+		const calculatedTotal = !item?.quantityPerCraft
+			? ""
+			: Math.round(item?.quantity * item?.price * item?.quantityPerCraft);
 
 		const isProduct = item?.type === "product";
 		const isInShoppingList = item.isInShoppingList;
@@ -349,11 +354,15 @@ export const ProductRow = observer(
 									min={1}
 									max={999_999}
 									w={90}
-									value={item?.quantityPerCraft ?? 1}
+									value={item?.quantityPerCraft ?? ""}
+									placeholder="?"
 									onChange={(val) => {
-										handleChange({ quantityPerCraft: val });
+										handleChange({ quantityPerCraft: val || null });
 									}}
 									prefix="× "
+									className={
+										guideStep === "per-craft" ? classes.guide : undefined
+									}
 								/>
 							)}
 							<NumberInput
@@ -378,7 +387,11 @@ export const ProductRow = observer(
 									decimalSeparator={globalStore.decimalSeparator}
 									hideControls
 									w={75}
-									value={item?.quantity * item?.quantityPerCraft}
+									value={
+										item?.quantityPerCraft
+											? item?.quantity * item?.quantityPerCraft
+											: ""
+									}
 									readOnly
 								/>
 							)}

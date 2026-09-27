@@ -43,6 +43,7 @@ export class ItemGroupElement {
 		uid = generateUid(),
 		id = "",
 		quantity = 1,
+		originalQuantity,
 		quantityPerCraft = 1,
 		price = 0,
 		sellPrice = 0,
@@ -51,7 +52,7 @@ export class ItemGroupElement {
 		location = locations[0],
 		priceData = [],
 		priceHistoryData = [],
-		returnRate = 0,
+		returnRate = 15,
 		isLocked = false,
 		isInShoppingList = false,
 		isActive = true,
@@ -64,7 +65,7 @@ export class ItemGroupElement {
 		this.id = id;
 		this.quantity = quantity;
 		this.quantityPerCraft = quantityPerCraft;
-		this.originalQuantity = quantity;
+		this.originalQuantity = originalQuantity ?? quantity;
 		this.price = price;
 		this.sellPrice = sellPrice;
 		this.buyOrderPrice = buyOrderPrice;
@@ -92,13 +93,17 @@ export class GroupStore {
 		this.items = data?.items
 			? data.items.map((_item) => new ItemGroupElement(_item))
 			: [
-					new ItemGroupElement({ type: "product" }),
+					new ItemGroupElement({ type: "product", quantityPerCraft: null }),
 					new ItemGroupElement({ type: "ingredient" }),
 				];
 		/** @type {import("@/pages/home/partials/TaxSelector").TaxesValue} */
 		this.tax = data?.tax ?? TAXES.sellOrderWithPremium;
 		this.location = data?.location ?? locations[0];
 		this.order = data?.order ?? 0;
+		/** @type {GroupPriceData[]} */
+		this.priceData = data?.priceData ?? [];
+		/** @type {PriceHistoryData[]} */
+		this.priceHistoryData = data?.priceHistoryData ?? [];
 
 		makeAutoObservable(this);
 	}

@@ -35,6 +35,7 @@
 	"priceModeSwitchTooltip": "Basculer entre le prix de l'ordre d'achat ou de l'ordre de vente",
 	"itemData": "Données de l'article",
 	"perCraft": "Par craft",
+	"fillPerCraftFirst": "Remplissez « Par craft » pour voir les calculs",
 	"units": "Unités",
 	"totalSilver": "Total argent",
 	"priceNotFound": "Prix introuvable",
